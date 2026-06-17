@@ -8,6 +8,7 @@ import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-transla
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient } from '@angular/common/http';
 import { importProvidersFrom } from '@angular/core';
+import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 
 // Factory for ngx-translate http loader
 export function httpLoaderFactory(http: HttpClient) {
@@ -26,6 +27,7 @@ bootstrapApplication(AppComponent, {
         deps: [HttpClient]
       }
     }))
+    , { provide: LocationStrategy, useClass: HashLocationStrategy }
   ]
 }).then(() => {
   // App initialization handled in AppComponent
