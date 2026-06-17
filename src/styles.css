@@ -1,0 +1,20 @@
+/* Mobile-first base styles */
+:root{
+  --primary:#b33a15; /* warm kebab red */
+  --accent:#f6a623; /* warm orange */
+  --bg:#fff7f0;
+  --text:#222;
+}
+html,body{height:100%;margin:0;font-family:Inter, Roboto, Arial, sans-serif;background:var(--bg);color:var(--text);}
+a{color:inherit}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:linear-gradient(90deg,var(--primary),#8b2b0f);color:white}
+.container{padding:16px;max-width:1100px;margin:0 auto}
+.hero{padding:36px 0;text-align:center}
+.cta{background:var(--accent);color:#2b2b2b;padding:12px 18px;border-radius:8px;border:none}
+.branch-card{background:white;padding:12px;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,0.08);margin-bottom:12px}
+@media(min-width:768px){
+  .hero{display:flex;align-items:center;justify-content:space-between;text-align:left}
+}
+
+/* Smooth scrolling */
+html{scroll-behavior:smooth}

@@ -1,0 +1,9 @@
+{
+  "NAV": { "HOME": "Strona główna" },
+  "HERO": { "SLOGAN": "Świeże składniki. Szybka obsługa. Pyszny kebab.", "CTA": "Znajdź najbliższy lokal" },
+  "NEAREST": { "TITLE": "Najbliższy lokal", "MAP": "Pokaż trasę", "PROMPT": "Aby znaleźć najbliższy lokal, włącz lokalizację.", "SELECT": "Wybierz" },
+  "ABOUT": { "TITLE": "O nas", "TEXT": "Delta Kebab to rodzinna restauracja serwująca pyszne kebaby z najlepszych składników." },
+  "MENU": { "TITLE": "Wybrane pozycje" },
+  "WHY": { "TITLE": "Dlaczego my?", "FRESH": "Świeże składniki", "FAST": "Szybka obsługa", "LOCATIONS": "Wiele lokalizacji", "QUALITY": "Jakość mięsa", "FRIENDLY": "Przyjazna atmosfera" },
+  "CONTACT": { "TITLE": "Kontakt", "PHONE": "Telefon", "EMAIL": "Email" }
+}
