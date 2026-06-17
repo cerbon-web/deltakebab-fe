@@ -6,4 +6,5 @@
   "MENU": { "TITLE": "Menu highlights" },
   "WHY": { "TITLE": "Why choose us?", "FRESH": "Fresh ingredients", "FAST": "Fast service", "LOCATIONS": "Multiple locations", "QUALITY": "Quality meat", "FRIENDLY": "Friendly atmosphere" },
   "CONTACT": { "TITLE": "Contact", "PHONE": "Phone", "EMAIL": "Email" }
+  ,"LANG": { "ENGLISH": "English", "POLISH": "Polish", "UKRAINIAN": "Ukrainian" }
 }

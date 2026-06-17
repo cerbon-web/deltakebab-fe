@@ -1,0 +1,22 @@
+<div class="lang-switcher" (keydown)="onKey($event)">
+  <button class="pill" (click)="toggle()" aria-haspopup="menu" [attr.aria-expanded]="open()">
+    <img class="flag" [src]="lang.getFlagFor(current())" alt="" />
+    <span class="caret">▾</span>
+  </button>
+
+  <div class="dropdown" *ngIf="open()" role="menu" aria-label="Language selector">
+    <ul>
+      <li *ngFor="let it of items; let i = index"
+          role="menuitemradio"
+          [attr.aria-checked]="it.code === current()"
+          [class.focused]="focusedIndex() === i"
+          (click)="choose(i)"
+          (mouseenter)="focusedIndex.set(i)">
+        <img class="item-flag" [src]="it.flag" alt="" />
+        <div class="label">{{ it.nativeName }}</div>
+        <div class="spacer"></div>
+        <div class="check" *ngIf="it.code === current()">✓</div>
+      </li>
+    </ul>
+  </div>
+</div>

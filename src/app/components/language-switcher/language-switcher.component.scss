@@ -1,0 +1,61 @@
+.lang-switcher {
+  position: relative;
+  display: inline-block;
+  color: #0f172a; /* enforce readable default text color */
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    border-radius: 999px;
+    padding: 6px 10px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    cursor: pointer;
+    align-items: center;
+    color: #0f172a; /* ensure caret/labels are dark on white */
+  }
+
+  .flag { width: 20px; height: 14px; border-radius: 2px; }
+  .caret { font-size: 12px; color: #475569; }
+
+  .dropdown {
+    position: absolute;
+    right: 0;
+    margin-top: 10px;
+    min-width: 180px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(2,6,23,0.08);
+    border: 1px solid rgba(15,23,42,0.04);
+    transform-origin: top right;
+    animation: pop .18s ease;
+    z-index: 40;
+    padding: 8px;
+    color: #0f172a; /* dropdown text color */
+  }
+
+  ul { list-style: none; margin: 0; padding: 6px 0; }
+  li {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 10px; border-radius: 10px; cursor: pointer;
+    transition: background .15s ease, color .12s ease;
+    color: inherit;
+  }
+  li:hover, li.focused { background: rgba(2,6,23,0.04); color: #0f172a; }
+
+  .item-flag { width: 28px; height: 18px; }
+  .label { font-weight: 600; font-size: 13px; text-transform: uppercase; color: inherit; }
+  .spacer { flex: 1 1 auto; }
+  .check { color: #0ea5a4; font-weight: 700; }
+
+  @keyframes pop {
+    from { opacity: 0; transform: translateY(-6px) scale(.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+}
+
+@media (max-width: 600px) {
+  .lang-switcher .dropdown { right: 8px; left: 8px; min-width: auto; }
+}
