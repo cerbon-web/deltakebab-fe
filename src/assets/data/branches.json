@@ -1,74 +1,111 @@
 [
   {
     "id": 1,
-    "name": "Delta Kebab - Starogard Gdański",
-    "address": "Rynek 38, 83-200 Starogard Gdański",
-    "city": "Starogard Gdański",
-    "latitude": 53.9637,
-    "longitude": 18.5267,
-    "openingHours": "10:00-23:00"
+    "name": "Delta Kebab - Cieplewo",
+    "address": "Długa 101a/Lokal 7, 83-031 Cieplewo",
+    "city": "Cieplewo",
+    "latitude": 54.232071,
+    "longitude": 18.643799,
+    "openingHours": "10:15-22:45"
   },
   {
     "id": 2,
-    "name": "Delta Kebab - Cieplewo",
-    "address": "Długa 101a/Local 7, 83-031 Cieplewo",
-    "city": "Cieplewo",
-    "latitude": 54.2831,
-    "longitude": 18.5772,
-    "openingHours": "10:00-22:00"
-  },
-  {
-    "id": 3,
-    "name": "Delta Kebab - Tczew Wojska Polskiego",
-    "address": "Wojska Polskiego 28, 83-110 Tczew",
-    "city": "Tczew",
-    "latitude": 54.0924,
-    "longitude": 18.7778,
-    "openingHours": "10:00-23:00"
-  },
-  {
-    "id": 4,
-    "name": "Delta Kebab - Pruszcz Gdański",
-    "address": "Chopina 2, 83-000 Pruszcz Gdański",
-    "city": "Pruszcz Gdański",
-    "latitude": 54.2598,
-    "longitude": 18.6365,
-    "openingHours": "10:00-23:00"
-  },
-  {
-    "id": 5,
-    "name": "Delta Kebab - Malbork",
-    "address": "Fryderyka Chopina 3, 82-200 Malbork",
-    "city": "Malbork",
-    "latitude": 54.0368,
-    "longitude": 19.0269,
-    "openingHours": "10:00-22:00"
-  },
-  {
-    "id": 6,
-    "name": "Delta Kebab - Tczew Jodłowa",
-    "address": "Jodłowa 11A, 83-110 Tczew",
-    "city": "Tczew",
-    "latitude": 54.0970,
-    "longitude": 18.7700,
-    "openingHours": "10:00-23:00"
-  },
-  {
-    "id": 7,
     "name": "Delta Kebab - Kowale",
     "address": "Apollina 16/2, 80-180 Kowale",
     "city": "Kowale",
-    "latitude": 54.3592,
-    "longitude": 18.4886,
-    "openingHours": "10:00-23:00"
+    "latitude": 54.306059,
+    "longitude": 18.569809,
+    "openingHours": "11:00-21:30"
+  },
+  {
+    "id": 3,
+    "name": "Delta Kebab - Pruszcz Gdański",
+    "address": "Chopina 2, 83-000 Pruszcz Gdański",
+    "city": "Pruszcz Gdański",
+    "latitude": 54.261974,
+    "longitude": 18.636377,
+    "openingHours": "11:00-21:30"
+  },
+  {
+    "id": 4,
+    "name": "Delta Kebab - Starogard Gdański (Rynek)",
+    "address": "Rynek 38, 83-200 Starogard Gdański",
+    "city": "Starogard Gdański",
+    "latitude": 53.967822,
+    "longitude": 18.532756,
+    "openingHours": "11:00-21:30"
+  },
+  {
+    "id": 5,
+    "name": "Delta Kebab - Starogard Gdański (Nowowiejska)",
+    "address": "Droga Nowowiejska 1A, 83-200 Starogard Gdański",
+    "city": "Starogard Gdański",
+    "latitude": 53.965418,
+    "longitude": 18.515419,
+    "openingHours": "11:00-21:30"
+  },
+  {
+    "id": 6,
+    "name": "Delta Kebab - Tczew (Jodłowa)",
+    "address": "Jodłowa 11A, 83-110 Tczew",
+    "city": "Tczew",
+    "latitude": 54.097471,
+    "longitude": 18.768975,
+    "openingHours": "10:30-22:30"
+  },
+  {
+    "id": 7,
+    "name": "Delta Kebab - Tczew (Wojska Polskiego)",
+    "address": "Wojska Polskiego 28, 83-110 Tczew",
+    "city": "Tczew",
+    "latitude": 54.088359,
+    "longitude": 18.787189,
+    "openingHours": "10:00-24:00"
   },
   {
     "id": 8,
     "name": "Delta Kebab - Tuchola",
     "address": "Świecka 26, 89-500 Tuchola",
     "city": "Tuchola",
-    "latitude": 53.5879,
-    "longitude": 17.8591,
+    "latitude": 53.586364,
+    "longitude": 17.861473,
+    "openingHours": "10:00-22:00"
+  },
+
+  {
+    "id": 9,
+    "name": "Delta Kebab - Lidzbark",
+    "address": "Plac Generała Józefa Hallera 2, 13-230 Lidzbark",
+    "city": "Lidzbark",
+    "latitude": 53.262713,
+    "longitude": 19.822296,
+    "openingHours": "10:00-23:00"
+  },
+  {
+    "id": 10,
+    "name": "Delta Kebab - Olsztynek",
+    "address": "Warszawska 8, 11-015 Olsztynek",
+    "city": "Olsztynek",
+    "latitude": 53.582472,
+    "longitude": 20.283026,
+    "openingHours": "10:00-23:00"
+  },
+  {
+    "id": 11,
+    "name": "Delta Kebab - Kętrzyn",
+    "address": "Adama Mickiewicza 2, 11-400 Kętrzyn",
+    "city": "Kętrzyn",
+    "latitude": 54.076653,
+    "longitude": 21.374531,
+    "openingHours": "10:00-22:00"
+  },
+  {
+    "id": 12,
+    "name": "Delta Kebab - Wrzeszcz",
+    "address": "Klonowa 1/43, 80-264 Gdańsk",
+    "city": "Gdansk Wrzeszcz",
+    "latitude": 54.380591,
+    "longitude": 18.603988,
     "openingHours": "10:00-22:00"
   }
 ]
