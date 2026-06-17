@@ -9,7 +9,7 @@ import { BranchService, Branch } from '../services/branch.service';
 import { GeolocationService } from '../services/geolocation.service';
 import { haversineDistance } from '../utils/haversine';
 import { mapsLinkForBranch } from '../utils/location';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-landing',
@@ -40,6 +40,7 @@ export class LandingComponent implements OnInit {
     private branchService: BranchService,
     private geo: GeolocationService,
     private ngZone: NgZone,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -85,7 +86,7 @@ export class LandingComponent implements OnInit {
             const sortedAll = enriched.sort((a, b) => a.distanceKm - b.distanceKm);
             this.nearestFallback.set(sortedAll[0]);
             this.nearbyBranches.set([]);
-            this.error.set('Nie znaleziono lokalu w promieniu 10 km. Wyświetlamy najbliższy.');
+            this.error.set(this.translate.instant('NEAREST.WARNING.NO_NEAR_10KM'));
           }
 
           this.loading.set(false);
@@ -97,7 +98,7 @@ export class LandingComponent implements OnInit {
             this.branches.set(b);
             computeAndSet();
           }).catch(() => {
-            this.error.set('Błąd wczytywania lokalizacji. Wyświetlamy wszystkie lokalizacje.');
+            this.error.set(this.translate.instant('NEAREST.ERROR.LOAD'));
             this.loading.set(false);
           });
         } else {
@@ -111,9 +112,9 @@ export class LandingComponent implements OnInit {
         this.loading.set(false);
         const maybe = err as { code?: number };
         if (maybe && maybe.code === 1) {
-          this.error.set('Dostęp do lokalizacji odmówiony. Wyświetlamy wszystkie lokalizacje.');
+          this.error.set(this.translate.instant('NEAREST.ERROR.GEO_DENIED'));
         } else {
-          this.error.set('Brak dostępu do lokalizacji. Wyświetlamy wszystkie lokalizacje.');
+          this.error.set(this.translate.instant('NEAREST.ERROR.GEO_UNAVAILABLE'));
         }
 
         if (!this.branches() || this.branches().length === 0) {
