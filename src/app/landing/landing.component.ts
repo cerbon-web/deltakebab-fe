@@ -95,34 +95,6 @@ import { TranslateModule } from '@ngx-translate/core';
           </div>
         </div>
       </section>
-
-      <section>
-        <h2>{{ 'ABOUT.TITLE' | translate }}</h2>
-        <p>{{ 'ABOUT.TEXT' | translate }}</p>
-      </section>
-
-      <section>
-        <h2>{{ 'MENU.TITLE' | translate }}</h2>
-        <div class="menu-grid">
-          <mat-card *ngFor="let item of menu">
-            <mat-card-title>{{ item.title }}</mat-card-title>
-            <mat-card-content>{{ item.desc }}</mat-card-content>
-          </mat-card>
-        </div>
-      </section>
-
-      <section>
-        <h2>{{ 'WHY.TITLE' | translate }}</h2>
-        <ul>
-          <li *ngFor="let p of points">{{ p | translate }}</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2>{{ 'CONTACT.TITLE' | translate }}</h2>
-        <p>{{ 'CONTACT.PHONE' | translate }}: +48 000 000 000</p>
-        <p>{{ 'CONTACT.EMAIL' | translate }}: kontakt@deltakebab.pl</p>
-      </section>
     </main>
   `
 })

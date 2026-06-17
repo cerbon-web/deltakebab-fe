@@ -1,5 +1,5 @@
 {
-  "NAV": { "HOME": "Home" },
+  "NAV": { "LANDING": "Landing", "MENU": "Menu", "WHY": "Why Us", "CONTACT": "Contact", "ABOUT": "About", "HOME": "Home" },
   "HERO": { "SLOGAN": "Fresh ingredients. Fast service. Tasty kebab.", "CTA": "Find nearest location" },
   "NEAREST": { "TITLE": "Nearest branch", "MAP": "Show route", "PROMPT": "Enable location to find the nearest branch.", "SELECT": "Select" },
   "ABOUT": { "TITLE": "About", "TEXT": "Delta Kebab is a family restaurant serving tasty kebabs made from high-quality ingredients." },

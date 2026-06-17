@@ -27,7 +27,11 @@ import { LanguageSwitcherComponent } from './components/language-switcher/langua
           </div>
         </div>
         <nav style="margin-left:auto;display:flex;align-items:center;gap:12px">
-          <a routerLink="/">{{ 'NAV.HOME' | translate }}</a>
+          <a routerLink="/">{{ 'NAV.LANDING' | translate }}</a>
+          <a routerLink="/menu">{{ 'NAV.MENU' | translate }}</a>
+          <a routerLink="/why-us">{{ 'NAV.WHY' | translate }}</a>
+          <a routerLink="/contact">{{ 'NAV.CONTACT' | translate }}</a>
+          <a routerLink="/about">{{ 'NAV.ABOUT' | translate }}</a>
           <div style="display:flex;gap:8px;align-items:center">
             <app-language-switcher></app-language-switcher>
           </div>
