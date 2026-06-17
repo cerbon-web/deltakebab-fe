@@ -83,7 +83,7 @@ jobs:
           # Create a PAT with `repo` scope and add it to repository secrets as `GH_PAGES_TOKEN`.
           # If you prefer the built-in GITHUB_TOKEN and your repo allows write, replace with
           # `github_token: ${{ secrets.GITHUB_TOKEN }}`.
-          github_token: ${{ secrets.GH_PAGES_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: ./dist
           # Force update the branch contents on every deploy (overwrites history)
