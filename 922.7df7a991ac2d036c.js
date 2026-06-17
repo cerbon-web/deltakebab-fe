@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdelta_fe=self.webpackChunkdelta_fe||[]).push([[922],{5922(o,t,c){function r(s){return[...s].sort((e,a)=>{const n=(e.city||e.name).localeCompare(a.city||a.name);return 0!==n?n:e.name.localeCompare(a.name)})}c.d(t,{sortBranches:()=>r})}}]);

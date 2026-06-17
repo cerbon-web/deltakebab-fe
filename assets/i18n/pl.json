@@ -1,0 +1,21 @@
+{
+  "NAV": { "LANDING": "Strona główna", "MENU": "Menu", "WHY": "Dlaczego my?", "CONTACT": "Kontakt", "ABOUT": "O nas", "HOME": "Strona główna" },
+  "HERO": { "SLOGAN": "Świeże składniki. Szybka obsługa. Pyszny kebab.", "CTA": "Znajdź najbliższy lokal" },
+  "NEAREST": {
+    "TITLE": "Najbliższy lokal",
+    "MAP": "Pokaż trasę",
+    "PROMPT": "Aby znaleźć najbliższy lokal, włącz lokalizację.",
+    "SELECT": "Wybierz",
+    "WARNING": { "NO_NEAR_10KM": "Nie znaleziono lokalu w promieniu 10 km. Wyświetlamy najbliższy." },
+    "ERROR": {
+      "GEO_DENIED": "Dostęp do lokalizacji odmówiony. Wyświetlamy wszystkie lokalizacje.",
+      "GEO_UNAVAILABLE": "Brak dostępu do lokalizacji. Wyświetlamy wszystkie lokalizacje.",
+      "LOAD": "Błąd wczytywania lokalizacji. Wyświetlamy wszystkie lokalizacje."
+    }
+  },
+  "ABOUT": { "TITLE": "O nas", "TEXT": "Delta Kebab to rodzinna restauracja serwująca pyszne kebaby z najlepszych składników." },
+  "MENU": { "TITLE": "Wybrane pozycje" },
+  "WHY": { "TITLE": "Dlaczego my?", "FRESH": "Świeże składniki", "FAST": "Szybka obsługa", "LOCATIONS": "Wiele lokalizacji", "QUALITY": "Jakość mięsa", "FRIENDLY": "Przyjazna atmosfera" },
+  "CONTACT": { "TITLE": "Kontakt", "PHONE": "Telefon", "EMAIL": "Email" }
+  ,"LANG": { "ENGLISH": "Angielski", "POLISH": "Polski", "UKRAINIAN": "Ukraiński" }
+}
