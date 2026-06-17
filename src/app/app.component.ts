@@ -19,7 +19,7 @@ import { TranslateService } from '@ngx-translate/core';
     <header>
       <div class="container" style="display:flex;align-items:center;gap:12px;">
         <div style="display:flex;align-items:center;gap:12px;">
-          <img src="/assets/logo.svg" alt="Delta Kebab" width="48" height="48" />
+          <img src="/assets/logo.png" alt="Delta Kebab" width="48" height="48" />
           <div>
             <div style="font-weight:700">Delta Kebab</div>
             <div style="font-size:12px">Najlepszy kebab w Trójmieście i okolicach</div>
