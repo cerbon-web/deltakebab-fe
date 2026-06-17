@@ -5,15 +5,38 @@
   --bg:#fff7f0;
   --text:#222;
 }
-html,body{height:100%;margin:0;font-family:Inter, Roboto, Arial, sans-serif;background:var(--bg);color:var(--text);}
 a{color:inherit}
-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:linear-gradient(90deg,var(--primary),#8b2b0f);color:white}
+html{height:100%;
+  /* subtle background image with >=50% white overlay for readability */
+  background-image: linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)), url('/assets/bg.png');
+  background-size: cover, cover;
+  background-position: center center, center center;
+  background-repeat: no-repeat, no-repeat;
+  background-attachment: fixed, fixed;
+  background-color: var(--bg);
+}
+body{height:100%;margin:0;font-family:Inter, Roboto, Arial, sans-serif;color:var(--text);}
+a{color:inherit}
 .container{padding:16px;max-width:1100px;margin:0 auto}
-.hero{padding:36px 0;text-align:center}
+.banner{padding:36px 0;text-align:center}
 .cta{background:var(--accent);color:#2b2b2b;padding:12px 18px;border-radius:8px;border:none}
 .branch-card{background:white;padding:12px;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,0.08);margin-bottom:12px}
+
+.banner-actions { display:flex;align-items:center;gap:12px }
+.mat-spinner-inline { display:inline-block; color:#1976d2; z-index:2000 }
+.branch-row { display:flex; justify-content:space-between; align-items:center }
+.branch-name { font-weight:700 }
+.branch-meta { font-size:13px }
+.branch-actions { text-align:right }
+.branch-distance { font-weight:700 }
+.error { color:#b00020 }
+
+/* Fallback spinner */
+@keyframes cp-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.cp-fallback-spinner.spinning { animation: cp-spin 1s linear infinite; }
+.cp-fallback-spinner { width:24px;height:24px;border:3px solid rgba(0,0,0,0.12);border-top-color:#1976d2;border-radius:50%;display:inline-block;margin-left:6px }
 @media(min-width:768px){
-  .hero{display:flex;align-items:center;justify-content:space-between;text-align:left}
+  .banner{display:flex;align-items:center;justify-content:space-between;text-align:left}
 }
 
 /* Smooth scrolling */

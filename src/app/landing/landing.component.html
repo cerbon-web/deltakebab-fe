@@ -1,0 +1,68 @@
+<main class="container">
+  <section class="banner">
+    <div>
+      <h1>Delta Kebab</h1>
+      <p>{{ 'HERO.SLOGAN' | translate }}</p>
+      <div class="banner-actions">
+        <button class="cta" (click)="findNearest()" [disabled]="loading()">{{ 'HERO.CTA' | translate }}</button>
+        <mat-progress-spinner *ngIf="loading()" diameter="24" mode="indeterminate" strokeWidth="3" class="mat-spinner-inline"></mat-progress-spinner>
+        <div *ngIf="loading()" class="cp-fallback-spinner" [class.spinning]="loading()"></div>
+      </div>
+    </div>
+    
+  </section>
+
+  <section aria-labelledby="nearest-title">
+    <h2 id="nearest-title">{{ 'NEAREST.TITLE' | translate }}</h2>
+    <div *ngIf="error()" class="error">{{ error() }}</div>
+
+    <div *ngIf="nearbyBranches() && nearbyBranches().length > 0">
+      <div *ngFor="let n of nearbyBranches()" class="branch-card">
+        <div class="branch-row">
+          <div>
+            <div class="branch-name">{{ n.name }}</div>
+            <div class="branch-meta">{{ n.address }}</div>
+            <div class="branch-meta">{{ n.openingHours }}</div>
+          </div>
+          <div class="branch-actions">
+            <div class="branch-distance">{{ n.distanceKm }} km</div>
+            <a [href]="n.mapsLink" target="_blank" rel="noopener">
+              <button mat-raised-button color="primary">{{ 'NEAREST.MAP' | translate }}</button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="nearestFallback()" class="branch-card">
+      <div class="branch-row">
+        <div>
+          <div class="branch-name">{{ nearestFallback()?.name }}</div>
+          <div class="branch-meta">{{ nearestFallback()?.address }}</div>
+          <div class="branch-meta">{{ nearestFallback()?.openingHours }}</div>
+        </div>
+        <div class="branch-actions">
+          <div class="branch-distance">{{ nearestFallback()?.distanceKm }} km</div>
+          <a [href]="nearestFallback()?.mapsLink" target="_blank" rel="noopener">
+            <button mat-raised-button color="primary">{{ 'NEAREST.MAP' | translate }}</button>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!coords() && !loading()">
+      <p>{{ 'NEAREST.PROMPT' | translate }}</p>
+      <div *ngFor="let b of branches()" class="branch-card">
+        <div class="branch-row">
+          <div>
+            <div class="branch-name">{{ b.name }}</div>
+            <div class="branch-meta">{{ b.address }}</div>
+          </div>
+          <div>
+            <button mat-stroked-button (click)="selectManual(b)">{{ 'NEAREST.SELECT' | translate }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>

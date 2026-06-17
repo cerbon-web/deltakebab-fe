@@ -1,0 +1,12 @@
+
+/* Landing-specific overrides kept minimal — shared styles moved to global styles.css */
+
+/* Banner-specific minor rules (component-scoped) */
+.banner { padding: 36px 0; text-align: center; }
+.banner-actions { display:flex;align-items:center;gap:12px }
+
+@media (min-width: 768px) {
+  .banner { display:flex; align-items:center; justify-content:space-between; text-align:left }
+}
+
+

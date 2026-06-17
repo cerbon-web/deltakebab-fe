@@ -1,0 +1,62 @@
+<header class="site-header">
+  <div class="container">
+    <a class="brand" routerLink="/" aria-label="Delta Kebab - Home">
+      <img src="/assets/logo.png" alt="Delta Kebab" width="40" height="40" />
+      <div>
+        <div class="title">Delta Kebab</div>
+        <div class="slogan">{{ 'HERO.SLOGAN' | translate }}</div>
+      </div>
+    </a>
+
+    <button class="menu-toggle" aria-label="Toggle menu" (click)="showMenu.update(v => !v)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="3" y="6" width="18" height="2" fill="currentColor" rx="1"/>
+        <rect x="3" y="11" width="18" height="2" fill="currentColor" rx="1"/>
+        <rect x="3" y="16" width="18" height="2" fill="currentColor" rx="1"/>
+      </svg>
+    </button>
+
+    <nav class="main-nav" role="navigation" aria-label="Main navigation">
+      <a routerLink="/">{{ 'NAV.LANDING' | translate }}</a>
+      <a routerLink="/menu">{{ 'NAV.MENU' | translate }}</a>
+      <a routerLink="/why-us">{{ 'NAV.WHY' | translate }}</a>
+      <a routerLink="/contact">{{ 'NAV.CONTACT' | translate }}</a>
+      <a routerLink="/about">{{ 'NAV.ABOUT' | translate }}</a>
+      <div class="nav-actions">
+        <app-language-switcher></app-language-switcher>
+      </div>
+    </nav>
+
+    <div class="mobile-actions">
+      <app-language-switcher></app-language-switcher>
+    </div>
+
+    <div class="mobile-menu" role="menu" [attr.aria-hidden]="!showMenu()">
+      <ul>
+        <li><a routerLink="/" (click)="showMenu.set(false)">{{ 'NAV.LANDING' | translate }}</a></li>
+        <li><a routerLink="/menu" (click)="showMenu.set(false)">{{ 'NAV.MENU' | translate }}</a></li>
+        <li><a routerLink="/why-us" (click)="showMenu.set(false)">{{ 'NAV.WHY' | translate }}</a></li>
+        <li><a routerLink="/contact" (click)="showMenu.set(false)">{{ 'NAV.CONTACT' | translate }}</a></li>
+        <li><a routerLink="/about" (click)="showMenu.set(false)">{{ 'NAV.ABOUT' | translate }}</a></li>
+      </ul>
+    </div>
+  </div>
+</header>
+<router-outlet></router-outlet>
+<footer class="site-footer">
+  <div>© Delta Kebab</div>
+  <div class="socials">
+    <a href="https://www.instagram.com/deltakebabs/" target="_blank" rel="noopener" aria-label="Delta Kebab Instagram">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.2"/>
+        <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.2"/>
+        <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
+      </svg>
+    </a>
+    <a href="https://www.facebook.com/deltakebab/" target="_blank" rel="noopener" aria-label="Delta Kebab Facebook">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M15 8h2.5V4.5H15c-2.2 0-3.5 1.3-3.5 3.5V11H9v3h2.5v7H15v-7h2.2l.3-3H15V8z" fill="currentColor" />
+      </svg>
+    </a>
+  </div>
+</footer>

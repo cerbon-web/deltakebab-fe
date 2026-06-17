@@ -31,8 +31,8 @@ export class LanguageService {
     this.currentLang.set(lang);
   }
 
-  instant(key: string, params?: any) {
-    return this.translate.instant(key, params);
+  instant(key: string, params?: Record<string, unknown> | undefined) {
+    return this.translate.instant(key, params as any);
   }
 
   getFlagFor(code: AppLang) {

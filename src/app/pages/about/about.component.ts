@@ -6,11 +6,6 @@ import { TranslateModule } from '@ngx-translate/core';
   selector: 'page-about',
   standalone: true,
   imports: [CommonModule, TranslateModule],
-  template: `
-    <main class="container">
-      <h1>{{ 'ABOUT.TITLE' | translate }}</h1>
-      <p>Delta Kebab is a family restaurant serving tasty kebabs made from high-quality ingredients.</p>
-    </main>
-  `
+  templateUrl: './about.component.html'
 })
 export class AboutComponent {}

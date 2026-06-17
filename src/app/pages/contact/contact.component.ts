@@ -6,12 +6,6 @@ import { TranslateModule } from '@ngx-translate/core';
   selector: 'page-contact',
   standalone: true,
   imports: [CommonModule, TranslateModule],
-  template: `
-    <main class="container">
-      <h1>{{ 'CONTACT.TITLE' | translate }}</h1>
-      <p>Phone: +48 000 000 000</p>
-      <p>Email: kontakt@deltakebab.pl</p>
-    </main>
-  `
+  templateUrl: './contact.component.html'
 })
 export class ContactComponent {}
