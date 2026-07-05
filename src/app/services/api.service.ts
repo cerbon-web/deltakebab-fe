@@ -18,31 +18,31 @@ export class ApiService {
 
   healthCheck(): Observable<HealthResponse> {
     return this.http.get<HealthResponse>(`${this.baseUrl}/health`).pipe(
-      catchError(this.handleError)
+      catchError((error) => this.handleError(error))
     );
   }
 
   getRestaurants(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/restaurants`).pipe(
-      catchError(this.handleError)
+      catchError((error) => this.handleError(error))
     );
   }
 
   getNearestRestaurants(lat: number, lng: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/restaurants/nearest?lat=${lat}&lng=${lng}`).pipe(
-      catchError(this.handleError)
+      catchError((error) => this.handleError(error))
     );
   }
 
   getMenu(restaurantId: string | number): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/menu/${restaurantId}`).pipe(
-      catchError(this.handleError)
+      catchError((error) => this.handleError(error))
     );
   }
 
   createOrder(payload: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/orders`, payload).pipe(
-      catchError(this.handleError)
+      catchError((error) => this.handleError(error))
     );
   }
 
