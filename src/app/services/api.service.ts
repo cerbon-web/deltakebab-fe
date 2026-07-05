@@ -13,6 +13,9 @@ export interface HealthResponse {
 export class ApiService {
   private readonly baseUrl = environment.apiBaseUrl;
   private readonly translate = inject(TranslateService);
+  private readonly getText = (key: string, fallback = key) => {
+    return this.translate?.instant ? this.translate.instant(key) : fallback;
+  };
 
   constructor(private http: HttpClient) {}
 
@@ -44,10 +47,6 @@ export class ApiService {
     return this.http.post<any>(`${this.baseUrl}/orders`, payload).pipe(
       catchError(this.handleError)
     );
-  }
-
-  private getText(key: string, fallback = key): string {
-    return this.translate?.instant ? this.translate.instant(key) : fallback;
   }
 
   private handleError(error: HttpErrorResponse) {

@@ -10,14 +10,13 @@ export class BackendConnectionService {
   public readonly status = signal<'checking' | 'ready' | 'error'>('checking');
   public readonly message = signal<string>('');
   public readonly error = signal<string | null>(null);
+  private readonly getText = (key: string, fallback = key) => {
+    return this.translate?.instant ? this.translate.instant(key) : fallback;
+  };
 
   constructor(private apiService: ApiService) {
     this.syncMessage();
     this.translate.onLangChange.subscribe(() => this.syncMessage());
-  }
-
-  private getText(key: string, fallback = key): string {
-    return this.translate?.instant ? this.translate.instant(key) : fallback;
   }
 
   private syncMessage() {

@@ -29,6 +29,9 @@ export class AppComponent implements OnInit {
   public connectionMessage = signal<string>('');
   public connectionError = signal<string | null>(null);
   private host = inject(ElementRef<HTMLElement>);
+  private readonly getText = (key: string, fallback = key) => {
+    return this.translate?.instant ? this.translate.instant(key) : fallback;
+  };
 
   constructor(
     private translate: TranslateService,
@@ -38,10 +41,6 @@ export class AppComponent implements OnInit {
     this.connectionMessage = this.backendConnection.message;
     this.connectionError = this.backendConnection.error;
     this.connectionMessage.set(this.getText('CONNECTION.CONNECTING'));
-  }
-
-  private getText(key: string): string {
-    return this.translate?.instant ? this.translate.instant(key) : key;
   }
 
   ngOnInit(): void {
