@@ -1,0 +1,185 @@
+{
+  "NAV": { "LANDING": "Landing", "MENU": "Menu", "WHY": "Why Us", "CONTACT": "Contact", "ABOUT": "About", "HOME": "Home" },
+  "HERO": { "SLOGAN": "Fresh ingredients. Fast service. Tasty kebab.", "CTA": "Find nearest location" },
+  "NEAREST": {
+    "TITLE": "Nearest branch",
+    "MAP": "Show route",
+    "PROMPT": "Enable location to find the nearest branch.",
+    "SELECT": "Select",
+    "WARNING": { "NO_NEAR_10KM": "No branches found within 10 km. Showing the nearest." },
+    "ERROR": {
+      "GEO_DENIED": "Location access denied. Showing all locations.",
+      "GEO_UNAVAILABLE": "Location not available. Showing all locations.",
+      "LOAD": "Error loading locations. Showing all locations."
+    }
+  },
+  "ABOUT": { "TITLE": "About", "TEXT": "Delta Kebab is a family restaurant serving tasty kebabs made from high-quality ingredients." },
+  "MENU": { "TITLE": "Menu highlights" },
+  "WHY": { "TITLE": "Why choose us?", "FRESH": "Fresh ingredients", "FAST": "Fast service", "LOCATIONS": "Multiple locations", "QUALITY": "Quality meat", "FRIENDLY": "Friendly atmosphere" },
+  "CONTACT": { "TITLE": "Contact", "PHONE": "Phone", "EMAIL": "Email" },
+  "LANG": { "ENGLISH": "English", "POLISH": "Polish", "UKRAINIAN": "Ukrainian" },
+  "APP": {
+    "BRAND_NAME": "Delta Kebab",
+    "BRAND_ALT": "Delta Kebab",
+    "HOME_LABEL": "Delta Kebab - Home",
+    "MENU_TOGGLE_LABEL": "Toggle menu",
+    "MAIN_NAV_LABEL": "Main navigation",
+    "ADMIN_LINK": "Admin",
+    "COPYRIGHT": "© Delta Kebab",
+    "SOCIAL_INSTAGRAM": "Delta Kebab Instagram",
+    "SOCIAL_FACEBOOK": "Delta Kebab Facebook",
+    "LANGUAGE_SELECTOR": "Language selector"
+  },
+  "CONNECTION": {
+    "CONNECTING": "Connecting...",
+    "PREPARING": "Preparing the experience...",
+    "CONNECTED": "Connected",
+    "UNAVAILABLE": "Service unavailable",
+    "RETRY": "Retry",
+    "ERRORS": {
+      "BACKEND_OFFLINE": "The backend is temporarily unavailable.",
+      "GENERIC": "Something went wrong.",
+      "SERVICE_UNAVAILABLE": "The service is temporarily unavailable."
+    }
+  },
+  "LANDING": {
+    "HERO": {
+      "EYEBROW": "Fast food, made simple",
+      "TITLE": "Order your favourite kebab in minutes.",
+      "DESCRIPTION": "Find the nearest restaurant, browse by category, add items to your cart, and checkout in a few taps.",
+      "FEATURES": {
+        "LOCATION": "Live location",
+        "CATEGORIES": "Category browsing",
+        "CHECKOUT": "Fast checkout"
+      }
+    },
+    "SELECT_RESTAURANT": {
+      "TITLE": "Select a restaurant",
+      "SUBTITLE": "Choose from available restaurants near you"
+    },
+    "RESTAURANT_HEADER": {
+      "LABEL": "Restaurant:",
+      "CHANGE_RESTAURANT": "Change restaurant"
+    },
+    "SELECT_BRANCH": {
+      "TITLE": "Select a branch",
+      "SUBTITLE": "Choose your preferred location",
+      "NEAREST_TO_YOU": "Nearest to you",
+      "FIND_NEAREST": "Find nearest branch",
+      "FINDING": "Finding nearest branch…",
+      "DETECTED_ADDRESS_LABEL": "Approximate address"
+    },
+    "SUMMARY": {
+      "LABEL_RESTAURANT": "Restaurant:",
+      "LABEL_BRANCH": "Branch:",
+      "CHANGE": "Change"
+    },
+    "MENU": {
+      "TITLE": "Menu",
+      "SUBTITLE": "Choose a category to reveal the matching dishes.",
+      "LOADING": "Loading menu…",
+      "AVAILABLE": "Available now"
+    },
+    "CART": {
+      "TITLE": "Your order",
+      "ITEM_SINGULAR": "item",
+      "ITEM_PLURAL": "items",
+      "EMPTY_TITLE": "Your cart is empty.",
+      "EMPTY_DESCRIPTION": "Select a dish to start your order.",
+      "NOTES_PLACEHOLDER": "Add notes for this item",
+      "REMOVE": "Remove",
+      "ADD": "Add to cart",
+      "CONTINUE": "Continue order"
+    },
+    "CHECKOUT": {
+      "STEPS": {
+        "DETAILS": "1. Delivery / pickup",
+        "REVIEW": "2. Review"
+      },
+      "ORDER_TYPES": {
+        "SELF_PICKUP": "Self pickup",
+        "DELIVERY": "Delivery"
+      },
+      "PAYMENT_METHODS": {
+        "CASH": "Cash",
+        "CARD": "Card"
+      },
+      "FORM": {
+        "STREET": "Street",
+        "HOUSE_NUMBER": "House number",
+        "APARTMENT": "Apartment number",
+        "FLOOR": "Floor",
+        "CITY": "City",
+        "PHONE": "Phone number",
+        "NAME": "Name (optional)",
+        "EMAIL": "Email (optional)",
+        "NOTES": "Delivery notes or special requests"
+      },
+      "ACTIONS": {
+        "REVIEW_ORDER": "Review order",
+        "PLACE_ORDER": "Place order",
+        "PLACING_ORDER": "Placing order…"
+      },
+      "REVIEW": {
+        "TITLE": "Order review",
+        "RESTAURANT": "Restaurant:",
+        "BRANCH": "Branch:",
+        "RECEIVING": "Receiving:",
+        "PAYMENT": "Payment:",
+        "PHONE": "Phone:",
+        "NOTES": "Notes:"
+      },
+      "SUCCESS": {
+        "TITLE": "Order placed successfully",
+        "DESCRIPTION": "Your order is being prepared.",
+        "ORDER_ID": "Order ID:",
+        "STATUS": "Status:"
+      }
+    },
+    "DISTANCE": {
+      "METERS": "{{value}} m",
+      "KILOMETERS": "{{value}} km"
+    },
+    "ERRORS": {
+      "RESTAURANT_LIST_UNAVAILABLE": "The restaurant list is temporarily unavailable.",
+      "BRANCH_LOCATION_UNAVAILABLE": "No branch location data is available for this restaurant.",
+      "LOCATION_INACCURATE": "We need a precise location to calculate distances. Please move to an open area and try again.",
+      "LOCATION_PERMISSION_BRANCH": "Location permission was denied. Please allow it to find the nearest branch.",
+      "LOCATION_UNAVAILABLE_BRANCH": "Location services are unavailable on this device.",
+      "NEARBY_RESTAURANT_UNAVAILABLE": "No nearby restaurant is currently available.",
+      "NEARBY_RESTAURANT_FAILED": "We could not find a nearby restaurant right now.",
+      "LOCATION_PERMISSION_RESTAURANT": "Location permission was denied. Please allow it to find the nearest restaurant.",
+      "MENU_UNAVAILABLE": "The menu is temporarily unavailable.",
+      "CART_EMPTY": "Your cart is empty. Add a dish to continue.",
+      "PHONE_REQUIRED": "A phone number is required for the order.",
+      "ORDER_PLACE_FAILED": "The order could not be placed."
+    }
+  },
+  "ADMIN": {
+    "TITLE": "Database maintenance",
+    "DESCRIPTION": "Internal maintenance tools for development and debugging.",
+    "ACTIONS": {
+      "RESET": "Database Reset",
+      "EXPORT": "Export Database",
+      "IMPORT": "Import Database"
+    },
+    "FORM": {
+      "CONFIRM_RESET": "Confirm reset",
+      "CONFIRMATION_PLACEHOLDER": "Type DELETE",
+      "TOKEN": "Bearer token",
+      "TOKEN_PLACEHOLDER": "Paste admin token",
+      "CLEAR_EXISTING": "Clear existing data before import"
+    },
+    "SNACKBAR": {
+      "RESET_SUCCESS": "Database reset completed",
+      "RESET_FAILED": "Reset failed",
+      "EXPORT_FAILED": "Export failed",
+      "IMPORT_SUCCESS": "Import completed",
+      "IMPORT_FAILED": "Import failed",
+      "IMPORT_INVALID_JSON": "Invalid JSON file"
+    },
+    "COMMON": {
+      "CLOSE": "Close"
+    }
+  }
+}

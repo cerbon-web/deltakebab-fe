@@ -1,0 +1,185 @@
+{
+  "NAV": { "LANDING": "Strona główna", "MENU": "Menu", "WHY": "Dlaczego my?", "CONTACT": "Kontakt", "ABOUT": "O nas", "HOME": "Strona główna" },
+  "HERO": { "SLOGAN": "Świeże składniki. Szybka obsługa. Pyszny kebab.", "CTA": "Znajdź najbliższy lokal" },
+  "NEAREST": {
+    "TITLE": "Najbliższy lokal",
+    "MAP": "Pokaż trasę",
+    "PROMPT": "Aby znaleźć najbliższy lokal, włącz lokalizację.",
+    "SELECT": "Wybierz",
+    "WARNING": { "NO_NEAR_10KM": "Nie znaleziono lokalu w promieniu 10 km. Wyświetlamy najbliższy." },
+    "ERROR": {
+      "GEO_DENIED": "Dostęp do lokalizacji odmówiony. Wyświetlamy wszystkie lokalizacje.",
+      "GEO_UNAVAILABLE": "Brak dostępu do lokalizacji. Wyświetlamy wszystkie lokalizacje.",
+      "LOAD": "Błąd wczytywania lokalizacji. Wyświetlamy wszystkie lokalizacje."
+    }
+  },
+  "ABOUT": { "TITLE": "O nas", "TEXT": "Delta Kebab to rodzinna restauracja serwująca pyszne kebaby z najlepszych składników." },
+  "MENU": { "TITLE": "Wybrane pozycje" },
+  "WHY": { "TITLE": "Dlaczego my?", "FRESH": "Świeże składniki", "FAST": "Szybka obsługa", "LOCATIONS": "Wiele lokalizacji", "QUALITY": "Jakość mięsa", "FRIENDLY": "Przyjazna atmosfera" },
+  "CONTACT": { "TITLE": "Kontakt", "PHONE": "Telefon", "EMAIL": "Email" },
+  "LANG": { "ENGLISH": "Angielski", "POLISH": "Polski", "UKRAINIAN": "Ukraiński" },
+  "APP": {
+    "BRAND_NAME": "Delta Kebab",
+    "BRAND_ALT": "Delta Kebab",
+    "HOME_LABEL": "Delta Kebab - Strona główna",
+    "MENU_TOGGLE_LABEL": "Przełącz menu",
+    "MAIN_NAV_LABEL": "Nawigacja główna",
+    "ADMIN_LINK": "Admin",
+    "COPYRIGHT": "© Delta Kebab",
+    "SOCIAL_INSTAGRAM": "Delta Kebab Instagram",
+    "SOCIAL_FACEBOOK": "Delta Kebab Facebook",
+    "LANGUAGE_SELECTOR": "Selektor języka"
+  },
+  "CONNECTION": {
+    "CONNECTING": "Łączenie...",
+    "PREPARING": "Przygotowywanie doświadczenia...",
+    "CONNECTED": "Połączono",
+    "UNAVAILABLE": "Usługa niedostępna",
+    "RETRY": "Spróbuj ponownie",
+    "ERRORS": {
+      "BACKEND_OFFLINE": "Serwer jest chwilowo niedostępny.",
+      "GENERIC": "Coś poszło nie tak.",
+      "SERVICE_UNAVAILABLE": "Usługa jest tymczasowo niedostępna."
+    }
+  },
+  "LANDING": {
+    "HERO": {
+      "EYEBROW": "Szybkie jedzenie, bez komplikacji",
+      "TITLE": "Zamów swój ulubiony kebab w kilka minut.",
+      "DESCRIPTION": "Znajdź najbliższą restaurację, przeglądaj po kategorii, dodawaj produkty do koszyka i przejdź do płatności w kilka kliknięć.",
+      "FEATURES": {
+        "LOCATION": "Lokalizacja na żywo",
+        "CATEGORIES": "Przeglądanie kategorii",
+        "CHECKOUT": "Szybkie zamówienie"
+      }
+    },
+    "SELECT_RESTAURANT": {
+      "TITLE": "Wybierz restaurację",
+      "SUBTITLE": "Wybierz z dostępnych restauracji w pobliżu"
+    },
+    "RESTAURANT_HEADER": {
+      "LABEL": "Restauracja:",
+      "CHANGE_RESTAURANT": "Zmień restaurację"
+    },
+    "SELECT_BRANCH": {
+      "TITLE": "Wybierz oddział",
+      "SUBTITLE": "Wybierz preferowaną lokalizację",
+      "NEAREST_TO_YOU": "Najbliżej Ciebie",
+      "FIND_NEAREST": "Znajdź najbliższy oddział",
+      "FINDING": "Szukam najbliższego oddziału…",
+      "DETECTED_ADDRESS_LABEL": "Przybliżony adres"
+    },
+    "SUMMARY": {
+      "LABEL_RESTAURANT": "Restauracja:",
+      "LABEL_BRANCH": "Oddział:",
+      "CHANGE": "Zmień"
+    },
+    "MENU": {
+      "TITLE": "Menu",
+      "SUBTITLE": "Wybierz kategorię, aby odkryć pasujące dania.",
+      "LOADING": "Ładowanie menu…",
+      "AVAILABLE": "Dostępne teraz"
+    },
+    "CART": {
+      "TITLE": "Twoje zamówienie",
+      "ITEM_SINGULAR": "pozycja",
+      "ITEM_PLURAL": "pozycje",
+      "EMPTY_TITLE": "Twój koszyk jest pusty.",
+      "EMPTY_DESCRIPTION": "Wybierz danie, aby rozpocząć zamówienie.",
+      "NOTES_PLACEHOLDER": "Dodaj notatki do tej pozycji",
+      "REMOVE": "Usuń",
+      "ADD": "Dodaj do koszyka",
+      "CONTINUE": "Kontynuuj zamówienie"
+    },
+    "CHECKOUT": {
+      "STEPS": {
+        "DETAILS": "1. Dostawa / odbiór",
+        "REVIEW": "2. Podsumowanie"
+      },
+      "ORDER_TYPES": {
+        "SELF_PICKUP": "Odbiór osobisty",
+        "DELIVERY": "Dostawa"
+      },
+      "PAYMENT_METHODS": {
+        "CASH": "Gotówka",
+        "CARD": "Karta"
+      },
+      "FORM": {
+        "STREET": "Ulica",
+        "HOUSE_NUMBER": "Numer domu",
+        "APARTMENT": "Numer mieszkania",
+        "FLOOR": "Piętro",
+        "CITY": "Miasto",
+        "PHONE": "Numer telefonu",
+        "NAME": "Imię (opcjonalne)",
+        "EMAIL": "Email (opcjonalne)",
+        "NOTES": "Notatki do dostawy lub specjalne życzenia"
+      },
+      "ACTIONS": {
+        "REVIEW_ORDER": "Przejdź do podsumowania",
+        "PLACE_ORDER": "Złóż zamówienie",
+        "PLACING_ORDER": "Składanie zamówienia…"
+      },
+      "REVIEW": {
+        "TITLE": "Podsumowanie zamówienia",
+        "RESTAURANT": "Restauracja:",
+        "BRANCH": "Oddział:",
+        "RECEIVING": "Odbiór:",
+        "PAYMENT": "Płatność:",
+        "PHONE": "Telefon:",
+        "NOTES": "Notatki:"
+      },
+      "SUCCESS": {
+        "TITLE": "Zamówienie złożone pomyślnie",
+        "DESCRIPTION": "Twoje zamówienie jest przygotowywane.",
+        "ORDER_ID": "Numer zamówienia:",
+        "STATUS": "Status:"
+      }
+    },
+    "DISTANCE": {
+      "METERS": "{{value}} m",
+      "KILOMETERS": "{{value}} km"
+    },
+    "ERRORS": {
+      "RESTAURANT_LIST_UNAVAILABLE": "Lista restauracji jest chwilowo niedostępna.",
+      "BRANCH_LOCATION_UNAVAILABLE": "Brak danych lokalizacji dla tego oddziału.",
+      "LOCATION_INACCURATE": "Potrzebujemy precyzyjnej lokalizacji, aby obliczyć odległości. Przejdź do otwartego miejsca i spróbuj ponownie.",
+      "LOCATION_PERMISSION_BRANCH": "Odmówiono dostępu do lokalizacji. Pozwól jej znaleźć najbliższy oddział.",
+      "LOCATION_UNAVAILABLE_BRANCH": "Usługi lokalizacyjne są niedostępne na tym urządzeniu.",
+      "NEARBY_RESTAURANT_UNAVAILABLE": "Brak restauracji w pobliżu.",
+      "NEARBY_RESTAURANT_FAILED": "Nie mogliśmy znaleźć restauracji w pobliżu.",
+      "LOCATION_PERMISSION_RESTAURANT": "Odmówiono dostępu do lokalizacji. Pozwól jej znaleźć najbliższą restaurację.",
+      "MENU_UNAVAILABLE": "Menu jest chwilowo niedostępne.",
+      "CART_EMPTY": "Twój koszyk jest pusty. Dodaj danie, aby kontynuować.",
+      "PHONE_REQUIRED": "Numer telefonu jest wymagany do złożenia zamówienia.",
+      "ORDER_PLACE_FAILED": "Nie można złożyć zamówienia."
+    }
+  },
+  "ADMIN": {
+    "TITLE": "Konserwacja bazy danych",
+    "DESCRIPTION": "Narzędzia konserwacji wewnętrznej dla rozwoju i debugowania.",
+    "ACTIONS": {
+      "RESET": "Resetuj bazę danych",
+      "EXPORT": "Eksportuj bazę danych",
+      "IMPORT": "Importuj bazę danych"
+    },
+    "FORM": {
+      "CONFIRM_RESET": "Potwierdź reset",
+      "CONFIRMATION_PLACEHOLDER": "Wpisz DELETE",
+      "TOKEN": "Token Bearer",
+      "TOKEN_PLACEHOLDER": "Wklej token administratora",
+      "CLEAR_EXISTING": "Wyczyść istniejące dane przed importem"
+    },
+    "SNACKBAR": {
+      "RESET_SUCCESS": "Reset bazy danych zakończony",
+      "RESET_FAILED": "Reset nie powiódł się",
+      "EXPORT_FAILED": "Eksport nie powiódł się",
+      "IMPORT_SUCCESS": "Import zakończony",
+      "IMPORT_FAILED": "Import nie powiódł się",
+      "IMPORT_INVALID_JSON": "Nieprawidłowy plik JSON"
+    },
+    "COMMON": {
+      "CLOSE": "Zamknij"
+    }
+  }
+}
