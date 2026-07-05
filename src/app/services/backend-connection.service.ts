@@ -8,41 +8,52 @@ export class BackendConnectionService {
   private readonly translate = inject(TranslateService);
 
   public readonly status = signal<'checking' | 'ready' | 'error'>('checking');
-  public readonly message = signal<string>(this.translate.instant('CONNECTION.CONNECTING'));
+  public readonly message = signal<string>('');
   public readonly error = signal<string | null>(null);
 
   constructor(private apiService: ApiService) {
-    this.translate.onLangChange.subscribe(() => {
-      if (this.status() === 'checking') {
-        this.message.set(this.translate.instant('CONNECTION.CONNECTING'));
-      } else if (this.status() === 'ready') {
-        this.message.set(this.translate.instant('CONNECTION.CONNECTED'));
-      } else if (this.status() === 'error') {
-        this.message.set(this.translate.instant('CONNECTION.UNAVAILABLE'));
-      }
-    });
+    this.syncMessage();
+    this.translate.onLangChange.subscribe(() => this.syncMessage());
+  }
+
+  private getText(key: string, fallback = key): string {
+    return this.translate?.instant ? this.translate.instant(key) : fallback;
+  }
+
+  private syncMessage() {
+    if (this.status() === 'checking') {
+      this.message.set(this.getText('CONNECTION.CONNECTING'));
+      return;
+    }
+
+    if (this.status() === 'ready') {
+      this.message.set(this.getText('CONNECTION.CONNECTED'));
+      return;
+    }
+
+    this.message.set(this.getText('CONNECTION.UNAVAILABLE'));
   }
 
   checkHealth() {
     this.status.set('checking');
-    this.message.set(this.translate.instant('CONNECTION.CONNECTING'));
+    this.message.set(this.getText('CONNECTION.CONNECTING'));
     this.error.set(null);
 
     return this.apiService.healthCheck().pipe(
       finalize(() => {
         if (this.status() === 'checking') {
-          this.message.set(this.translate.instant('CONNECTION.PREPARING'));
+          this.message.set(this.getText('CONNECTION.PREPARING'));
         }
       })
     ).subscribe({
       next: () => {
         this.status.set('ready');
-        this.message.set(this.translate.instant('CONNECTION.CONNECTED'));
+        this.message.set(this.getText('CONNECTION.CONNECTED'));
       },
       error: (err: Error) => {
         this.status.set('error');
-        this.error.set(err.message || this.translate.instant('CONNECTION.ERRORS.SERVICE_UNAVAILABLE'));
-        this.message.set(this.translate.instant('CONNECTION.UNAVAILABLE'));
+        this.error.set(err.message || this.getText('CONNECTION.ERRORS.SERVICE_UNAVAILABLE'));
+        this.message.set(this.getText('CONNECTION.UNAVAILABLE'));
       }
     });
   }

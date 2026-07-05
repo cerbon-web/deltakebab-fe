@@ -37,7 +37,11 @@ export class AppComponent implements OnInit {
     this.connectionStatus = this.backendConnection.status;
     this.connectionMessage = this.backendConnection.message;
     this.connectionError = this.backendConnection.error;
-    this.connectionMessage.set(this.translate.instant('CONNECTION.CONNECTING'));
+    this.connectionMessage.set(this.getText('CONNECTION.CONNECTING'));
+  }
+
+  private getText(key: string): string {
+    return this.translate?.instant ? this.translate.instant(key) : key;
   }
 
   ngOnInit(): void {

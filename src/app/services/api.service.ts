@@ -46,10 +46,14 @@ export class ApiService {
     );
   }
 
+  private getText(key: string, fallback = key): string {
+    return this.translate?.instant ? this.translate.instant(key) : fallback;
+  }
+
   private handleError(error: HttpErrorResponse) {
     const message = error.status === 0
-      ? this.translate.instant('CONNECTION.ERRORS.BACKEND_OFFLINE')
-      : error.error?.message || this.translate.instant('CONNECTION.ERRORS.GENERIC');
+      ? this.getText('CONNECTION.ERRORS.BACKEND_OFFLINE', 'Backend is temporarily unavailable.')
+      : error.error?.message || this.getText('CONNECTION.ERRORS.GENERIC', 'Something went wrong.');
 
     return throwError(() => new Error(message));
   }
