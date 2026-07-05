@@ -13,9 +13,6 @@ export interface HealthResponse {
 export class ApiService {
   private readonly baseUrl = environment.apiBaseUrl;
   private readonly translate = inject(TranslateService);
-  private readonly getText = (key: string, fallback = key) => {
-    return this.translate?.instant ? this.translate.instant(key) : fallback;
-  };
 
   constructor(private http: HttpClient) {}
 
@@ -50,9 +47,11 @@ export class ApiService {
   }
 
   private handleError(error: HttpErrorResponse) {
+    const offlineMessage = this.translate?.instant?.('CONNECTION.ERRORS.BACKEND_OFFLINE');
+    const genericMessage = this.translate?.instant?.('CONNECTION.ERRORS.GENERIC');
     const message = error.status === 0
-      ? this.getText('CONNECTION.ERRORS.BACKEND_OFFLINE', 'Backend is temporarily unavailable.')
-      : error.error?.message || this.getText('CONNECTION.ERRORS.GENERIC', 'Something went wrong.');
+      ? (typeof offlineMessage === 'string' && offlineMessage ? offlineMessage : 'Backend is temporarily unavailable.')
+      : error.error?.message || (typeof genericMessage === 'string' && genericMessage ? genericMessage : 'Something went wrong.');
 
     return throwError(() => new Error(message));
   }
