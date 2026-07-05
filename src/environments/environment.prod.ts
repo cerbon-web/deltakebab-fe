@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://206.189.122.81:4000/api'
+  apiBaseUrl: 'https://dapi.cerbon.id:4000/api'
 };
