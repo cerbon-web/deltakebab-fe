@@ -10,16 +10,12 @@ on:
       - main
 
 permissions:
-  contents: write
-  pages: write
-  id-token: write
+  contents: read
 
 jobs:
-  build-and-deploy:
-    name: Build and deploy
+  build:
+    name: Build site
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
 
     steps:
       - name: Checkout repository
@@ -69,12 +65,26 @@ jobs:
             echo "No CNAME file present"
           fi
 
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
           path: ./dist
 
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
