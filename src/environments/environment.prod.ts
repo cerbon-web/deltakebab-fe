@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://api.cerbon.id/delta/api'
+  apiBaseUrl: 'http://206.189.122.81:4000/api'
 };

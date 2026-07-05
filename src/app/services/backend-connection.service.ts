@@ -43,9 +43,9 @@ export class BackendConnectionService {
         this.status.set('ready');
         this.message.set('Połączono');
       },
-      error: (err: Error) => {
+      error: () => {
         this.status.set('error');
-        this.error.set(err.message || 'Usługa jest tymczasowo niedostępna.');
+        this.error.set('Serwer jest chwilowo niedostępny. Spróbuj ponownie za chwilę.');
         this.message.set('Usługa niedostępna');
       }
     });
