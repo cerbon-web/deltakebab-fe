@@ -4,9 +4,12 @@ import { RouterModule } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
 import { LanguageSwitcherComponent } from './components/language-switcher/language-switcher.component';
+import { BackendConnectionService } from './services/backend-connection.service';
 
 /*
   AppComponent is a standalone root component. It sets up translations
@@ -15,16 +18,27 @@ import { LanguageSwitcherComponent } from './components/language-switcher/langua
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatToolbarModule, MatIconModule, HttpClientModule, TranslateModule, LanguageSwitcherComponent],
+  imports: [CommonModule, RouterModule, MatToolbarModule, MatIconModule, HttpClientModule, MatButtonModule, MatProgressSpinnerModule, TranslateModule, LanguageSwitcherComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
   // example signal for future global UI state
   public showMenu = signal(false);
+  public connectionStatus = signal<'checking' | 'ready' | 'error'>('checking');
+  public connectionMessage = signal<string>('');
+  public connectionError = signal<string | null>(null);
   private host = inject(ElementRef<HTMLElement>);
 
-  constructor(private translate: TranslateService) {}
+  constructor(
+    private translate: TranslateService,
+    private backendConnection: BackendConnectionService
+  ) {
+    this.connectionStatus = this.backendConnection.status;
+    this.connectionMessage = this.backendConnection.message;
+    this.connectionError = this.backendConnection.error;
+    this.connectionMessage.set(this.translate.instant('CONNECTION.CONNECTING'));
+  }
 
   ngOnInit(): void {
     // translation setup: Polish default
@@ -33,11 +47,17 @@ export class AppComponent implements OnInit {
     const defaultLang = saved ?? 'pl';
     this.translate.setDefaultLang('pl');
     this.translate.use(defaultLang);
+
+    this.backendConnection.checkHealth();
   }
 
   switchLang(lang: string) {
     this.translate.use(lang);
     localStorage.setItem('delta-lang', lang);
+  }
+
+  retryConnection() {
+    this.backendConnection.checkHealth();
   }
 
   @HostListener('document:click', ['$event'])

@@ -1,12 +1,422 @@
+:host { display:block; }
 
-/* Landing-specific overrides kept minimal — shared styles moved to global styles.css */
-
-/* Banner-specific minor rules (component-scoped) */
-.banner { padding: 36px 0; text-align: center; }
-.banner-actions { display:flex;align-items:center;gap:12px }
-
-@media (min-width: 768px) {
-  .banner { display:flex; align-items:center; justify-content:space-between; text-align:left }
+/* Animations */
+@keyframes fadeInDown {
+  from { opacity:0; transform:translateY(-20px); }
+  to { opacity:1; transform:translateY(0); }
 }
 
+@keyframes fadeOut {
+  from { opacity:1; }
+  to { opacity:0; }
+}
+
+@keyframes slideDown {
+  from { opacity:0; max-height:0; }
+  to { opacity:1; max-height:500px; }
+}
+
+@keyframes slideUp {
+  from { opacity:1; max-height:500px; }
+  to { opacity:0; max-height:0; }
+}
+
+.landing-shell { display:grid; gap:1.25rem; padding:1.25rem 1rem 2rem; max-width:1180px; margin:0 auto; }
+
+/* Hero Card - Introduction (Stage 1) */
+.hero-card { 
+  background:white; 
+  border-radius:24px; 
+  box-shadow:0 16px 40px rgba(15, 23, 42, 0.08); 
+  overflow:hidden; 
+  display:grid; 
+  gap:1rem; 
+  padding:1.5rem; 
+  background:linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  transition:all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  animation:fadeInDown 300ms ease-out;
+}
+
+.hero-card.collapsed {
+  opacity:0;
+  max-height:0;
+  padding:0;
+  margin:0;
+  overflow:hidden;
+  animation:slideUp 300ms ease-out forwards;
+}
+
+.hero-copy h1 { margin:0.25rem 0 0.75rem; font-size:clamp(1.7rem, 3vw, 2.5rem); }
+.hero-copy p { margin:0; color:#6b7280; max-width:640px; }
+.eyebrow { text-transform:uppercase; letter-spacing:0.16em; font-size:0.78rem; font-weight:700; color:#b45309; margin:0 0 0.35rem; }
+
+.primary-btn, .secondary-btn, .choice-btn, .category-chip, .text-link, .change-btn, .restaurant-btn, .branch-btn, .edit-icon-btn { border:none; cursor:pointer; font:inherit; }
+
+.primary-btn { background:var(--primary); color:white; padding:0.8rem 1rem; border-radius:999px; font-weight:700; transition:all 200ms ease; }
+.primary-btn:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,0.15); }
+.primary-btn.small { padding:0.65rem 0.9rem; font-size:0.95rem; }
+.primary-btn.full { width:100%; justify-content:center; display:flex; }
+.primary-btn:disabled { opacity:0.7; cursor:not-allowed; transform:none; }
+
+.secondary-btn { background:#fff7ed; color:#7c2d12; padding:0.8rem 1rem; border-radius:999px; border:1px solid #fdba74; font-weight:700; transition:all 200ms ease; }
+.secondary-btn:hover { background:#fed7aa; }
+.secondary-btn:disabled { opacity:0.7; cursor:not-allowed; }
+
+.hero-preview { display:flex; flex-wrap:wrap; gap:0.6rem; }
+.preview-pill { background:rgba(255,255,255,0.7); border:1px solid rgba(180,83,9,0.16); padding:0.5rem 0.8rem; border-radius:999px; color:#7c2d12; font-weight:600; }
+
+.helper-text { margin-top:0.75rem; color:#b91c1c; font-weight:500; }
+
+/* Restaurant Selector Card (Stage 1 & 2) */
+.restaurant-selector-card {
+  background:white; 
+  border-radius:24px; 
+  box-shadow:0 16px 40px rgba(15, 23, 42, 0.08); 
+  overflow:hidden;
+  transition:all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  animation:fadeInDown 300ms ease-out 100ms both;
+}
+
+.restaurant-selector-card.expanded {
+  padding:1.5rem;
+}
+
+.restaurant-selector-card.collapsed {
+  padding:0.9rem 1.2rem;
+}
+
+.selector-content h2 { margin:0 0 0.5rem; font-size:1.5rem; }
+.selector-subtitle { margin:0 0 1rem; color:#6b7280; font-size:0.95rem; }
+
+.restaurant-buttons {
+  display:grid;
+  gap:0.7rem;
+}
+
+.restaurant-btn {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:0.3rem;
+  padding:1rem;
+  border-radius:12px;
+  border:2px solid #e5e7eb;
+  background:#fffaf5;
+  color:#1f2937;
+  font-weight:500;
+  transition:all 200ms ease;
+  animation:slideDown 250ms ease-out;
+}
+
+.restaurant-btn:hover {
+  border-color:#fdba74;
+  background:#fff7ed;
+}
+
+.restaurant-btn:active {
+  transform:scale(0.98);
+}
+
+.restaurant-name { font-weight:700; font-size:1rem; }
+.restaurant-distance { font-size:0.85rem; color:#b45309; }
+
+/* Restaurant Header Compact (Stage 2) */
+.restaurant-header-compact {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  animation:slideDown 250ms ease-out;
+}
+
+.header-info {
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+  flex:1;
+}
+
+.header-label { font-size:0.85rem; color:#6b7280; font-weight:500; }
+.header-value { font-weight:700; color:#1f2937; }
+
+.edit-icon-btn {
+  background:none;
+  padding:0.5rem;
+  color:#b45309;
+  font-size:1.1rem;
+  cursor:pointer;
+  transition:all 200ms ease;
+  border-radius:6px;
+}
+
+.edit-icon-btn:hover {
+  background:#fff7ed;
+  color:#9a2c0f;
+}
+
+/* Branch Selector Card (Stage 2) */
+.branch-selector-card {
+  background:white; 
+  border-radius:24px; 
+  box-shadow:0 16px 40px rgba(15, 23, 42, 0.08); 
+  overflow:hidden;
+  padding:1.5rem;
+  transition:all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.branch-selector-card.enter {
+  animation:fadeInDown 300ms ease-out;
+}
+
+.branch-selector-card h2 { margin:0 0 0.5rem; font-size:1.5rem; }
+
+.branch-header {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:1rem;
+  margin-bottom:1rem;
+}
+
+.branch-title-group {
+  flex:1;
+}
+
+.branch-list {
+  display:grid;
+  gap:0.75rem;
+  margin:1rem 0;
+}
+
+.detected-address {
+  display:flex;
+  flex-direction:column;
+  gap:0.2rem;
+  margin:0.5rem 0 0;
+  color:#6b7280;
+  font-size:0.95rem;
+}
+
+.detected-address-label {
+  font-weight:700;
+  color:#b45309;
+}
+
+.branch-btn {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:0.5rem;
+  text-align:left;
+  padding:1rem;
+  border-radius:12px;
+  border:2px solid #e5e7eb;
+  background:#fffaf5;
+  color:#1f2937;
+  font-weight:500;
+  transition:all 200ms ease;
+  animation:slideDown 250ms ease-out;
+}
+
+.branch-btn:hover {
+  border-color:#fdba74;
+  background:#fff7ed;
+}
+
+.branch-btn.suggested {
+  border-color:#86efac;
+  background:#f0fdf4;
+}
+
+.branch-btn:active {
+  transform:scale(0.98);
+}
+
+.branch-info { display:grid; gap:0.35rem; }
+.branch-name { font-weight:700; font-size:1rem; }
+.branch-address { font-size:0.9rem; color:#6b7280; }
+.branch-distance { font-size:0.85rem; color:#b45309; font-weight:600; }
+.branch-suggestion { font-size:0.85rem; font-weight:700; color:#16a34a; margin-top:0.35rem; }
+
+.branch-actions {
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-end;
+  flex-shrink:0;
+}
+
+.branch-action-group {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:0.4rem;
+}
+
+/* Selector Header - Compact (Stage 3) */
+.selector-header {
+  background:white; 
+  border-radius:24px; 
+  box-shadow:0 16px 40px rgba(15, 23, 42, 0.08); 
+  padding:1rem 1.5rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  animation:slideDown 250ms ease-out;
+}
+
+.header-content {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+  gap:1rem;
+}
+
+.selection-summary {
+  display:grid;
+  gap:0.4rem;
+  flex:1;
+}
+
+.summary-item {
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+  font-size:0.95rem;
+}
+
+.summary-label { color:#6b7280; font-weight:500; }
+.summary-value { font-weight:700; color:#1f2937; }
+.summary-distance { color:#b45309; font-size:0.9rem; margin-left:0.3rem; }
+
+.change-btn {
+  background:var(--primary);
+  color:white;
+  padding:0.65rem 1.2rem;
+  border-radius:999px;
+  font-weight:600;
+  white-space:nowrap;
+  transition:all 200ms ease;
+}
+
+.change-btn:hover {
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Menu Stage (Stage 4) */
+.menu-stage {
+  background:white; 
+  border-radius:24px; 
+  box-shadow:0 16px 40px rgba(15, 23, 42, 0.08); 
+  overflow:hidden;
+  display:grid; 
+  gap:1rem; 
+  padding:1rem;
+  transition:all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-stage.enter {
+  animation:fadeInDown 300ms ease-out;
+}
+
+.menu-column { display:grid; gap:1rem; }
+.section-title h3 { margin:0 0 0.2rem; }
+.section-title p { margin:0; color:#6b7280; }
+
+.category-row { display:flex; flex-wrap:wrap; gap:0.6rem; }
+.category-chip { 
+  background:#fff7ed; 
+  color:#7c2d12; 
+  padding:0.6rem 0.9rem; 
+  border-radius:999px; 
+  font-weight:600; 
+  border:1px solid #fdba74;
+  transition:all 200ms ease;
+  cursor:pointer;
+}
+.category-chip:hover { background:#fed7aa; }
+.category-chip.active { background:var(--primary); color:white; }
+
+.menu-loading { display:flex; align-items:center; gap:0.75rem; color:#b45309; }
+
+.products-grid { display:grid; gap:0.8rem; }
+.product-card {
+  border:1px solid #f3d8bf;
+  border-radius:16px;
+  padding:1rem;
+  display:flex;
+  flex-direction:column;
+  gap:0.75rem;
+  background:#fffaf5;
+  transition:all 200ms ease;
+}
+.product-card:hover { box-shadow:0 8px 20px rgba(0,0,0,0.1); transform:translateY(-2px); }
+
+.product-title-row { display:flex; justify-content:space-between; gap:0.75rem; align-items:center; }
+.product-title-row h4 { margin:0; }
+.price-pill { background:white; color:#9a2c0f; border-radius:999px; padding:0.3rem 0.6rem; font-weight:700; }
+.product-meta, .product-description, .availability-pill { margin:0; color:#6b7280; }
+.availability-pill { color:#166534; font-weight:600; }
+
+.cart-column { display:grid; }
+.cart-card { background:#fffdf9; border:1px solid #f3d8bf; border-radius:18px; padding:1rem; position:sticky; top:5.5rem; }
+.cart-header { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:0.8rem; }
+.cart-total { font-weight:800; color:#9a2c0f; }
+.empty-state { color:#6b7280; padding:0.25rem 0 0.5rem; }
+.cart-items { display:grid; gap:0.75rem; margin-bottom:0.9rem; }
+.cart-item { border:1px solid #f3d8bf; border-radius:12px; padding:0.75rem; background:white; }
+.cart-item-row { display:flex; justify-content:space-between; gap:0.75rem; align-items:center; }
+.quantity-controls { display:flex; align-items:center; gap:0.4rem; }
+.quantity-controls button { width:1.8rem; height:1.8rem; border-radius:999px; border:1px solid #fdba74; background:#fff7ed; cursor:pointer; transition:all 200ms ease; }
+.quantity-controls button:hover { background:#fed7aa; }
+.cart-item-price { color:#b45309; font-size:0.95rem; }
+.cart-item textarea, .checkout-form input, .checkout-form textarea { width:100%; border:1px solid #f3d8bf; border-radius:10px; padding:0.7rem; margin-top:0.55rem; box-sizing:border-box; font:inherit; }
+.text-link { background:none; color:#b45309; padding:0; margin-top:0.4rem; cursor:pointer; transition:color 200ms ease; }
+.text-link:hover { color:#9a2c0f; }
+
+/* Checkout Card */
+.checkout-card { 
+  background:white; 
+  border-radius:24px; 
+  box-shadow:0 16px 40px rgba(15, 23, 42, 0.08); 
+  padding:1rem; 
+  display:grid; 
+  gap:1rem;
+  animation:fadeInDown 300ms ease-out;
+}
+.checkout-stepper { display:flex; gap:0.75rem; color:#6b7280; font-weight:600; }
+.checkout-stepper .active { color:#9a2c0f; }
+.checkout-panel { display:grid; gap:0.9rem; }
+.order-type-toggle, .payment-toggle { display:flex; flex-wrap:wrap; gap:0.6rem; }
+.choice-btn { 
+  background:#fff7ed; 
+  padding:0.7rem 0.95rem; 
+  border-radius:999px; 
+  border:1px solid #fdba74; 
+  font-weight:600; 
+  color:#7c2d12;
+  cursor:pointer;
+  transition:all 200ms ease;
+}
+.choice-btn:hover { background:#fed7aa; }
+.choice-btn.active { background:var(--primary); color:white; }
+.checkout-form { display:grid; gap:0.6rem; }
+.summary-box, .summary-items { border:1px solid #f3d8bf; border-radius:12px; padding:0.8rem; background:#fffaf5; display:grid; gap:0.35rem; }
+.success-panel { color:#166534; }
+
+@media (min-width: 900px) {
+  .hero-card { grid-template-columns:1.2fr 0.8fr; align-items:center; }
+  .menu-stage { grid-template-columns:1.3fr 0.7fr; align-items:start; }
+  .products-grid { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 899px) {
+  .cart-card { position:static; }
+  .selector-header { flex-direction:column; align-items:flex-start; }
+  .header-content { flex-direction:column; width:100%; }
+  .change-btn { width:100%; text-align:center; }
+  .branch-header { flex-direction:column; align-items:flex-start; }
+  .branch-actions { width:100%; justify-content:flex-start; }
+}
 

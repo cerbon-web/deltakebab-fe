@@ -4,7 +4,7 @@
     <span class="caret">▾</span>
   </button>
 
-  <div class="dropdown" *ngIf="open()" role="menu" aria-label="Language selector">
+  <div class="dropdown" *ngIf="open()" role="menu" [attr.aria-label]="'APP.LANGUAGE_SELECTOR' | translate">
     <ul>
       <li *ngFor="let it of items; let i = index"
           role="menuitemradio"
@@ -13,7 +13,7 @@
           (click)="choose(i)"
           (mouseenter)="focusedIndex.set(i)">
         <img class="item-flag" [src]="it.flag" alt="" />
-        <div class="label">{{ it.nativeName }}</div>
+        <div class="label">{{ it.labelKey | translate }}</div>
         <div class="spacer"></div>
         <div class="check" *ngIf="it.code === current()">✓</div>
       </li>

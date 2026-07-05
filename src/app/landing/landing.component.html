@@ -1,68 +1,240 @@
-<main class="container">
-  <section class="banner">
-    <div>
-      <h1>Delta Kebab</h1>
-      <p>{{ 'HERO.SLOGAN' | translate }}</p>
-      <div class="banner-actions">
-        <button class="cta" (click)="findNearest()" [disabled]="loading()">{{ 'HERO.CTA' | translate }}</button>
-        <mat-progress-spinner *ngIf="loading()" diameter="24" mode="indeterminate" strokeWidth="3" class="mat-spinner-inline"></mat-progress-spinner>
-        <div *ngIf="loading()" class="cp-fallback-spinner" [class.spinning]="loading()"></div>
-      </div>
-    </div>
-    
-  </section>
-
-  <section aria-labelledby="nearest-title">
-    <h2 id="nearest-title">{{ 'NEAREST.TITLE' | translate }}</h2>
-    <div *ngIf="error()" class="error">{{ error() }}</div>
-
-    <div *ngIf="nearbyBranches() && nearbyBranches().length > 0">
-      <div *ngFor="let n of nearbyBranches()" class="branch-card">
-        <div class="branch-row">
-          <div>
-            <div class="branch-name">{{ n.name }}</div>
-            <div class="branch-meta">{{ n.address }}</div>
-            <div class="branch-meta">{{ n.openingHours }}</div>
-          </div>
-          <div class="branch-actions">
-            <div class="branch-distance">{{ n.distanceKm }} km</div>
-            <a [href]="n.mapsLink" target="_blank" rel="noopener">
-              <button mat-raised-button color="primary">{{ 'NEAREST.MAP' | translate }}</button>
-            </a>
-          </div>
-        </div>
-      </div>
+<main class="landing-shell">
+  <section class="hero-card" [class.collapsed]="selectedRestaurant()" *ngIf="!selectedRestaurant() || !selectorCollapsed()">
+    <div class="hero-copy">
+      <p class="eyebrow">{{ 'LANDING.HERO.EYEBROW' | translate }}</p>
+      <h1>{{ 'LANDING.HERO.TITLE' | translate }}</h1>
+      <p>{{ 'LANDING.HERO.DESCRIPTION' | translate }}</p>
+      <div class="helper-text" *ngIf="error() && !selectedRestaurant()">{{ error() }}</div>
     </div>
 
-    <div *ngIf="nearestFallback()" class="branch-card">
-      <div class="branch-row">
-        <div>
-          <div class="branch-name">{{ nearestFallback()?.name }}</div>
-          <div class="branch-meta">{{ nearestFallback()?.address }}</div>
-          <div class="branch-meta">{{ nearestFallback()?.openingHours }}</div>
-        </div>
-        <div class="branch-actions">
-          <div class="branch-distance">{{ nearestFallback()?.distanceKm }} km</div>
-          <a [href]="nearestFallback()?.mapsLink" target="_blank" rel="noopener">
-            <button mat-raised-button color="primary">{{ 'NEAREST.MAP' | translate }}</button>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div *ngIf="!coords() && !loading()">
-      <p>{{ 'NEAREST.PROMPT' | translate }}</p>
-      <div *ngFor="let b of branches()" class="branch-card">
-        <div class="branch-row">
-          <div>
-            <div class="branch-name">{{ b.name }}</div>
-            <div class="branch-meta">{{ b.address }}</div>
-          </div>
-          <div>
-            <button mat-stroked-button (click)="selectManual(b)">{{ 'NEAREST.SELECT' | translate }}</button>
-          </div>
-        </div>
-      </div>
+    <div class="hero-preview" *ngIf="!selectedRestaurant()">
+      <div class="preview-pill">{{ 'LANDING.HERO.FEATURES.LOCATION' | translate }}</div>
+      <div class="preview-pill">{{ 'LANDING.HERO.FEATURES.CATEGORIES' | translate }}</div>
+      <div class="preview-pill">{{ 'LANDING.HERO.FEATURES.CHECKOUT' | translate }}</div>
     </div>
   </section>
+
+  <section class="restaurant-selector-card" *ngIf="!selectedBranch()" [class.expanded]="!selectedRestaurant()" [class.collapsed]="selectedRestaurant()">
+    <div *ngIf="!selectedRestaurant() && restaurants().length > 0" class="selector-content">
+      <h2>{{ 'LANDING.SELECT_RESTAURANT.TITLE' | translate }}</h2>
+      <p class="selector-subtitle">{{ 'LANDING.SELECT_RESTAURANT.SUBTITLE' | translate }}</p>
+      <div class="restaurant-buttons">
+        <button
+          class="restaurant-btn"
+          *ngFor="let restaurant of restaurants()"
+          (click)="selectRestaurant(restaurant)">
+          <span class="restaurant-name">{{ restaurant.name }}</span>
+          <span *ngIf="restaurant.distance_km !== null && restaurant.distance_km !== undefined" class="restaurant-distance">
+            {{ restaurant.distance_km | number:'1.0-1' }} km
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="selectedRestaurant() && !selectorCollapsed()" class="restaurant-header-compact">
+      <div class="header-info">
+        <span class="header-label">{{ 'LANDING.RESTAURANT_HEADER.LABEL' | translate }}</span>
+        <span class="header-value">{{ selectedRestaurant()?.name }}</span>
+      </div>
+      <button class="edit-icon-btn" (click)="changeRestaurant()" [attr.title]="'LANDING.RESTAURANT_HEADER.CHANGE_RESTAURANT' | translate">✎</button>
+    </div>
+  </section>
+
+  <section class="branch-selector-card" *ngIf="selectedRestaurant() && !selectedBranch()" [class.enter]="selectedRestaurant()">
+    <div class="branch-header">
+      <div class="branch-title-group">
+        <h2>{{ 'LANDING.SELECT_BRANCH.TITLE' | translate }}</h2>
+        <p class="selector-subtitle">{{ 'LANDING.SELECT_BRANCH.SUBTITLE' | translate }}</p>
+      </div>
+
+      <div class="branch-actions">
+        <div class="branch-action-group">
+          <button class="secondary-btn" (click)="findNearestBranch()" [disabled]="loading()">
+            <span *ngIf="!loading()">🔍 {{ 'LANDING.SELECT_BRANCH.FIND_NEAREST' | translate }}</span>
+            <span *ngIf="loading()">{{ 'LANDING.SELECT_BRANCH.FINDING' | translate }}</span>
+          </button>
+          <div class="detected-address" *ngIf="detectedAddress()">
+            <span class="detected-address-label">{{ 'LANDING.SELECT_BRANCH.DETECTED_ADDRESS_LABEL' | translate }}</span>
+            <span>{{ detectedAddress() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="branch-list">
+    </div>
+
+    <div class="branch-list">
+      <button
+        class="branch-btn"
+        *ngFor="let branch of restaurantBranches()"
+        (click)="selectBranch(branch)"
+        [class.suggested]="branch.id === suggestedNearestBranch()?.id">
+        <div class="branch-info">
+          <div class="branch-name">{{ branch.street }} {{ branch.buildingNumber }}</div>
+          <div class="branch-address">{{ branch.postalCode }} {{ branch.city }}</div>
+          <div *ngIf="getDistanceDisplay(branch.id)" class="branch-distance">
+            📍 {{ getDistanceDisplay(branch.id) }}
+          </div>
+          <div *ngIf="branch.id === suggestedNearestBranch()?.id" class="branch-suggestion">
+            ✓ {{ 'LANDING.SELECT_BRANCH.NEAREST_TO_YOU' | translate }}
+          </div>
+        </div>
+      </button>
+    </div>
+
+    <div class="helper-text" *ngIf="error() && selectedRestaurant()">{{ error() }}</div>
+  </section>
+
+  <section class="selector-header" *ngIf="selectorCollapsed() && selectedRestaurant() && selectedBranch()">
+    <div class="header-content">
+      <div class="selection-summary">
+        <div class="summary-item">
+          <span class="summary-label">{{ 'LANDING.SUMMARY.LABEL_RESTAURANT' | translate }}</span>
+          <span class="summary-value">{{ selectedRestaurant()?.name }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">{{ 'LANDING.SUMMARY.LABEL_BRANCH' | translate }}</span>
+          <span class="summary-value">
+            {{ selectedBranch()?.street }} {{ selectedBranch()?.buildingNumber }}, {{ selectedBranch()?.city }}
+            <span *ngIf="getDistanceDisplay(selectedBranch()?.id)" class="summary-distance">{{ getDistanceDisplay(selectedBranch()?.id) }}</span>
+          </span>
+        </div>
+      </div>
+      <button class="change-btn" (click)="toggleSelector()">{{ 'LANDING.SUMMARY.CHANGE' | translate }}</button>
+    </div>
+  </section>
+
+  <section class="menu-stage" *ngIf="selectedBranch()" [class.enter]="selectedBranch()">
+    <div class="menu-column">
+      <div class="section-title">
+        <h3>{{ 'LANDING.MENU.TITLE' | translate }}</h3>
+        <p>{{ 'LANDING.MENU.SUBTITLE' | translate }}</p>
+      </div>
+
+      <div class="category-row" *ngIf="categories().length > 0">
+        <button class="category-chip" *ngFor="let category of categories()" [class.active]="selectedCategory() === category.name" (click)="chooseCategory(category.name)">
+          {{ category.name }}
+        </button>
+      </div>
+
+      <div class="menu-loading" *ngIf="menuLoading()">
+        <mat-progress-spinner diameter="24" mode="indeterminate"></mat-progress-spinner>
+        <span>{{ 'LANDING.MENU.LOADING' | translate }}</span>
+      </div>
+
+      <div class="products-grid" *ngIf="!menuLoading() && filteredMenuItems.length > 0">
+        <article class="product-card" *ngFor="let item of filteredMenuItems">
+          <div class="product-content">
+            <div class="product-title-row">
+              <h4>{{ item.name }}</h4>
+              <span class="price-pill">{{ item.price | currency:'PLN' }}</span>
+            </div>
+            <p class="product-meta">{{ item.category_name }}</p>
+            <p class="product-description">{{ item.ingredients }}</p>
+            <p class="availability-pill">{{ 'LANDING.MENU.AVAILABLE' | translate }}</p>
+          </div>
+          <button class="primary-btn small" (click)="addToCart(item)">{{ 'LANDING.CART.ADD' | translate }}</button>
+        </article>
+      </div>
+    </div>
+
+    <aside class="cart-column">
+      <div class="cart-card">
+        <div class="cart-header">
+          <div>
+            <p class="eyebrow">{{ 'LANDING.CART.TITLE' | translate }}</p>
+            <h3>{{ cart().length }} {{ cart().length === 1 ? ('LANDING.CART.ITEM_SINGULAR' | translate) : ('LANDING.CART.ITEM_PLURAL' | translate) }}</h3>
+          </div>
+          <div class="cart-total">{{ cartTotal | currency:'PLN' }}</div>
+        </div>
+
+        <div class="empty-state" *ngIf="cart().length === 0">
+          <p>{{ 'LANDING.CART.EMPTY_TITLE' | translate }}</p>
+          <p>{{ 'LANDING.CART.EMPTY_DESCRIPTION' | translate }}</p>
+        </div>
+
+        <div class="cart-items" *ngIf="cart().length > 0">
+          <div class="cart-item" *ngFor="let entry of cart()">
+            <div class="cart-item-row">
+              <div>
+                <strong>{{ entry.name }}</strong>
+                <div class="cart-item-price">{{ entry.price | currency:'PLN' }}</div>
+              </div>
+              <div class="quantity-controls">
+                <button (click)="updateQuantity(entry.itemId, -1)">−</button>
+                <span>{{ entry.quantity }}</span>
+                <button (click)="updateQuantity(entry.itemId, 1)">+</button>
+              </div>
+            </div>
+            <textarea [value]="entry.notes" (input)="updateNotes(entry.itemId, $any($event.target).value)" [attr.placeholder]="'LANDING.CART.NOTES_PLACEHOLDER' | translate"></textarea>
+            <button class="text-link" (click)="removeFromCart(entry.itemId)">{{ 'LANDING.CART.REMOVE' | translate }}</button>
+          </div>
+        </div>
+
+        <button class="primary-btn full" (click)="continueToCheckout()" [disabled]="cart().length === 0">{{ 'LANDING.CART.CONTINUE' | translate }}</button>
+      </div>
+    </aside>
+  </section>
+
+  <section class="checkout-card" *ngIf="checkoutStep() !== 'menu' && selectedRestaurant() && selectedBranch()">
+    <div class="checkout-stepper">
+      <span [class.active]="checkoutStep() === 'details'">{{ 'LANDING.CHECKOUT.STEPS.DETAILS' | translate }}</span>
+      <span [class.active]="checkoutStep() === 'confirm' || checkoutStep() === 'submitted'">{{ 'LANDING.CHECKOUT.STEPS.REVIEW' | translate }}</span>
+    </div>
+
+    <div *ngIf="checkoutStep() === 'details'" class="checkout-panel">
+      <div class="order-type-toggle">
+        <button class="choice-btn" [class.active]="orderType() === 'SELF_PICKUP'" (click)="orderType.set('SELF_PICKUP')">{{ 'LANDING.CHECKOUT.ORDER_TYPES.SELF_PICKUP' | translate }}</button>
+        <button class="choice-btn" [class.active]="orderType() === 'DELIVERY'" (click)="orderType.set('DELIVERY')">{{ 'LANDING.CHECKOUT.ORDER_TYPES.DELIVERY' | translate }}</button>
+      </div>
+
+      <div class="payment-toggle">
+        <button class="choice-btn" [class.active]="paymentMethod() === 'CASH'" (click)="paymentMethod.set('CASH')">{{ 'LANDING.CHECKOUT.PAYMENT_METHODS.CASH' | translate }}</button>
+        <button class="choice-btn" [class.active]="paymentMethod() === 'CARD'" (click)="paymentMethod.set('CARD')">{{ 'LANDING.CHECKOUT.PAYMENT_METHODS.CARD' | translate }}</button>
+      </div>
+
+      <div class="checkout-form" *ngIf="orderType() === 'DELIVERY'">
+        <input [attr.placeholder]="'LANDING.CHECKOUT.FORM.STREET' | translate" [value]="street()" (input)="street.set($any($event.target).value)" />
+        <input [attr.placeholder]="'LANDING.CHECKOUT.FORM.HOUSE_NUMBER' | translate" [value]="houseNumber()" (input)="houseNumber.set($any($event.target).value)" />
+        <input [attr.placeholder]="'LANDING.CHECKOUT.FORM.APARTMENT' | translate" [value]="apartment()" (input)="apartment.set($any($event.target).value)" />
+        <input [attr.placeholder]="'LANDING.CHECKOUT.FORM.FLOOR' | translate" [value]="floor()" (input)="floor.set($any($event.target).value)" />
+        <input [attr.placeholder]="'LANDING.CHECKOUT.FORM.CITY' | translate" [value]="city()" (input)="city.set($any($event.target).value)" />
+      </div>
+
+      <div class="checkout-form">
+        <input [attr.placeholder]="'LANDING.CHECKOUT.FORM.PHONE' | translate" required [value]="customerPhone()" (input)="customerPhone.set($any($event.target).value)" />
+        <input [attr.placeholder]="'LANDING.CHECKOUT.FORM.NAME' | translate" [value]="customerName()" (input)="customerName.set($any($event.target).value)" />
+        <input [attr.placeholder]="'LANDING.CHECKOUT.FORM.EMAIL' | translate" [value]="customerEmail()" (input)="customerEmail.set($any($event.target).value)" />
+        <textarea [attr.placeholder]="'LANDING.CHECKOUT.FORM.NOTES' | translate" [value]="deliveryNotes()" (input)="deliveryNotes.set($any($event.target).value)"></textarea>
+      </div>
+
+      <button class="primary-btn full" (click)="goToConfirmation()">{{ 'LANDING.CHECKOUT.ACTIONS.REVIEW_ORDER' | translate }}</button>
+    </div>
+
+    <div *ngIf="checkoutStep() === 'confirm'" class="checkout-panel">
+      <h3>{{ 'LANDING.CHECKOUT.REVIEW.TITLE' | translate }}</h3>
+      <div class="summary-box">
+        <p><strong>{{ 'LANDING.CHECKOUT.REVIEW.RESTAURANT' | translate }}</strong> {{ selectedRestaurant()?.name }}</p>
+        <p><strong>{{ 'LANDING.CHECKOUT.REVIEW.BRANCH' | translate }}</strong> {{ selectedBranch()?.street }} {{ selectedBranch()?.buildingNumber }}, {{ selectedBranch()?.city }}</p>
+        <p><strong>{{ 'LANDING.CHECKOUT.REVIEW.RECEIVING' | translate }}</strong> {{ orderType() === 'DELIVERY' ? ('LANDING.CHECKOUT.ORDER_TYPES.DELIVERY' | translate) : ('LANDING.CHECKOUT.ORDER_TYPES.SELF_PICKUP' | translate) }}</p>
+        <p><strong>{{ 'LANDING.CHECKOUT.REVIEW.PAYMENT' | translate }}</strong> {{ paymentMethod() === 'CASH' ? ('LANDING.CHECKOUT.PAYMENT_METHODS.CASH' | translate) : ('LANDING.CHECKOUT.PAYMENT_METHODS.CARD' | translate) }}</p>
+        <p><strong>{{ 'LANDING.CHECKOUT.REVIEW.PHONE' | translate }}</strong> {{ customerPhone() }}</p>
+      </div>
+      <div class="summary-items" *ngFor="let item of cart()">
+        <span>{{ item.name }} × {{ item.quantity }}</span>
+        <span *ngIf="item.notes">{{ 'LANDING.CHECKOUT.REVIEW.NOTES' | translate }} {{ item.notes }}</span>
+      </div>
+      <button class="primary-btn full" (click)="placeOrder()" [disabled]="orderSubmitting()">{{ orderSubmitting() ? ('LANDING.CHECKOUT.ACTIONS.PLACING_ORDER' | translate) : ('LANDING.CHECKOUT.ACTIONS.PLACE_ORDER' | translate) }}</button>
+    </div>
+
+    <div *ngIf="checkoutStep() === 'submitted'" class="checkout-panel success-panel">
+      <h3>{{ 'LANDING.CHECKOUT.SUCCESS.TITLE' | translate }}</h3>
+      <p>{{ 'LANDING.CHECKOUT.SUCCESS.DESCRIPTION' | translate }}</p>
+      <p><strong>{{ 'LANDING.CHECKOUT.SUCCESS.ORDER_ID' | translate }}</strong> {{ submittedOrder()?.id }}</p>
+      <p><strong>{{ 'LANDING.CHECKOUT.SUCCESS.STATUS' | translate }}</strong> {{ submittedOrder()?.status }}</p>
+    </div>
+  </section>
+
+  <div class="helper-text" *ngIf="error() && checkoutStep() !== 'menu' && selectedRestaurant() && selectedBranch()">{{ error() }}</div>
 </main>

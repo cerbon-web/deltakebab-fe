@@ -1,3 +1,9 @@
+.connection-state { min-height: 100vh; display: grid; place-items: center; padding: 2rem; background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); }
+.connection-card { background: white; border-radius: 16px; padding: 2rem; max-width: 420px; width: 100%; box-shadow: 0 18px 45px rgba(0,0,0,0.12); text-align: center; }
+.connection-card h1 { margin: 1rem 0 0.5rem; font-size: 1.4rem; }
+.connection-card p { margin: 0; color: #6b7280; }
+.connection-error { margin-top: 0.75rem !important; color: #b91c1c !important; }
+
 .site-header { position: sticky; top: 0; z-index: 60; background: linear-gradient(90deg, var(--primary), #8b2b0f); color: #fff; border-bottom: 1px solid rgba(0,0,0,0.06);} 
 .site-header .container { display:flex;align-items:center;gap:12px;padding:10px 16px;max-width:1100px;margin:0 auto; }
 .brand { display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit }
@@ -7,6 +13,8 @@
 nav.main-nav { margin-left:auto; display:flex; align-items:center; gap:12px; }
 nav.main-nav a { text-decoration:none; color:inherit; padding:6px 8px; border-radius:6px }
 nav.main-nav a:hover { background: rgba(255,255,255,0.06) }
+nav.main-nav .admin-link { color: #ef4444; font-weight: 700; }
+nav.main-nav .admin-link:hover { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
 .nav-actions { display:flex; gap:8px; align-items:center }
 
 /* Mobile menu toggle */
