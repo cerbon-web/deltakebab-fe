@@ -1,6 +1,6 @@
-# GitHub Actions workflow: build and deploy Angular app to GitHub Pages (gh-pages branch)
+# GitHub Actions workflow: build and deploy Angular app to GitHub Pages
 # Triggers on pushes to the main branch and deploys the production build artifacts
-# Uses peaceiris/actions-gh-pages to publish the contents of `dist/` to `gh-pages` branch
+# Uses the official GitHub Pages actions for artifact upload and deploy
 
 name: Deploy to GitHub Pages
 
@@ -30,36 +30,23 @@ jobs:
         with:
           node-version: 'lts/*'
 
-      - name: Cache node modules
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       - name: Install dependencies
         run: npm ci
 
       - name: Optional lint (recommended)
         run: |
-          # Run lint if the script exists; ignore failures so deploy is not blocked
           npm run lint || true
 
       - name: Compute base href for GitHub Pages
         id: base-href
         run: |
           REPO_NAME=${{ github.event.repository.name }}
-          # If a CNAME file is present the site is using a custom domain -> root '/'
           if [ -f CNAME ]; then
             echo "CNAME found - using root base href"
             echo "BASE_HREF=/" >> $GITHUB_OUTPUT
           elif [[ "$REPO_NAME" == *.github.io ]]; then
-            echo "base=/"
             echo "BASE_HREF=/" >> $GITHUB_OUTPUT
           else
-            # Repository pages are served under /repo-name/
-            echo "base=/${REPO_NAME}/"
             echo "BASE_HREF=/${REPO_NAME}/" >> $GITHUB_OUTPUT
           fi
 
@@ -68,7 +55,6 @@ jobs:
           BASE_HREF: ${{ steps.base-href.outputs.BASE_HREF }}
         run: |
           echo "Building with base-href=$BASE_HREF"
-          # Use Angular CLI build with explicit base-href so GitHub Pages serves correctly
           npx ng build --configuration production --base-href "$BASE_HREF"
 
       - name: Copy CNAME for custom domain (if present)
@@ -80,17 +66,12 @@ jobs:
             echo "No CNAME file present"
           fi
 
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          # Use a Personal Access Token (PAT) if your org/repo blocks GITHUB_TOKEN push
-          # Create a PAT with `repo` scope and add it to repository secrets as `GH_PAGES_TOKEN`.
-          # If you prefer the built-in GITHUB_TOKEN and your repo allows write, replace with
-          # `github_token: ${{ secrets.GITHUB_TOKEN }}`.
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: ./dist
-          # Force update the branch contents on every deploy (overwrites history)
-          force_orphan: true
+          path: ./dist
 
-# End of workflow
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
