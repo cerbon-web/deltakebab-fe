@@ -9,7 +9,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
 import { LanguageSwitcherComponent } from './components/language-switcher/language-switcher.component';
+import { DevIndicatorComponent } from './components/dev-indicator/dev-indicator.component';
 import { BackendConnectionService } from './services/backend-connection.service';
+import { environment } from '../environments/environment';
 
 /*
   AppComponent is a standalone root component. It sets up translations
@@ -18,11 +20,12 @@ import { BackendConnectionService } from './services/backend-connection.service'
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatToolbarModule, MatIconModule, HttpClientModule, MatButtonModule, MatProgressSpinnerModule, TranslateModule, LanguageSwitcherComponent],
+  imports: [CommonModule, RouterModule, MatToolbarModule, MatIconModule, HttpClientModule, MatButtonModule, MatProgressSpinnerModule, TranslateModule, LanguageSwitcherComponent, DevIndicatorComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+  public environment = environment;
   // example signal for future global UI state
   public showMenu = signal(false);
   public connectionStatus = signal<'checking' | 'ready' | 'error'>('checking');
