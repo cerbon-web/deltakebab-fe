@@ -65,6 +65,7 @@
       "TITLE": "Select a branch",
       "SUBTITLE": "Choose your preferred location",
       "NEAREST_TO_YOU": "Nearest to you",
+      "SEARCH_PLACEHOLDER": "Search branch, city or address",
       "FIND_NEAREST": "Find nearest branch",
       "FINDING": "Finding nearest branch…",
       "DETECTED_ADDRESS_LABEL": "Approximate address"

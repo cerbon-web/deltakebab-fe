@@ -10,6 +10,7 @@ import { firstValueFrom } from 'rxjs';
 import { GeolocationService } from '../services/geolocation.service';
 import { ApiService } from '../services/api.service';
 import { haversineDistance } from '../utils/haversine';
+import { getDisplayedBranches } from '../utils/branch-utils';
 
 interface CartItem {
   id: number;
@@ -62,8 +63,10 @@ export class LandingComponent implements OnInit {
   selectorCollapsed = signal(false);
   suggestedNearestBranch = signal<any | null>(null);
   restaurantBranches = signal<any[]>([]);
+  branchSource = signal<any[]>([]);
   branchDistances = signal<Map<string, number>>(new Map());
   detectedAddress = signal<string | null>(null);
+  branchSearchTerm = signal('');
 
   constructor(
     private geo: GeolocationService,
@@ -120,6 +123,10 @@ export class LandingComponent implements OnInit {
     this.error.set(null);
     this.detectedAddress.set(null);
 
+    const branchesToEvaluate = this.branchSource().length > 0 ? this.branchSource() : this.normalizeBranches(restaurant.branches || [], restaurant.name);
+    this.branchSource.set(branchesToEvaluate);
+    this.restaurantBranches.set(getDisplayedBranches(branchesToEvaluate, this.branchSearchTerm()));
+
     try {
       const pos = await this.geo.getCurrentPosition();
       const userLat = pos.coords.latitude;
@@ -129,7 +136,7 @@ export class LandingComponent implements OnInit {
       this.detectedAddress.set(detectedAddress);
 
       const distancesMap = new Map<string, number>();
-      const branchesWithDistance = (restaurant.branches || [])
+      const branchesWithDistance = branchesToEvaluate
         .map((b: any) => {
           const branchLat = b.latitude;
           const branchLng = b.longitude;
@@ -147,12 +154,9 @@ export class LandingComponent implements OnInit {
 
       this.branchDistances.set(distancesMap);
 
-      const sortedBranches = [...branchesWithDistance].sort((a: any, b: any) => {
-        const distanceA = a.distance ?? Number.POSITIVE_INFINITY;
-        const distanceB = b.distance ?? Number.POSITIVE_INFINITY;
-        return distanceA - distanceB;
-      });
+      const sortedBranches = getDisplayedBranches(branchesWithDistance, this.branchSearchTerm());
 
+      this.branchSource.set(branchesWithDistance);
       this.restaurantBranches.set(sortedBranches);
 
       const nearest = sortedBranches.length > 0 ? sortedBranches[0] : null;
@@ -233,11 +237,23 @@ export class LandingComponent implements OnInit {
     }
   }
 
+  private normalizeBranches(branches: any[], restaurantName?: string): any[] {
+    return branches.map((branch: any) => ({
+      ...branch,
+      restaurantName: branch.restaurantName ?? restaurantName ?? '',
+      address: [branch.street, branch.buildingNumber, branch.postalCode, branch.city].filter(Boolean).join(', ')
+    }));
+  }
+
   selectRestaurant(restaurant: any) {
+    const normalizedBranches = this.normalizeBranches(restaurant.branches || [], restaurant.name);
+
     this.selectedRestaurant.set(restaurant);
     this.suggestedNearestBranch.set(null);
     this.detectedAddress.set(null);
-    this.restaurantBranches.set(restaurant.branches || []);
+    this.branchSearchTerm.set('');
+    this.branchSource.set(normalizedBranches);
+    this.restaurantBranches.set(getDisplayedBranches(normalizedBranches, this.branchSearchTerm()));
     this.categories.set([]);
     this.menuItems.set([]);
     this.selectedCategory.set(null);
@@ -257,28 +273,41 @@ export class LandingComponent implements OnInit {
   }
 
   private async calculateDistancesToBranches(branches: any[]) {
+    const normalizedBranches = this.normalizeBranches(branches, this.selectedRestaurant()?.name);
+    this.branchSource.set(normalizedBranches);
+    this.restaurantBranches.set(getDisplayedBranches(normalizedBranches, this.branchSearchTerm()));
+
     try {
       const pos = await this.geo.getCurrentPosition();
       const userLat = pos.coords.latitude;
       const userLng = pos.coords.longitude;
 
       const distancesMap = new Map<string, number>();
-      branches.forEach((b: any) => {
+      const branchesWithDistance = normalizedBranches.map((b: any) => {
         const branchLat = Number(b.latitude);
         const branchLng = Number(b.longitude);
         const validCoords = !Number.isNaN(branchLat) && !Number.isNaN(branchLng);
         if (!validCoords) {
-          return;
+          return { ...b, distance: null };
         }
 
         const distance = haversineDistance(userLat, userLng, branchLat, branchLng);
         distancesMap.set(String(b.id), distance);
+        return { ...b, distance };
       });
 
       this.branchDistances.set(distancesMap);
+      this.branchSource.set(branchesWithDistance);
+      this.restaurantBranches.set(getDisplayedBranches(branchesWithDistance, this.branchSearchTerm()));
     } catch {
       this.branchDistances.set(new Map());
+      this.restaurantBranches.set(getDisplayedBranches(normalizedBranches, this.branchSearchTerm()));
     }
+  }
+
+  onBranchSearchChange(searchTerm: string) {
+    this.branchSearchTerm.set(searchTerm);
+    this.restaurantBranches.set(getDisplayedBranches(this.branchSource(), searchTerm));
   }
 
   getDistanceDisplay(branchId: string | number): string {
@@ -507,6 +536,7 @@ export class LandingComponent implements OnInit {
     this.selectedBranch.set(null);
     this.suggestedNearestBranch.set(null);
     this.detectedAddress.set(null);
+    this.branchSearchTerm.set('');
     this.categories.set([]);
     this.menuItems.set([]);
     this.selectedCategory.set(null);
@@ -521,5 +551,6 @@ export class LandingComponent implements OnInit {
     this.selectedCategory.set(null);
     this.selectorCollapsed.set(false);
     this.suggestedNearestBranch.set(null);
+    this.branchSearchTerm.set('');
   }
 }

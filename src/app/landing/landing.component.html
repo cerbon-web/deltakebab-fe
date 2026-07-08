@@ -61,7 +61,13 @@
       </div>
     </div>
 
-    <div class="branch-list">
+    <div class="branch-search">
+      <input
+        type="search"
+        class="branch-search-input"
+        [attr.placeholder]="'LANDING.SELECT_BRANCH.SEARCH_PLACEHOLDER' | translate"
+        [value]="branchSearchTerm()"
+        (input)="onBranchSearchChange($any($event.target).value)" />
     </div>
 
     <div class="branch-list">
