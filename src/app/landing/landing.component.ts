@@ -404,8 +404,11 @@ export class LandingComponent implements OnInit {
             .sort((a: any, b: any) => (a.categoryDisplayOrder ?? 0) - (b.categoryDisplayOrder ?? 0) || (a.itemDisplayOrder ?? 0) - (b.itemDisplayOrder ?? 0) || a.name.localeCompare(b.name))
         } : null;
 
-        const categories = featuredCategory ? [featuredCategory, ...baseCategories] : baseCategories;
-        const items = baseCategories.flatMap((category: any) =>
+        const hasServerFeaturedCategory = baseCategories.some((category: any) => category.isFeatured || category.name === 'Top ones');
+        const categories = hasServerFeaturedCategory
+          ? baseCategories
+          : (featuredCategory ? [featuredCategory, ...baseCategories] : baseCategories);
+        const items = categories.flatMap((category: any) =>
           (category.items || []).map((item: any) => ({
             ...item,
             category_id: category.id,
