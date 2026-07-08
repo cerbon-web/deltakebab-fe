@@ -92,6 +92,11 @@ export class LandingComponent implements OnInit {
       return [];
     }
 
+    const selectedCategoryData = this.categories().find((entry) => entry.name === category);
+    if (selectedCategoryData?.isFeatured) {
+      return this.menuItems().filter((item) => item.featured);
+    }
+
     return this.menuItems().filter((item) => item.category_name === category);
   }
 
@@ -362,8 +367,45 @@ export class LandingComponent implements OnInit {
 
     this.apiService.getMenu(branchId).subscribe({
       next: (menu) => {
-        const categories = menu?.categories || [];
-        const items = (menu?.items || categories.flatMap((category: any) =>
+        const baseCategories = (menu?.categories || [])
+          .map((category: any) => ({
+            ...category,
+            displayOrder: category.displayOrder ?? 0,
+            items: (category.items || [])
+              .map((item: any) => ({
+                ...item,
+                displayOrder: item.displayOrder ?? 0,
+                featured: Boolean(item.featured)
+              }))
+              .sort((a: any, b: any) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0) || a.name.localeCompare(b.name))
+          }))
+          .sort((a: any, b: any) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0) || a.name.localeCompare(b.name));
+
+        const featuredItems = baseCategories.flatMap((category: any) =>
+          (category.items || [])
+            .filter((item: any) => item.featured && item.available !== false)
+            .map((item: any) => ({
+              ...item,
+              category_id: category.id,
+              category_name: category.name,
+              categoryDisplayOrder: category.displayOrder ?? 0,
+              itemDisplayOrder: item.displayOrder ?? 0
+            }))
+        );
+
+        const featuredCategory = featuredItems.length > 0 ? {
+          id: 'featured',
+          name: 'Top ones',
+          icon: null,
+          displayOrder: Number.MIN_SAFE_INTEGER,
+          isFeatured: true,
+          items: featuredItems
+            .slice()
+            .sort((a: any, b: any) => (a.categoryDisplayOrder ?? 0) - (b.categoryDisplayOrder ?? 0) || (a.itemDisplayOrder ?? 0) - (b.itemDisplayOrder ?? 0) || a.name.localeCompare(b.name))
+        } : null;
+
+        const categories = featuredCategory ? [featuredCategory, ...baseCategories] : baseCategories;
+        const items = baseCategories.flatMap((category: any) =>
           (category.items || []).map((item: any) => ({
             ...item,
             category_id: category.id,
@@ -371,7 +413,7 @@ export class LandingComponent implements OnInit {
             price: Number(item.sizes?.[0]?.price ?? item.price ?? 0),
             ingredients: item.description ?? ''
           }))
-        )).map((item: any) => ({
+        ).map((item: any) => ({
           ...item,
           sizes: (item.sizes || []).map((size: any) => ({
             id: size.id,
