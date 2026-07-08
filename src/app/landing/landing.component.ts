@@ -15,6 +15,8 @@ interface CartItem {
   id: number;
   itemId: number;
   name: string;
+  sizeName?: string;
+  sizeId?: string;
   price: number;
   quantity: number;
   notes: string;
@@ -84,7 +86,7 @@ export class LandingComponent implements OnInit {
   get filteredMenuItems() {
     const category = this.selectedCategory();
     if (!category) {
-      return this.menuItems();
+      return [];
     }
 
     return this.menuItems().filter((item) => item.category_name === category);
@@ -233,7 +235,6 @@ export class LandingComponent implements OnInit {
 
   selectRestaurant(restaurant: any) {
     this.selectedRestaurant.set(restaurant);
-    this.selectedBranch.set(null);
     this.suggestedNearestBranch.set(null);
     this.detectedAddress.set(null);
     this.restaurantBranches.set(restaurant.branches || []);
@@ -243,6 +244,16 @@ export class LandingComponent implements OnInit {
     this.checkoutStep.set('menu');
     this.cartOpen.set(false);
     this.calculateDistancesToBranches(restaurant.branches || []);
+
+    const branches = restaurant.branches || [];
+    if (branches.length === 1) {
+      this.selectedBranch.set(branches[0]);
+      this.selectorCollapsed.set(true);
+      this.loadMenu(branches[0].id);
+      return;
+    }
+
+    this.selectedBranch.set(null);
   }
 
   private async calculateDistancesToBranches(branches: any[]) {
@@ -313,28 +324,40 @@ export class LandingComponent implements OnInit {
     this.selectedBranch.set(branch);
     this.suggestedNearestBranch.set(null);
     this.selectorCollapsed.set(true);
-    this.loadMenu(this.selectedRestaurant()?.id);
+    this.loadMenu(branch.id);
   }
 
-  loadMenu(restaurantId: number | string) {
+  loadMenu(branchId: number | string) {
     this.menuLoading.set(true);
     this.error.set(null);
 
-    this.apiService.getMenu(restaurantId).subscribe({
+    this.apiService.getMenu(branchId).subscribe({
       next: (menu) => {
-        const categories = menu.categories || [];
-        const items = menu.items || categories.flatMap((category: any) =>
+        const categories = menu?.categories || [];
+        const items = (menu?.items || categories.flatMap((category: any) =>
           (category.items || []).map((item: any) => ({
             ...item,
+            category_id: category.id,
             category_name: category.name,
-            price: Number(item.price ?? item.prices?.[0]?.price ?? 0),
+            price: Number(item.sizes?.[0]?.price ?? item.price ?? 0),
             ingredients: item.description ?? ''
           }))
-        );
+        )).map((item: any) => ({
+          ...item,
+          sizes: (item.sizes || []).map((size: any) => ({
+            id: size.id,
+            name: size.name ?? size.sizeOption?.name ?? '',
+            price: Number(size.price ?? 0),
+            available: size.available ?? true
+          })),
+          selectedSizeId: item.sizes?.[0]?.id ?? null,
+          price: Number((item.sizes || []).find((size: any) => size.id === item.selectedSizeId)?.price ?? item.sizes?.[0]?.price ?? item.price ?? 0),
+          ingredients: item.ingredients ?? item.description ?? ''
+        }));
 
         this.categories.set(categories);
         this.menuItems.set(items);
-        this.selectedCategory.set(categories[0]?.name ?? null);
+        this.selectedCategory.set(null);
         this.menuLoading.set(false);
       },
       error: () => {
@@ -348,10 +371,34 @@ export class LandingComponent implements OnInit {
     this.selectedCategory.set(categoryName);
   }
 
+  getSelectedSize(item: any) {
+    return item.sizes?.length
+      ? (item.sizes.find((size: any) => size.id === item.selectedSizeId) || item.sizes[0])
+      : null;
+  }
+
+  getItemDisplayPrice(item: any): number {
+    const selectedSize = this.getSelectedSize(item);
+    return Number(selectedSize?.price ?? item.price ?? 0);
+  }
+
+  selectItemSize(item: any, sizeId: string) {
+    this.menuItems.set(this.menuItems().map((menuItem) => (
+      menuItem.id === item.id && menuItem.category_id === item.category_id
+        ? { ...menuItem, selectedSizeId: sizeId }
+        : menuItem
+    )));
+  }
+
   addToCart(item: any) {
-    const existing = this.cart().find((entry) => entry.itemId === item.id && entry.notes === '');
+    const selectedSize = item.sizes?.length
+      ? item.sizes.find((size: any) => size.id === item.selectedSizeId) || item.sizes[0]
+      : null;
+    const unitPrice = Number(selectedSize?.price ?? item.price ?? 0);
+    const existing = this.cart().find((entry) => entry.itemId === item.id && entry.notes === '' && entry.sizeName === selectedSize?.name);
+
     if (existing) {
-      this.cart.set(this.cart().map((entry) => entry.itemId === item.id && entry.notes === ''
+      this.cart.set(this.cart().map((entry) => entry.itemId === item.id && entry.notes === '' && entry.sizeName === selectedSize?.name
         ? { ...entry, quantity: entry.quantity + 1 }
         : entry));
       return;
@@ -363,7 +410,9 @@ export class LandingComponent implements OnInit {
         id: Date.now(),
         itemId: item.id,
         name: item.name,
-        price: Number(item.price) || 0,
+        sizeName: selectedSize?.name,
+        sizeId: selectedSize?.id,
+        price: unitPrice,
         quantity: 1,
         notes: ''
       }
@@ -427,6 +476,8 @@ export class LandingComponent implements OnInit {
       paymentMethod: this.paymentMethod(),
       items: this.cart().map((entry) => ({
         itemId: entry.itemId,
+        itemName: entry.name,
+        sizeName: entry.sizeName,
         quantity: entry.quantity,
         unitPrice: entry.price,
         notes: entry.notes || undefined

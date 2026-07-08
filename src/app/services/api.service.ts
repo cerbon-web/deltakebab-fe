@@ -34,8 +34,8 @@ export class ApiService {
     );
   }
 
-  getMenu(restaurantId: string | number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/menu/${restaurantId}`).pipe(
+  getMenu(branchId: string | number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/menu/${branchId}`).pipe(
       catchError((error) => this.handleError(error))
     );
   }

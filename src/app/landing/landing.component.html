@@ -128,11 +128,21 @@
           <div class="product-content">
             <div class="product-title-row">
               <h4>{{ item.name }}</h4>
-              <span class="price-pill">{{ item.price | currency:'PLN' }}</span>
+              <span class="price-pill">{{ getItemDisplayPrice(item) | currency:'PLN' }}</span>
             </div>
             <p class="product-meta">{{ item.category_name }}</p>
             <p class="product-description">{{ item.ingredients }}</p>
-            <p class="availability-pill">{{ 'LANDING.MENU.AVAILABLE' | translate }}</p>
+            <div class="size-options" *ngIf="item.sizes?.length > 1">
+              <button
+                class="size-chip"
+                *ngFor="let size of item.sizes"
+                [class.active]="(item.selectedSizeId || item.sizes[0].id) === size.id"
+                (click)="selectItemSize(item, size.id)">
+                <span>{{ size.name }}</span>
+                <span class="size-price">{{ size.price | currency:'PLN' }}</span>
+              </button>
+            </div>
+            <p class="availability-pill" *ngIf="item.available === false">{{ 'LANDING.MENU.UNAVAILABLE' | translate }}</p>
           </div>
           <button class="primary-btn small" (click)="addToCart(item)">{{ 'LANDING.CART.ADD' | translate }}</button>
         </article>

@@ -78,7 +78,8 @@
       "TITLE": "Menu",
       "SUBTITLE": "Choose a category to reveal the matching dishes.",
       "LOADING": "Loading menu…",
-      "AVAILABLE": "Available now"
+      "AVAILABLE": "Available now",
+      "UNAVAILABLE": "Unavailable"
     },
     "CART": {
       "TITLE": "Your order",

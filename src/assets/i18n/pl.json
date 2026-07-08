@@ -78,7 +78,8 @@
       "TITLE": "Menu",
       "SUBTITLE": "Wybierz kategorię, aby odkryć pasujące dania.",
       "LOADING": "Ładowanie menu…",
-      "AVAILABLE": "Dostępne teraz"
+      "AVAILABLE": "Dostępne teraz",
+      "UNAVAILABLE": "Niedostępne"
     },
     "CART": {
       "TITLE": "Twoje zamówienie",

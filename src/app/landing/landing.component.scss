@@ -358,6 +358,11 @@
 .price-pill { background:white; color:#9a2c0f; border-radius:999px; padding:0.3rem 0.6rem; font-weight:700; }
 .product-meta, .product-description, .availability-pill { margin:0; color:#6b7280; }
 .availability-pill { color:#166534; font-weight:600; }
+.size-options { display:flex; flex-wrap:wrap; gap:0.5rem; }
+.size-chip { display:flex; align-items:center; gap:0.35rem; border:1px solid #f6d4a8; border-radius:999px; background:#fffaf2; color:#92400e; padding:0.4rem 0.7rem; font-size:0.9rem; cursor:pointer; transition:all 200ms ease; }
+.size-chip:hover { background:#ffedd5; }
+.size-chip.active { background:#fef3c7; color:#7c2d12; border-color:#f59e0b; }
+.size-price { font-weight:700; }
 
 .cart-column { display:grid; }
 .cart-card { background:#fffdf9; border:1px solid #f3d8bf; border-radius:18px; padding:1rem; position:sticky; top:5.5rem; }
