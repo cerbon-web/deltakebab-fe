@@ -396,6 +396,7 @@
 .quantity-controls { display:flex; align-items:center; gap:0.4rem; }
 .quantity-controls button { width:1.8rem; height:1.8rem; border-radius:999px; border:1px solid #fdba74; background:#fff7ed; cursor:pointer; transition:all 200ms ease; }
 .quantity-controls button:hover { background:#fed7aa; }
+.cart-item-variant { color:#6b7280; font-size:0.85rem; margin-top:0.15rem; }
 .cart-item-price { color:#b45309; font-size:0.95rem; }
 .cart-item textarea, .checkout-form input, .checkout-form textarea { width:100%; border:1px solid #f3d8bf; border-radius:10px; padding:0.7rem; margin-top:0.55rem; box-sizing:border-box; font:inherit; }
 .text-link { background:none; color:#b45309; padding:0; margin-top:0.4rem; cursor:pointer; transition:color 200ms ease; }

@@ -136,7 +136,6 @@
               <h4>{{ item.name }}</h4>
               <span class="price-pill">{{ getItemDisplayPrice(item) | currency:'PLN' }}</span>
             </div>
-            <p class="product-meta">{{ item.category_name }}</p>
             <p class="product-description">{{ item.ingredients }}</p>
             <div class="size-options" *ngIf="item.sizes?.length > 1">
               <button
@@ -175,6 +174,7 @@
             <div class="cart-item-row">
               <div>
                 <strong>{{ entry.name }}</strong>
+                <div *ngIf="entry.sizeName" class="cart-item-variant">{{ entry.sizeName }}</div>
                 <div class="cart-item-price">{{ entry.price | currency:'PLN' }}</div>
               </div>
               <div class="quantity-controls">
@@ -238,7 +238,11 @@
         <p><strong>{{ 'LANDING.CHECKOUT.REVIEW.PHONE' | translate }}</strong> {{ customerPhone() }}</p>
       </div>
       <div class="summary-items" *ngFor="let item of cart()">
-        <span>{{ item.name }} × {{ item.quantity }}</span>
+        <span>
+          {{ item.name }}
+          <small *ngIf="item.sizeName">({{ item.sizeName }})</small>
+          × {{ item.quantity }}
+        </span>
         <span *ngIf="item.notes">{{ 'LANDING.CHECKOUT.REVIEW.NOTES' | translate }} {{ item.notes }}</span>
       </div>
       <button class="primary-btn full" (click)="placeOrder()" [disabled]="orderSubmitting()">{{ orderSubmitting() ? ('LANDING.CHECKOUT.ACTIONS.PLACING_ORDER' | translate) : ('LANDING.CHECKOUT.ACTIONS.PLACE_ORDER' | translate) }}</button>
