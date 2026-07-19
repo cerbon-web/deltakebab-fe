@@ -384,6 +384,15 @@
 .size-chip:hover { background:#ffedd5; }
 .size-chip.active { background:#fef3c7; color:#7c2d12; border-color:#f59e0b; }
 .size-price { font-weight:700; }
+.modifier-groups { display:grid; gap:0.6rem; margin-top:0.6rem; }
+.modifier-group { display:grid; gap:0.4rem; }
+.modifier-group-title { font-size:0.8rem; font-weight:700; color:#7c2d12; }
+.modifier-options { display:flex; flex-wrap:wrap; gap:0.45rem; }
+.modifier-chip { display:inline-flex; align-items:center; gap:0.35rem; border:1px solid #f59e0b; border-radius:999px; padding:0.35rem 0.65rem; background:#fff7ed; color:#7c2d12; font-size:0.8rem; cursor:pointer; }
+.modifier-chip.active { background:#ea580c; color:white; border-color:#ea580c; }
+.modifier-price { font-size:0.75rem; opacity:0.95; }
+.cart-item-modifiers { display:flex; flex-wrap:wrap; gap:0.35rem; margin-top:0.35rem; }
+.cart-item-modifier { display:inline-flex; align-items:center; background:#fff7ed; color:#7c2d12; border-radius:999px; padding:0.2rem 0.45rem; font-size:0.75rem; }
 
 .cart-column { display:grid; }
 .cart-card { background:#fffdf9; border:1px solid #f3d8bf; border-radius:18px; padding:1rem; position:sticky; top:5.5rem; }

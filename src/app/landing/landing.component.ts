@@ -18,6 +18,7 @@ interface CartItem {
   name: string;
   sizeName?: string;
   sizeId?: string;
+  modifiers?: Array<{ groupId: string; groupName: string; optionId?: string; name: string; price: number }>;
   price: number;
   quantity: number;
   notes: string;
@@ -432,7 +433,7 @@ export class LandingComponent implements OnInit {
             ...item,
             category_id: category.id,
             category_name: category.name,
-            price: Number(item.sizes?.[0]?.price ?? item.price ?? 0),
+            price: Number(item.price ?? item.basePrice ?? item.sizes?.[0]?.price ?? 0),
             ingredients: item.description ?? ''
           }))
         ).map((item: any) => ({
@@ -441,13 +442,32 @@ export class LandingComponent implements OnInit {
             id: size.id,
             name: size.name ?? size.sizeOption?.name ?? '',
             price: Number(size.price ?? 0),
-            available: size.available ?? true
+            available: size.available ?? true,
+            modifierGroups: (size.modifierGroups || []).map((group: any) => ({
+              ...group,
+              options: (group.options || []).map((option: any) => ({
+                ...option,
+                price: Number(option.price ?? 0)
+              }))
+            }))
+          })),
+          modifierGroups: (item.modifierGroups || []).map((group: any) => ({
+            ...group,
+            options: (group.options || []).map((option: any) => ({
+              ...option,
+              price: Number(option.price ?? 0)
+            }))
           })),
           selectedSizeId: item.sizes?.[0]?.id ?? null,
-          price: Number((item.sizes || []).find((size: any) => size.id === item.selectedSizeId)?.price ?? item.sizes?.[0]?.price ?? item.price ?? 0),
+          selectedModifiers: [],
+          price: Number((item.sizes || []).find((size: any) => size.id === item.selectedSizeId)?.price ?? item.price ?? item.basePrice ?? 0),
           ingredients: item.ingredients ?? item.description ?? ''
         }));
 
+        (window as any).__menuDebug = {
+          categories,
+          firstItem: items.find((item: any) => item.name === 'DELTA ROLLO')
+        };
         this.categories.set(categories);
         this.menuItems.set(items);
         this.selectedCategory.set(null);
@@ -470,9 +490,67 @@ export class LandingComponent implements OnInit {
       : null;
   }
 
+  getActiveModifierGroups(item: any) {
+    const selectedSize = this.getSelectedSize(item);
+    return selectedSize?.modifierGroups?.length ? selectedSize.modifierGroups : (item.modifierGroups || []);
+  }
+
+  isModifierSelected(item: any, group: any, option: any) {
+    return (item.selectedModifiers || []).some((selected: any) => selected.groupId === group.id && selected.optionId === option.id);
+  }
+
+  toggleModifier(item: any, group: any, option: any) {
+    const currentSelections = (item.selectedModifiers || []).filter((selected: any) => selected.groupId !== group.id);
+    const alreadySelected = currentSelections.some((selected: any) => selected.optionId === option.id);
+
+    if (group.maxSelections <= 1) {
+      const nextSelections = alreadySelected
+        ? currentSelections
+        : [
+            ...currentSelections,
+            {
+              groupId: group.id,
+              groupName: group.name,
+              optionId: option.id,
+              name: option.name,
+              price: Number(option.price ?? 0)
+            }
+          ];
+
+      this.menuItems.set(this.menuItems().map((menuItem) => (
+        menuItem.id === item.id && menuItem.category_id === item.category_id
+          ? { ...menuItem, selectedModifiers: nextSelections }
+          : menuItem
+      )));
+      return;
+    }
+
+    const nextSelections = alreadySelected
+      ? currentSelections
+      : [
+          ...currentSelections,
+          {
+            groupId: group.id,
+            groupName: group.name,
+            optionId: option.id,
+            name: option.name,
+            price: Number(option.price ?? 0)
+          }
+        ];
+
+    this.menuItems.set(this.menuItems().map((menuItem) => (
+      menuItem.id === item.id && menuItem.category_id === item.category_id
+        ? { ...menuItem, selectedModifiers: nextSelections }
+        : menuItem
+    )));
+  }
+
   getItemDisplayPrice(item: any): number {
     const selectedSize = this.getSelectedSize(item);
-    return Number(selectedSize?.price ?? item.price ?? 0);
+    const basePrice = Number(item.basePrice ?? 0);
+    const sizePrice = Number(selectedSize?.price ?? basePrice);
+    const modifierPrice = (item.selectedModifiers || []).reduce((sum: number, modifier: any) => sum + Number(modifier.price ?? 0), 0);
+    return Number(sizePrice + modifierPrice);
   }
 
   selectItemSize(item: any, sizeId: string) {
@@ -487,11 +565,18 @@ export class LandingComponent implements OnInit {
     const selectedSize = item.sizes?.length
       ? item.sizes.find((size: any) => size.id === item.selectedSizeId) || item.sizes[0]
       : null;
-    const unitPrice = Number(selectedSize?.price ?? item.price ?? 0);
-    const existing = this.cart().find((entry) => entry.itemId === item.id && entry.notes === '' && entry.sizeName === selectedSize?.name);
+    const selectedModifiers = (item.selectedModifiers || []).map((modifier: any) => ({
+      groupId: modifier.groupId,
+      groupName: modifier.groupName,
+      optionId: modifier.optionId,
+      name: modifier.name,
+      price: Number(modifier.price ?? 0)
+    }));
+    const unitPrice = this.getItemDisplayPrice(item);
+    const existing = this.cart().find((entry) => entry.itemId === item.id && entry.notes === '' && entry.sizeName === selectedSize?.name && JSON.stringify(entry.modifiers || []) === JSON.stringify(selectedModifiers));
 
     if (existing) {
-      this.cart.set(this.cart().map((entry) => entry.itemId === item.id && entry.notes === '' && entry.sizeName === selectedSize?.name
+      this.cart.set(this.cart().map((entry) => entry.itemId === item.id && entry.notes === '' && entry.sizeName === selectedSize?.name && JSON.stringify(entry.modifiers || []) === JSON.stringify(selectedModifiers)
         ? { ...entry, quantity: entry.quantity + 1 }
         : entry));
       return;
@@ -505,6 +590,7 @@ export class LandingComponent implements OnInit {
         name: item.name,
         sizeName: selectedSize?.name,
         sizeId: selectedSize?.id,
+        modifiers: selectedModifiers,
         price: unitPrice,
         quantity: 1,
         notes: ''
@@ -573,7 +659,13 @@ export class LandingComponent implements OnInit {
         sizeName: entry.sizeName,
         quantity: entry.quantity,
         unitPrice: entry.price,
-        notes: entry.notes || undefined
+        notes: entry.notes || undefined,
+        modifiers: (entry.modifiers || []).map((modifier) => ({
+          modifierGroupName: modifier.groupName,
+          modifierOptionName: modifier.name,
+          modifierOptionId: modifier.optionId,
+          price: modifier.price
+        }))
       })),
       notes: this.orderNotes().trim() || undefined,
       deliveryAddress: this.orderType() === 'DELIVERY'
