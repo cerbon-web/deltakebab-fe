@@ -5,6 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../environments/environment';
 import { CreateOrderPayload, CreateOrderResponse, MenuResponse, Restaurant } from '../types/domain';
+import { LanguageService } from './language.service';
 
 export interface HealthResponse {
   status: string;
@@ -14,6 +15,7 @@ export interface HealthResponse {
 export class ApiService {
   private readonly baseUrl = environment.apiBaseUrl;
   private readonly translate = inject(TranslateService);
+  private readonly languageService = inject(LanguageService);
 
   constructor(private http: HttpClient) {}
 
@@ -36,7 +38,8 @@ export class ApiService {
   }
 
   getMenu(branchId: string | number): Observable<MenuResponse> {
-    return this.http.get<MenuResponse>(`${this.baseUrl}/menu/${branchId}`).pipe(
+    const lang = this.languageService.currentLang() || 'pl';
+    return this.http.get<MenuResponse>(`${this.baseUrl}/menu/${branchId}?lang=${encodeURIComponent(lang)}`).pipe(
       catchError((error) => this.handleError(error))
     );
   }
