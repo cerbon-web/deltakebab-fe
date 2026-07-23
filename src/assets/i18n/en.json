@@ -93,7 +93,8 @@
       "NOTES_PLACEHOLDER": "Add notes for this item",
       "REMOVE": "Remove",
       "ADD": "Add to cart",
-      "CONTINUE": "Continue order"
+      "CONTINUE": "Continue order",
+      "ADDED_SUCCESS": "Item added to cart successfully."
     },
     "CHECKOUT": {
       "STEPS": {
@@ -156,6 +157,7 @@
       "MENU_UNAVAILABLE": "The menu is temporarily unavailable.",
       "CART_EMPTY": "Your cart is empty. Add a dish to continue.",
       "PHONE_REQUIRED": "A phone number is required for the order.",
+      "MODIFIER_SELECTION_REQUIRED": "Please choose required modifier options before adding this item to the cart.",
       "ORDER_PLACE_FAILED": "The order could not be placed."
     }
   },

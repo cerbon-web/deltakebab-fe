@@ -39,6 +39,10 @@ export class LandingComponent implements OnInit {
   get cart() { return this.cartService.cart; }
   get error() { return this.cartService.error; }
   get loading() { return this.uiStateService.loading; }
+  readonly itemMessage = signal<{ type: 'success' | 'error'; message: string } | null>(null);
+  readonly invalidModifierGroupIds = signal<Record<string, string[]>>({});
+  private itemMessageTimeout: number | null = null;
+  private itemMessageHovered = false;
   get menuLoading() { return this.uiStateService.menuLoading; }
   get cartOpen() { return this.cartService.cartOpen; }
   get checkoutStep() { return this.cartService.checkoutStep; }
@@ -260,6 +264,16 @@ export class LandingComponent implements OnInit {
 
   toggleModifier(item: any, group: any, option: any) {
     this.cartFlowService.toggleModifier(item, group, option);
+
+    const missingGroups = this.getMissingRequiredModifierGroupIds(item);
+    if (missingGroups.length === 0) {
+      this.clearInvalidModifierGroups(item);
+    } else {
+      this.invalidModifierGroupIds.update((current) => ({
+        ...current,
+        [String(item.id)]: missingGroups
+      }));
+    }
   }
 
   getItemDisplayPrice(item: any): number {
@@ -271,19 +285,96 @@ export class LandingComponent implements OnInit {
   }
 
   addToCart(item: any) {
-    this.cartFlowService.addToCart(item, (entry) => this.getItemDisplayPrice(entry));
+    const result = this.cartFlowService.addToCart(item, (entry) => this.getItemDisplayPrice(entry));
+    const itemId = String(item.id);
+
+    if (result) {
+      const message = this.t(result.messageKey);
+      this.showItemMessage(result.type, message);
+
+      if (result.messageKey === 'LANDING.ERRORS.MODIFIER_SELECTION_REQUIRED') {
+        this.invalidModifierGroupIds.update((current) => ({
+          ...current,
+          [itemId]: this.getMissingRequiredModifierGroupIds(item)
+        }));
+      } else {
+        this.clearInvalidModifierGroups(item);
+      }
+    }
   }
 
-  updateQuantity(itemId: number, delta: number) {
-    this.cartFlowService.updateQuantity(itemId, delta);
+  isModifierGroupInvalid(item: any, group: any) {
+    return this.invalidModifierGroupIds()[String(item.id)]?.includes(group.id);
   }
 
-  updateNotes(itemId: number, notes: string) {
-    this.cartFlowService.updateNotes(itemId, notes);
+  private getMissingRequiredModifierGroupIds(item: any): string[] {
+    const groups = this.getActiveModifierGroups(item) || [];
+    return groups
+      .filter((group: any) => group.required && !(item.selectedModifiers || []).some((selection: any) => selection.groupId === group.id && selection.optionId))
+      .map((group: any) => group.id);
   }
 
-  removeFromCart(itemId: number) {
-    this.cartFlowService.removeFromCart(itemId);
+  private clearInvalidModifierGroups(item: any) {
+    const { [String(item.id)]: removed, ...rest } = this.invalidModifierGroupIds();
+    this.invalidModifierGroupIds.set(rest);
+  }
+
+  showItemMessage(type: 'success' | 'error', message: string) {
+    if (this.itemMessageTimeout) {
+      window.clearTimeout(this.itemMessageTimeout);
+      this.itemMessageTimeout = null;
+    }
+
+    this.itemMessage.set({ type, message });
+    this.scheduleItemMessageClear();
+  }
+
+  hideItemMessage() {
+    if (this.itemMessageTimeout) {
+      window.clearTimeout(this.itemMessageTimeout);
+      this.itemMessageTimeout = null;
+    }
+    this.itemMessage.set(null);
+  }
+
+  private scheduleItemMessageClear() {
+    if (this.itemMessageHovered) {
+      return;
+    }
+
+    if (this.itemMessageTimeout) {
+      window.clearTimeout(this.itemMessageTimeout);
+    }
+
+    this.itemMessageTimeout = window.setTimeout(() => {
+      this.itemMessage.set(null);
+      this.itemMessageTimeout = null;
+    }, 2200);
+  }
+
+  onItemMessageMouseEnter() {
+    this.itemMessageHovered = true;
+    if (this.itemMessageTimeout) {
+      window.clearTimeout(this.itemMessageTimeout);
+      this.itemMessageTimeout = null;
+    }
+  }
+
+  onItemMessageMouseLeave() {
+    this.itemMessageHovered = false;
+    this.scheduleItemMessageClear();
+  }
+
+  updateQuantity(entryId: number, delta: number) {
+    this.cartFlowService.updateQuantity(entryId, delta);
+  }
+
+  updateNotes(entryId: number, notes: string) {
+    this.cartFlowService.updateNotes(entryId, notes);
+  }
+
+  removeFromCart(entryId: number) {
+    this.cartFlowService.removeFromCart(entryId);
   }
 
   continueToCheckout() {

@@ -67,6 +67,35 @@
 
 .helper-text { margin-top:0.75rem; color:#b91c1c; font-weight:500; }
 
+.item-toast-wrapper {
+  position:fixed;
+  top:4.5rem;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:999;
+  display:flex;
+  justify-content:center;
+  pointer-events:auto;
+  width:100%;
+  padding:0 1rem;
+}
+.item-toast {
+  max-width:clamp(260px, 45vw, 520px);
+  width:100%;
+  padding:0.85rem 1rem;
+  border-radius:999px;
+  font-weight:700;
+  color:white;
+  box-shadow:0 16px 30px rgba(15,23,42,0.16);
+  animation:toastFadeIn 220ms ease-out;
+}
+.item-toast.success { background:#047857; }
+.item-toast.error { background:#b91c1c; }
+@keyframes toastFadeIn {
+  from { opacity:0; transform:translateY(-8px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
 /* Restaurant Selector Card (Stage 1 & 2) */
 .restaurant-selector-card {
   background:white; 
@@ -386,6 +415,8 @@
 .size-price { font-weight:700; }
 .modifier-groups { display:grid; gap:0.6rem; margin-top:0.6rem; }
 .modifier-group { display:grid; gap:0.4rem; }
+.modifier-group.invalid { border:1px solid #dc2626; background:rgba(254,226,226,0.45); border-radius:16px; padding:0.45rem; animation: pulse-danger 1.6s ease-in-out infinite alternate; }
+.modifier-group.invalid .modifier-group-title { color:#991b1b; }
 .modifier-group-title { font-size:0.8rem; font-weight:700; color:#7c2d12; }
 .modifier-options { display:flex; flex-wrap:wrap; gap:0.45rem; }
 .modifier-chip { display:inline-flex; align-items:center; gap:0.35rem; border:1px solid #f59e0b; border-radius:999px; padding:0.35rem 0.65rem; background:#fff7ed; color:#7c2d12; font-size:0.8rem; cursor:pointer; }
@@ -408,6 +439,7 @@
 .cart-item-variant { color:#6b7280; font-size:0.85rem; margin-top:0.15rem; }
 .cart-item-price { color:#b45309; font-size:0.95rem; }
 .cart-item textarea, .checkout-form input, .checkout-form textarea { width:100%; border:1px solid #f3d8bf; border-radius:10px; padding:0.7rem; margin-top:0.55rem; box-sizing:border-box; font:inherit; }
+@keyframes pulse-danger { from { box-shadow: 0 0 0 0 rgba(220,38,38,0.25); } to { box-shadow: 0 0 0 16px rgba(220,38,38,0); } }
 .text-link { background:none; color:#b45309; padding:0; margin-top:0.4rem; cursor:pointer; transition:color 200ms ease; }
 .text-link:hover { color:#9a2c0f; }
 

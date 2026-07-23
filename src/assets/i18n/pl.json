@@ -93,7 +93,8 @@
       "NOTES_PLACEHOLDER": "Dodaj notatki do tej pozycji",
       "REMOVE": "Usuń",
       "ADD": "Dodaj do koszyka",
-      "CONTINUE": "Kontynuuj zamówienie"
+      "CONTINUE": "Kontynuuj zamówienie",
+      "ADDED_SUCCESS": "Produkt został pomyślnie dodany do koszyka."
     },
     "CHECKOUT": {
       "STEPS": {
@@ -156,6 +157,7 @@
       "MENU_UNAVAILABLE": "Menu jest chwilowo niedostępne.",
       "CART_EMPTY": "Twój koszyk jest pusty. Dodaj danie, aby kontynuować.",
       "PHONE_REQUIRED": "Numer telefonu jest wymagany do złożenia zamówienia.",
+      "MODIFIER_SELECTION_REQUIRED": "Wybierz wymagane opcje modyfikatora przed dodaniem pozycji do koszyka.",
       "ORDER_PLACE_FAILED": "Nie można złożyć zamówienia."
     }
   },

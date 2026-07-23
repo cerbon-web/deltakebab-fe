@@ -15,20 +15,24 @@ export class LandingCartService {
   }
 
   addToCart(item: any, unitPrice: number, selectedSize?: { id?: string; name?: string } | null, selectedModifiers: Array<any> = []) {
-    const normalizedModifiers = (selectedModifiers || []).map((modifier) => ({
-      groupId: modifier.groupId,
-      groupName: modifier.groupName,
-      optionId: modifier.optionId,
-      name: modifier.name,
-      price: Number(modifier.price ?? 0)
-    }));
+    const normalizedModifiers = this.normalizeModifiers(selectedModifiers);
 
-    const existing = this.cart().find((entry) => entry.itemId === item.id && entry.notes === '' && entry.sizeName === selectedSize?.name && JSON.stringify(entry.modifiers || []) === JSON.stringify(normalizedModifiers));
+    const existing = this.cart().find((entry) =>
+      entry.itemId === item.id &&
+      entry.notes === '' &&
+      entry.sizeName === selectedSize?.name &&
+      this.areModifiersEqual(this.normalizeModifiers(entry.modifiers || []), normalizedModifiers)
+    );
 
     if (existing) {
-      this.cart.set(this.cart().map((entry) => entry.itemId === item.id && entry.notes === '' && entry.sizeName === selectedSize?.name && JSON.stringify(entry.modifiers || []) === JSON.stringify(normalizedModifiers)
-        ? { ...entry, quantity: entry.quantity + 1 }
-        : entry));
+      this.cart.set(this.cart().map((entry) =>
+        entry.itemId === item.id &&
+        entry.notes === '' &&
+        entry.sizeName === selectedSize?.name &&
+        this.areModifiersEqual(this.normalizeModifiers(entry.modifiers || []), normalizedModifiers)
+          ? { ...entry, quantity: entry.quantity + 1 }
+          : entry
+      ));
       return;
     }
 
@@ -48,9 +52,39 @@ export class LandingCartService {
     ]);
   }
 
-  updateQuantity(itemId: number, delta: number) {
+  private normalizeModifiers(modifiers: Array<any> = []) {
+    return (modifiers || [])
+      .map((modifier) => ({
+        groupId: modifier.groupId,
+        groupName: modifier.groupName,
+        optionId: modifier.optionId,
+        name: modifier.name,
+        price: Number(modifier.price ?? 0)
+      }))
+      .sort((a, b) => {
+        if (a.groupId !== b.groupId) {
+          return String(a.groupId).localeCompare(String(b.groupId));
+        }
+        return String(a.optionId).localeCompare(String(b.optionId));
+      });
+  }
+
+  private areModifiersEqual(a: Array<any>, b: Array<any>) {
+    if (a.length !== b.length) {
+      return false;
+    }
+
+    return a.every((modifier, index) =>
+      modifier.groupId === b[index].groupId &&
+      modifier.optionId === b[index].optionId &&
+      modifier.name === b[index].name &&
+      modifier.price === b[index].price
+    );
+  }
+
+  updateQuantity(entryId: number, delta: number) {
     this.cart.set(this.cart().flatMap((entry) => {
-      if (entry.itemId !== itemId) {
+      if (entry.id !== entryId) {
         return [entry];
       }
 
@@ -59,12 +93,12 @@ export class LandingCartService {
     }));
   }
 
-  updateNotes(itemId: number, notes: string) {
-    this.cart.set(this.cart().map((entry) => entry.itemId === itemId ? { ...entry, notes } : entry));
+  updateNotes(entryId: number, notes: string) {
+    this.cart.set(this.cart().map((entry) => entry.id === entryId ? { ...entry, notes } : entry));
   }
 
-  removeFromCart(itemId: number) {
-    this.cart.set(this.cart().filter((entry) => entry.itemId !== itemId));
+  removeFromCart(entryId: number) {
+    this.cart.set(this.cart().filter((entry) => entry.id !== entryId));
   }
 
   beginCheckout() {

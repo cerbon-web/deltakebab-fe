@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { LandingCartService } from './landing-cart.service';
 import { LandingCheckoutFormService } from './landing-checkout-form.service';
 import { LandingMenuStateService } from './landing-menu-state.service';
@@ -17,20 +18,62 @@ export class LandingCartFlowService {
     private landingOrderService: LandingOrderService,
     private dataFlowService: LandingDataFlowService,
     private selectionService: LandingSelectionService,
-    private uiStateService: LandingUiStateService
+    private uiStateService: LandingUiStateService,
+    private translate: TranslateService
   ) {}
 
   addToCart(item: MenuItem, getItemDisplayPrice: (item: MenuItem) => number) {
+    if (this.hasMissingRequiredSelection(item)) {
+      return {
+        success: false,
+        type: 'error' as const,
+        messageKey: 'LANDING.ERRORS.MODIFIER_SELECTION_REQUIRED'
+      };
+    }
+
     const selectedSize = item.sizes?.length
       ? item.sizes.find((size) => size.id === item.selectedSizeId) || item.sizes[0]
       : null;
     const selectedModifiers = this.menuStateService.buildSelectedModifiers(item, null, item.selectedModifiers || []);
     const unitPrice = getItemDisplayPrice(item);
     this.cartService.addToCart(item, unitPrice, selectedSize, selectedModifiers);
+
+    return {
+      success: true,
+      type: 'success' as const,
+      messageKey: 'LANDING.CART.ADDED_SUCCESS'
+    };
   }
 
-  toggleModifier(item: MenuItem, group: { id: string; name: string; maxSelections?: number }, option: { id?: string; name: string; price?: number | string }, getItemDisplayPrice?: (item: MenuItem) => number) {
-    const nextSelections = this.menuStateService.toggleModifier(item.id, group.id, option as any, group.maxSelections ?? 1, item.selectedModifiers || []);
+  private getSelectedSize(item: MenuItem) {
+    return item.sizes?.length
+      ? item.sizes.find((size) => size.id === item.selectedSizeId) || item.sizes[0]
+      : null;
+  }
+
+  private getActiveModifierGroups(item: MenuItem) {
+    const selectedSize = this.getSelectedSize(item);
+    return selectedSize?.modifierGroups?.length ? selectedSize.modifierGroups : item.modifierGroups || [];
+  }
+
+  private hasMissingRequiredSelection(item: MenuItem) {
+    const selectedModifiers = item.selectedModifiers || [];
+
+    return this.getActiveModifierGroups(item).some((group) =>
+      group.required && (group.maxSelections ?? 1) <= 1 &&
+      !selectedModifiers.some((selection) => selection.groupId === group.id && selection.optionId)
+    );
+  }
+
+  toggleModifier(item: MenuItem, group: { id: string; name: string; maxSelections?: number; required?: boolean }, option: { id?: string; name?: string; price?: number | string }, getItemDisplayPrice?: (item: MenuItem) => number) {
+    const nextSelections = this.menuStateService.toggleModifier(
+      item.id,
+      group.id,
+      option as any,
+      group.maxSelections ?? 1,
+      item.selectedModifiers || [],
+      group.required ?? false
+    );
 
     this.menuStateService.updateMenuItem(item.id, {
       selectedModifiers: nextSelections.map((selection: any) => ({
@@ -45,16 +88,16 @@ export class LandingCartFlowService {
     return nextSelections;
   }
 
-  updateQuantity(itemId: number, delta: number) {
-    this.cartService.updateQuantity(itemId, delta);
+  updateQuantity(entryId: number, delta: number) {
+    this.cartService.updateQuantity(entryId, delta);
   }
 
-  updateNotes(itemId: number, notes: string) {
-    this.cartService.updateNotes(itemId, notes);
+  updateNotes(entryId: number, notes: string) {
+    this.cartService.updateNotes(entryId, notes);
   }
 
-  removeFromCart(itemId: number) {
-    this.cartService.removeFromCart(itemId);
+  removeFromCart(entryId: number) {
+    this.cartService.removeFromCart(entryId);
   }
 
   continueToCheckout(cartLength: number, translate: (key: string) => string) {

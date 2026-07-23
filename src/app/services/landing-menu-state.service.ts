@@ -19,35 +19,46 @@ export class LandingMenuStateService {
     this.updateMenuItem(itemId, { selectedSizeId: sizeId });
   }
 
-  toggleModifier(itemId: string | number, groupId: string, option: MenuModifierOption, maxSelections: number, existingSelections: Array<{ groupId: string; optionId?: string; name: string; price: number }> = []) {
-    const currentSelections = (existingSelections || []).filter((selected) => selected.groupId !== groupId);
-    const alreadySelected = currentSelections.some((selected) => selected.optionId === option.id);
+  toggleModifier(itemId: string | number, groupId: string, option: MenuModifierOption, maxSelections: number, existingSelections: Array<{ groupId: string; optionId?: string; name: string; price: number }> = [], required: boolean = false) {
+    const currentSelections = existingSelections || [];
+    const groupSelections = currentSelections.filter((selected) => selected.groupId === groupId);
+    const remainingSelections = currentSelections.filter((selected) => selected.groupId !== groupId);
+    const alreadySelected = groupSelections.some((selected) => selected.optionId === option.id);
 
     if (maxSelections <= 1) {
-      return alreadySelected
-        ? currentSelections
-        : [
-            ...currentSelections,
-            {
-              groupId,
-              optionId: option.id,
-              name: option.name,
-              price: Number(option.price ?? 0)
-            }
-          ];
+      if (alreadySelected) {
+        return required ? currentSelections : remainingSelections;
+      }
+
+      return [
+        ...remainingSelections,
+        {
+          groupId,
+          optionId: option.id,
+          name: option.name,
+          price: Number(option.price ?? 0)
+        }
+      ];
     }
 
-    return alreadySelected
-      ? currentSelections
-      : [
-          ...currentSelections,
-          {
-            groupId,
-            optionId: option.id,
-            name: option.name,
-            price: Number(option.price ?? 0)
-          }
-        ];
+    if (alreadySelected) {
+      return currentSelections.filter((selected) => !(selected.groupId === groupId && selected.optionId === option.id));
+    }
+
+    if (groupSelections.length >= maxSelections) {
+      return currentSelections;
+    }
+
+    return [
+      ...remainingSelections,
+      ...groupSelections,
+      {
+        groupId,
+        optionId: option.id,
+        name: option.name,
+        price: Number(option.price ?? 0)
+      }
+    ];
   }
 
   isModifierSelected(item: MenuItem, group: MenuModifierGroup, option: MenuModifierOption) {

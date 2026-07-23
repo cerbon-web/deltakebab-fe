@@ -1,4 +1,11 @@
 <main class="landing-shell">
+  <div class="item-toast-wrapper" *ngIf="itemMessage()"
+       (mouseenter)="onItemMessageMouseEnter()"
+       (mouseleave)="onItemMessageMouseLeave()">
+    <div class="item-toast" [class.success]="itemMessage()?.type === 'success'" [class.error]="itemMessage()?.type === 'error'">
+      {{ itemMessage()?.message }}
+    </div>
+  </div>
   <section class="hero-card" [class.collapsed]="selectedRestaurant() && !isSingleRestaurantMode()" *ngIf="shouldShowHero()">
     <div class="hero-copy">
       <p class="eyebrow">{{ 'LANDING.HERO.EYEBROW' | translate }}</p>
@@ -156,7 +163,7 @@
               </button>
             </div>
             <div class="modifier-groups" *ngIf="getActiveModifierGroups(item).length > 0">
-              <div class="modifier-group" *ngFor="let group of getActiveModifierGroups(item)">
+              <div class="modifier-group" *ngFor="let group of getActiveModifierGroups(item)" [class.invalid]="isModifierGroupInvalid(item, group)">
                 <div class="modifier-group-title">{{ group.name }}</div>
                 <div class="modifier-options">
                   <button
@@ -187,6 +194,8 @@
           <div class="cart-total">{{ cartTotal | currency:'PLN' }}</div>
         </div>
 
+        <div class="helper-text" *ngIf="error() && selectedBranch()">{{ error() }}</div>
+
         <div class="empty-state" *ngIf="cart().length === 0">
           <p>{{ 'LANDING.CART.EMPTY_TITLE' | translate }}</p>
           <p>{{ 'LANDING.CART.EMPTY_DESCRIPTION' | translate }}</p>
@@ -204,13 +213,13 @@
                 <div class="cart-item-price">{{ entry.price | currency:'PLN' }}</div>
               </div>
               <div class="quantity-controls">
-                <button (click)="updateQuantity(entry.itemId, -1)">−</button>
+                <button (click)="updateQuantity(entry.id, -1)">−</button>
                 <span>{{ entry.quantity }}</span>
-                <button (click)="updateQuantity(entry.itemId, 1)">+</button>
+                <button (click)="updateQuantity(entry.id, 1)">+</button>
               </div>
             </div>
-            <textarea [value]="entry.notes" (input)="updateNotes(entry.itemId, $any($event.target).value)" [attr.placeholder]="'LANDING.CART.NOTES_PLACEHOLDER' | translate"></textarea>
-            <button class="text-link" (click)="removeFromCart(entry.itemId)">{{ 'LANDING.CART.REMOVE' | translate }}</button>
+            <textarea [value]="entry.notes" (input)="updateNotes(entry.id, $any($event.target).value)" [attr.placeholder]="'LANDING.CART.NOTES_PLACEHOLDER' | translate"></textarea>
+            <button class="text-link" (click)="removeFromCart(entry.id)">{{ 'LANDING.CART.REMOVE' | translate }}</button>
           </div>
         </div>
 
