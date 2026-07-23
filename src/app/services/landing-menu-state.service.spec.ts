@@ -19,4 +19,14 @@ describe('LandingMenuStateService', () => {
     expect(selections.length).toBe(1);
     expect(selections[0].optionId).toBe('o-1');
   });
+
+  it('resets selected modifiers when a new size is selected', () => {
+    service.setMenuItems([{ id: 'item-1', name: 'Classic', sizes: [], modifierGroups: [], selectedModifiers: [{ groupId: 'group-1', optionId: 'o-1', name: 'Czosnkowy', price: 2 }] } as any]);
+
+    service.selectSize('item-1', 'size-2');
+
+    const item = service.menuItems()[0];
+    expect(item.selectedSizeId).toBe('size-2');
+    expect(item.selectedModifiers).toEqual([]);
+  });
 });

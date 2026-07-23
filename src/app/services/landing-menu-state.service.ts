@@ -16,7 +16,7 @@ export class LandingMenuStateService {
   }
 
   selectSize(itemId: string | number, sizeId: string) {
-    this.updateMenuItem(itemId, { selectedSizeId: sizeId });
+    this.updateMenuItem(itemId, { selectedSizeId: sizeId, selectedModifiers: [] });
   }
 
   toggleModifier(itemId: string | number, groupId: string, option: MenuModifierOption, maxSelections: number, existingSelections: Array<{ groupId: string; optionId?: string; name: string; price: number }> = [], required: boolean = false) {
