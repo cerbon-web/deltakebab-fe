@@ -55,7 +55,9 @@
     },
     "SELECT_RESTAURANT": {
       "TITLE": "Wybierz restaurację",
-      "SUBTITLE": "Wybierz z dostępnych restauracji w pobliżu"
+      "SUBTITLE": "Wybierz z dostępnych restauracji w pobliżu",
+      "FIND_NEAREST": "Znajdź najbliższą restaurację",
+      "FINDING": "Szukam najbliższej restauracji…"
     },
     "RESTAURANT_HEADER": {
       "LABEL": "Restauracja:",

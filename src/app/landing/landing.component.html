@@ -1,5 +1,5 @@
 <main class="landing-shell">
-  <section class="hero-card" [class.collapsed]="selectedRestaurant()" *ngIf="!selectedRestaurant() || !selectorCollapsed()">
+  <section class="hero-card" [class.collapsed]="selectedRestaurant() && !isSingleRestaurantMode()" *ngIf="shouldShowHero()">
     <div class="hero-copy">
       <p class="eyebrow">{{ 'LANDING.HERO.EYEBROW' | translate }}</p>
       <h1>{{ 'LANDING.HERO.TITLE' | translate }}</h1>
@@ -14,11 +14,19 @@
     </div>
   </section>
 
-  <section class="restaurant-selector-card" *ngIf="!selectedBranch()" [class.expanded]="!selectedRestaurant()" [class.collapsed]="selectedRestaurant()">
-    <div *ngIf="!selectedRestaurant() && restaurants().length > 0" class="selector-content">
+  <section class="restaurant-selector-card" *ngIf="shouldShowRestaurantSelector()" [class.expanded]="!selectedRestaurant()" [class.collapsed]="selectedRestaurant()">
+    <div *ngIf="!selectedRestaurant()" class="selector-content">
       <h2>{{ 'LANDING.SELECT_RESTAURANT.TITLE' | translate }}</h2>
       <p class="selector-subtitle">{{ 'LANDING.SELECT_RESTAURANT.SUBTITLE' | translate }}</p>
-      <div class="restaurant-buttons">
+
+      <div class="branch-actions">
+        <button class="secondary-btn" (click)="findNearestRestaurant()" [disabled]="loading()">
+          <span *ngIf="!loading()">🔍 {{ 'LANDING.SELECT_RESTAURANT.FIND_NEAREST' | translate }}</span>
+          <span *ngIf="loading()">{{ 'LANDING.SELECT_RESTAURANT.FINDING' | translate }}</span>
+        </button>
+      </div>
+
+      <div *ngIf="restaurants().length > 0" class="restaurant-buttons">
         <button
           class="restaurant-btn"
           *ngFor="let restaurant of restaurants()"
@@ -31,7 +39,7 @@
       </div>
     </div>
 
-    <div *ngIf="selectedRestaurant() && !selectorCollapsed()" class="restaurant-header-compact">
+    <div *ngIf="shouldShowCompactRestaurantHeader()" class="restaurant-header-compact">
       <div class="header-info">
         <span class="header-label">{{ 'LANDING.RESTAURANT_HEADER.LABEL' | translate }}</span>
         <span class="header-value">{{ selectedRestaurant()?.name }}</span>
@@ -40,7 +48,7 @@
     </div>
   </section>
 
-  <section class="branch-selector-card" *ngIf="selectedRestaurant() && !selectedBranch()" [class.enter]="selectedRestaurant()">
+  <section class="branch-selector-card" *ngIf="shouldShowBranchSelector()" [class.enter]="selectedRestaurant()">
     <div class="branch-header">
       <div class="branch-title-group">
         <h2>{{ 'LANDING.SELECT_BRANCH.TITLE' | translate }}</h2>
@@ -137,7 +145,7 @@
               <span class="price-pill">{{ getItemDisplayPrice(item) | currency:'PLN' }}</span>
             </div>
             <p class="product-description">{{ item.ingredients }}</p>
-            <div class="size-options" *ngIf="item.sizes?.length > 1">
+            <div class="size-options" *ngIf="item.sizes.length > 1">
               <button
                 class="size-chip"
                 *ngFor="let size of item.sizes"

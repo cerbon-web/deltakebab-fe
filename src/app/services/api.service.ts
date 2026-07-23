@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../environments/environment';
+import { CreateOrderPayload, CreateOrderResponse, MenuResponse, Restaurant } from '../types/domain';
 
 export interface HealthResponse {
   status: string;
@@ -22,26 +23,26 @@ export class ApiService {
     );
   }
 
-  getRestaurants(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/restaurants`).pipe(
+  getRestaurants(): Observable<Restaurant[]> {
+    return this.http.get<Restaurant[]>(`${this.baseUrl}/restaurants`).pipe(
       catchError((error) => this.handleError(error))
     );
   }
 
-  getNearestRestaurants(lat: number, lng: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/restaurants/nearest?lat=${lat}&lng=${lng}`).pipe(
+  getNearestRestaurants(lat: number, lng: number): Observable<Restaurant[]> {
+    return this.http.get<Restaurant[]>(`${this.baseUrl}/restaurants/nearest?lat=${lat}&lng=${lng}`).pipe(
       catchError((error) => this.handleError(error))
     );
   }
 
-  getMenu(branchId: string | number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/menu/${branchId}`).pipe(
+  getMenu(branchId: string | number): Observable<MenuResponse> {
+    return this.http.get<MenuResponse>(`${this.baseUrl}/menu/${branchId}`).pipe(
       catchError((error) => this.handleError(error))
     );
   }
 
-  createOrder(payload: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/orders`, payload).pipe(
+  createOrder(payload: CreateOrderPayload): Observable<CreateOrderResponse> {
+    return this.http.post<CreateOrderResponse>(`${this.baseUrl}/orders`, payload).pipe(
       catchError((error) => this.handleError(error))
     );
   }

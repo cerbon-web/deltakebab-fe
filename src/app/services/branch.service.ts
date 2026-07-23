@@ -2,17 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
-
-export interface Branch {
-  id: string;
-  name: string;
-  address?: string;
-  city?: string;
-  latitude?: number;
-  longitude?: number;
-  openingHours?: string;
-  restaurantId?: string;
-}
+import { Branch, Restaurant } from '../types/domain';
 
 /*
   BranchService now loads branches from the backend `/restaurants` endpoint
@@ -24,14 +14,14 @@ export class BranchService {
   constructor(private http: HttpClient) {}
 
   getBranches(): Observable<Branch[]> {
-    return this.http.get<any[]>(this.url).pipe(
-      map((restaurants) => restaurants.flatMap((r: any) =>
-        (r.branches || []).map((b: any) => ({
-          ...b,
-          id: b.id,
-          name: b.name || `${r.name} - ${b.city || b.street || ''}`,
-          address: [b.street, b.buildingNumber, b.postalCode, b.city].filter(Boolean).join(', '),
-          restaurantId: r.id
+    return this.http.get<Restaurant[]>(this.url).pipe(
+      map((restaurants) => restaurants.flatMap((restaurant) =>
+        (restaurant.branches || []).map((branch) => ({
+          ...branch,
+          id: branch.id,
+          name: branch.name || `${restaurant.name} - ${branch.city || branch.street || ''}`,
+          address: [branch.street, branch.buildingNumber, branch.postalCode, branch.city].filter(Boolean).join(', '),
+          restaurantId: restaurant.id
         }))
       ))
     );

@@ -55,7 +55,9 @@
     },
     "SELECT_RESTAURANT": {
       "TITLE": "Select a restaurant",
-      "SUBTITLE": "Choose from available restaurants near you"
+      "SUBTITLE": "Choose from available restaurants near you",
+      "FIND_NEAREST": "Find nearest restaurant",
+      "FINDING": "Finding nearest restaurant…"
     },
     "RESTAURANT_HEADER": {
       "LABEL": "Restaurant:",

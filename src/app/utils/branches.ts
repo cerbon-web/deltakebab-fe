@@ -1,4 +1,4 @@
-import { Branch } from '../services/branch.service';
+import { Branch } from '../types/domain';
 
 /**
  * Sort branches by city (or name) then by name — stable, reusable comparator.
