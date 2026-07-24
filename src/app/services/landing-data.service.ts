@@ -82,9 +82,8 @@ export class LandingDataService {
         price: Number(item.price ?? item.basePrice ?? item.sizes?.[0]?.price ?? 0),
         ingredients: item.description ?? ''
       }))
-    ).map((item: any) => ({
-      ...item,
-      sizes: (item.sizes || []).map((size: any) => ({
+    ).map((item: any) => {
+      const normalizedSizes = (item.sizes || []).map((size: any) => ({
         id: size.id,
         name: size.name ?? size.sizeOption?.name ?? '',
         price: Number(size.price ?? 0),
@@ -93,22 +92,45 @@ export class LandingDataService {
           ...group,
           options: (group.options || []).map((option: any) => ({
             ...option,
-            price: Number(option.price ?? 0)
+            price: Number(option.price ?? 0),
+            defaultSelected: Boolean(option.defaultSelected)
           }))
         }))
-      })),
-      modifierGroups: (item.modifierGroups || []).map((group: any) => ({
+      }));
+
+      const normalizedItemModifierGroups = (item.modifierGroups || []).map((group: any) => ({
         ...group,
         options: (group.options || []).map((option: any) => ({
           ...option,
-          price: Number(option.price ?? 0)
+          price: Number(option.price ?? 0),
+          defaultSelected: Boolean(option.defaultSelected)
         }))
-      })),
-      selectedSizeId: item.sizes?.[0]?.id ?? null,
-      selectedModifiers: [],
-      price: Number((item.sizes || []).find((size: any) => size.id === item.selectedSizeId)?.price ?? item.price ?? item.basePrice ?? 0),
-      ingredients: item.ingredients ?? item.description ?? ''
-    }));
+      }));
+
+      const initialSelectedSizeId = normalizedSizes?.[0]?.id ?? null;
+      const initialSelectedSize = normalizedSizes.find((size: any) => size.id === initialSelectedSizeId) || null;
+      const initialDefaultSelections = (initialSelectedSize?.modifierGroups || normalizedItemModifierGroups || [])
+        .flatMap((group: any) => {
+          const defaultOptions = (group.options || []).filter((option: any) => option.defaultSelected);
+          return defaultOptions.map((option: any) => ({
+            groupId: group.id,
+            groupName: group.name,
+            optionId: option.id,
+            name: option.name,
+            price: Number(option.price ?? 0)
+          }));
+        });
+
+      return {
+        ...item,
+        sizes: normalizedSizes,
+        modifierGroups: normalizedItemModifierGroups,
+        selectedSizeId: initialSelectedSizeId,
+        selectedModifiers: initialDefaultSelections,
+        price: Number((normalizedSizes || []).find((size: any) => size.id === initialSelectedSizeId)?.price ?? item.price ?? item.basePrice ?? 0),
+        ingredients: item.ingredients ?? item.description ?? ''
+      };
+    });
 
     return { categories, items } as { categories: MenuCategory[]; items: MenuItem[] };
   }

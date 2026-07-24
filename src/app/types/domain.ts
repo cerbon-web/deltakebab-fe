@@ -47,6 +47,7 @@ export interface MenuModifierOption {
   id: string;
   name: string;
   price: number;
+  defaultSelected?: boolean;
 }
 
 export interface MenuModifierGroup {

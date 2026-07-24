@@ -16,7 +16,31 @@ export class LandingMenuStateService {
   }
 
   selectSize(itemId: string | number, sizeId: string) {
-    this.updateMenuItem(itemId, { selectedSizeId: sizeId, selectedModifiers: [] });
+    const items = this.menuItems();
+    const item = items.find((entry) => entry.id === itemId);
+    const size = item?.sizes?.find((entry) => entry.id === sizeId);
+    const defaultSelections = (size?.modifierGroups || item?.modifierGroups || [])
+      .flatMap((group: MenuModifierGroup) => {
+        const defaultOptions = (group.options || []).filter((option) => option.defaultSelected);
+        const selectedOptions = defaultOptions.length > 0
+          ? defaultOptions
+          : (group.maxSelections ?? 1) <= 1 && (group.options || []).length > 0
+            ? [(group.options || [])[0]]
+            : [];
+
+        return selectedOptions.map((option) => ({
+          groupId: group.id,
+          groupName: group.name,
+          optionId: option.id,
+          name: option.name,
+          price: Number(option.price ?? 0)
+        }));
+      });
+
+    this.updateMenuItem(itemId, {
+      selectedSizeId: sizeId,
+      selectedModifiers: defaultSelections
+    });
   }
 
   toggleModifier(itemId: string | number, groupId: string, option: MenuModifierOption, maxSelections: number, existingSelections: Array<{ groupId: string; optionId?: string; name: string; price: number }> = [], required: boolean = false) {
