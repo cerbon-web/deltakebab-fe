@@ -14,22 +14,16 @@ export class LandingCartService {
     return this.cart().reduce((sum, item) => sum + item.price * item.quantity, 0);
   }
 
-  addToCart(item: any, unitPrice: number, selectedSize?: { id?: string; name?: string } | null, selectedModifiers: Array<any> = []) {
+  addToCart(item: any, unitPrice: number, selectedSize?: { id?: string; name?: string } | null, selectedModifiers: Array<any> = [], branchId?: string | number | null) {
     const normalizedModifiers = this.normalizeModifiers(selectedModifiers);
 
     const existing = this.cart().find((entry) =>
-      entry.itemId === item.id &&
-      entry.notes === '' &&
-      entry.sizeName === selectedSize?.name &&
-      this.areModifiersEqual(this.normalizeModifiers(entry.modifiers || []), normalizedModifiers)
+      this.isSameCartItem(entry, item, selectedSize, normalizedModifiers, branchId)
     );
 
     if (existing) {
       this.cart.set(this.cart().map((entry) =>
-        entry.itemId === item.id &&
-        entry.notes === '' &&
-        entry.sizeName === selectedSize?.name &&
-        this.areModifiersEqual(this.normalizeModifiers(entry.modifiers || []), normalizedModifiers)
+        this.isSameCartItem(entry, item, selectedSize, normalizedModifiers, branchId)
           ? { ...entry, quantity: entry.quantity + 1 }
           : entry
       ));
@@ -44,6 +38,7 @@ export class LandingCartService {
         name: item.name,
         sizeName: selectedSize?.name,
         sizeId: selectedSize?.id,
+        branchId,
         modifiers: normalizedModifiers,
         price: unitPrice,
         quantity: 1,
@@ -65,8 +60,22 @@ export class LandingCartService {
         if (a.groupId !== b.groupId) {
           return String(a.groupId).localeCompare(String(b.groupId));
         }
-        return String(a.optionId).localeCompare(String(b.optionId));
+        return String(a.optionId ?? '').localeCompare(String(b.optionId ?? ''));
       });
+  }
+
+  private isSameCartItem(entry: any, item: any, selectedSize?: { id?: string; name?: string } | null, normalizedModifiers: Array<any> = [], branchId?: string | number | null) {
+    const entrySizeKey = entry.sizeId ?? null;
+    const incomingSizeKey = selectedSize?.id ?? null;
+    const entryBranchKey = entry.branchId ?? null;
+    const incomingBranchKey = branchId ?? null;
+    const sameBranch = entryBranchKey === incomingBranchKey || entryBranchKey === null || incomingBranchKey === null;
+
+    return entry.itemId === item.id &&
+      entry.notes === '' &&
+      sameBranch &&
+      entrySizeKey === incomingSizeKey &&
+      this.areModifiersEqual(this.normalizeModifiers(entry.modifiers || []), normalizedModifiers);
   }
 
   private areModifiersEqual(a: Array<any>, b: Array<any>) {
@@ -76,10 +85,23 @@ export class LandingCartService {
 
     return a.every((modifier, index) =>
       modifier.groupId === b[index].groupId &&
-      modifier.optionId === b[index].optionId &&
-      modifier.name === b[index].name &&
-      modifier.price === b[index].price
+      modifier.optionId === b[index].optionId
     );
+  }
+
+  hasIncompatibleBranchItems(targetBranchId?: string | number | null): boolean {
+    if (!this.cart().length) {
+      return false;
+    }
+
+    return this.cart().some((entry) => {
+      const entryBranchId = entry.branchId ?? null;
+      return entryBranchId !== null && entryBranchId !== targetBranchId;
+    });
+  }
+
+  clearCart() {
+    this.cart.set([]);
   }
 
   updateQuantity(entryId: number, delta: number) {

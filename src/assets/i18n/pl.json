@@ -94,7 +94,8 @@
       "REMOVE": "Usuń",
       "ADD": "Dodaj do koszyka",
       "CONTINUE": "Kontynuuj zamówienie",
-      "ADDED_SUCCESS": "Produkt został pomyślnie dodany do koszyka."
+      "ADDED_SUCCESS": "Produkt został pomyślnie dodany do koszyka.",
+      "CLEAR_BRANCH_SWITCH_CONFIRM": "Twój koszyk zawiera produkty z innego oddziału. Wyczyścić koszyk i przełączyć oddział?"
     },
     "CHECKOUT": {
       "STEPS": {

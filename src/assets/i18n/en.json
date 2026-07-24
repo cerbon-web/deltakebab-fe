@@ -94,7 +94,8 @@
       "REMOVE": "Remove",
       "ADD": "Add to cart",
       "CONTINUE": "Continue order",
-      "ADDED_SUCCESS": "Item added to cart successfully."
+      "ADDED_SUCCESS": "Item added to cart successfully.",
+      "CLEAR_BRANCH_SWITCH_CONFIRM": "Your cart contains items from another branch. Clear the cart and switch branches?"
     },
     "CHECKOUT": {
       "STEPS": {

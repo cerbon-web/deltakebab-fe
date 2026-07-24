@@ -37,6 +37,7 @@ export interface CartItem {
   name: string;
   sizeName?: string;
   sizeId?: string;
+  branchId?: string | number | null;
   modifiers?: CartModifier[];
   price: number;
   quantity: number;

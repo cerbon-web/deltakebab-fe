@@ -127,106 +127,154 @@
   </section>
 
   <section class="menu-stage" *ngIf="selectedBranch()" [class.enter]="selectedBranch()">
-    <div class="menu-column">
-      <div class="section-title">
-        <h3>{{ 'LANDING.MENU.TITLE' | translate }}</h3>
-        <p>{{ 'LANDING.MENU.SUBTITLE' | translate }}</p>
-      </div>
-
-      <div class="category-row" *ngIf="categories().length > 0">
-        <button class="category-chip" *ngFor="let category of categories()" [class.active]="selectedCategory() === category.name" (click)="chooseCategory(category.name)">
-          {{ category.name }}
-        </button>
-      </div>
-
-      <div class="menu-loading" *ngIf="menuLoading()">
-        <mat-progress-spinner diameter="24" mode="indeterminate"></mat-progress-spinner>
-        <span>{{ 'LANDING.MENU.LOADING' | translate }}</span>
-      </div>
-
-      <div class="products-grid" *ngIf="!menuLoading() && filteredMenuItems.length > 0">
-        <article class="product-card" *ngFor="let item of filteredMenuItems">
-          <div class="product-content">
-            <div class="product-title-row">
-              <h4>{{ item.name }}</h4>
-              <span class="price-pill">{{ getItemDisplayPrice(item) | currency:'PLN' }}</span>
-            </div>
-            <p class="product-description">{{ item.ingredients }}</p>
-            <div class="size-options" *ngIf="item.sizes.length > 1">
-              <button
-                class="size-chip"
-                *ngFor="let size of item.sizes"
-                [class.active]="(item.selectedSizeId || item.sizes[0].id) === size.id"
-                (click)="selectItemSize(item, size.id)">
-                <span>{{ size.name }}</span>
-                <span class="size-price">{{ size.price | currency:'PLN' }}</span>
-              </button>
-            </div>
-            <div class="modifier-groups" *ngIf="getActiveModifierGroups(item).length > 0">
-              <div class="modifier-group" *ngFor="let group of getActiveModifierGroups(item)" [class.invalid]="isModifierGroupInvalid(item, group)">
-                <div class="modifier-group-title">{{ group.name }}</div>
-                <div class="modifier-options">
-                  <button
-                    class="modifier-chip"
-                    *ngFor="let option of group.options"
-                    [class.active]="isModifierSelected(item, group, option)"
-                    (click)="toggleModifier(item, group, option)">
-                    <span>{{ option.name }}</span>
-                    <span class="modifier-price" *ngIf="option.price > 0">+{{ option.price | currency:'PLN' }}</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <p class="availability-pill" *ngIf="item.available === false">{{ 'LANDING.MENU.UNAVAILABLE' | translate }}</p>
-          </div>
-          <button class="primary-btn small" (click)="addToCart(item)">{{ 'LANDING.CART.ADD' | translate }}</button>
-        </article>
-      </div>
+    <div class="order-tabs" role="tablist" aria-label="Ordering view">
+      <button class="order-tab" [class.active]="activeTab() === 'menu'" (click)="setActiveTab('menu')">
+        <span>{{ 'LANDING.MENU.TITLE' | translate }}</span>
+      </button>
+      <button class="order-tab" [class.active]="activeTab() === 'cart'" (click)="setActiveTab('cart')">
+        <span>{{ 'LANDING.CART.TITLE' | translate }}</span>
+        <span class="tab-badge" *ngIf="cart().length > 0">{{ cart().length }}</span>
+      </button>
     </div>
 
-    <aside class="cart-column">
-      <div class="cart-card">
-        <div class="cart-header">
-          <div>
-            <p class="eyebrow">{{ 'LANDING.CART.TITLE' | translate }}</p>
-            <h3>{{ cart().length }} {{ cart().length === 1 ? ('LANDING.CART.ITEM_SINGULAR' | translate) : ('LANDING.CART.ITEM_PLURAL' | translate) }}</h3>
+    <div class="menu-view-panels">
+      <div class="view-panel" [class.active]="activeTab() === 'menu'">
+        <div class="menu-column">
+          <div class="section-title">
+            <h3>{{ 'LANDING.MENU.TITLE' | translate }}</h3>
+            <p>{{ 'LANDING.MENU.SUBTITLE' | translate }}</p>
           </div>
-          <div class="cart-total">{{ cartTotal | currency:'PLN' }}</div>
-        </div>
 
-        <div class="helper-text" *ngIf="error() && selectedBranch()">{{ error() }}</div>
+          <div class="category-row" *ngIf="categories().length > 0">
+            <button class="category-chip" *ngFor="let category of categories()" [class.active]="selectedCategory() === category.name" (click)="chooseCategory(category.name)">
+              {{ category.name }}
+            </button>
+          </div>
 
-        <div class="empty-state" *ngIf="cart().length === 0">
-          <p>{{ 'LANDING.CART.EMPTY_TITLE' | translate }}</p>
-          <p>{{ 'LANDING.CART.EMPTY_DESCRIPTION' | translate }}</p>
-        </div>
+          <div class="menu-loading" *ngIf="menuLoading()">
+            <mat-progress-spinner diameter="24" mode="indeterminate"></mat-progress-spinner>
+            <span>{{ 'LANDING.MENU.LOADING' | translate }}</span>
+          </div>
 
-        <div class="cart-items" *ngIf="cart().length > 0">
-          <div class="cart-item" *ngFor="let entry of cart()">
-            <div class="cart-item-row">
-              <div>
-                <strong>{{ entry.name }}</strong>
-                <div *ngIf="entry.sizeName" class="cart-item-variant">{{ entry.sizeName }}</div>
-                <div class="cart-item-modifiers" *ngIf="entry.modifiers?.length">
-                  <span class="cart-item-modifier" *ngFor="let modifier of entry.modifiers">{{ modifier.name }}</span>
+          <div class="products-grid" *ngIf="!menuLoading() && filteredMenuItems.length > 0">
+            <article class="product-card" *ngFor="let item of filteredMenuItems">
+              <div class="product-content">
+                <div class="product-title-row">
+                  <h4>{{ item.name }}</h4>
+                  <span class="price-pill">{{ getItemDisplayPrice(item) | currency:'PLN' }}</span>
                 </div>
-                <div class="cart-item-price">{{ entry.price | currency:'PLN' }}</div>
+                <p class="product-description">{{ item.ingredients }}</p>
+
+                <div class="customization-sections">
+                  <div class="customization-section" *ngIf="item.sizes.length > 1">
+                    <div class="customization-title">Size</div>
+                    <div class="size-options">
+                      <button
+                        class="size-chip"
+                        *ngFor="let size of item.sizes"
+                        [class.active]="(item.selectedSizeId || item.sizes[0].id) === size.id"
+                        (click)="selectItemSize(item, size.id)">
+                        <span>{{ size.name }}</span>
+                        <span class="size-price">{{ size.price | currency:'PLN' }}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="customization-section modifier-section" *ngFor="let group of getActiveModifierGroups(item)" [class.invalid]="isModifierGroupInvalid(item, group)">
+                    <div class="customization-title">{{ getModifierSectionTitle(group) }}</div>
+                    <div class="modifier-options">
+                      <button
+                        class="modifier-chip"
+                        *ngFor="let option of group.options"
+                        [class.active]="isModifierSelected(item, group, option)"
+                        (click)="toggleModifier(item, group, option)">
+                        <span>{{ option.name }}</span>
+                        <span class="modifier-price" *ngIf="option.price > 0">+{{ option.price | currency:'PLN' }}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <p class="availability-pill" *ngIf="item.available === false">{{ 'LANDING.MENU.UNAVAILABLE' | translate }}</p>
               </div>
-              <div class="quantity-controls">
-                <button (click)="updateQuantity(entry.id, -1)">−</button>
-                <span>{{ entry.quantity }}</span>
-                <button (click)="updateQuantity(entry.id, 1)">+</button>
+
+              <div class="product-card-footer">
+                <div class="product-price-summary">
+                  <span class="product-price-summary-label">Current price</span>
+                  <span class="product-price-summary-value">{{ getItemDisplayPrice(item) | currency:'PLN' }}</span>
+                </div>
+                <button class="primary-btn small" (click)="addToCart(item)">{{ 'LANDING.CART.ADD' | translate }}</button>
               </div>
-            </div>
-            <textarea [value]="entry.notes" (input)="updateNotes(entry.id, $any($event.target).value)" [attr.placeholder]="'LANDING.CART.NOTES_PLACEHOLDER' | translate"></textarea>
-            <button class="text-link" (click)="removeFromCart(entry.id)">{{ 'LANDING.CART.REMOVE' | translate }}</button>
+            </article>
           </div>
         </div>
-
-        <button class="primary-btn full" (click)="continueToCheckout()" [disabled]="cart().length === 0">{{ 'LANDING.CART.CONTINUE' | translate }}</button>
       </div>
-    </aside>
+
+      <div class="view-panel" [class.active]="activeTab() === 'cart'">
+        <div class="cart-panel">
+          <div class="cart-panel-header">
+            <div>
+              <p class="eyebrow">{{ 'LANDING.CART.TITLE' | translate }}</p>
+              <h3>{{ cart().length }} {{ cart().length === 1 ? ('LANDING.CART.ITEM_SINGULAR' | translate) : ('LANDING.CART.ITEM_PLURAL' | translate) }}</h3>
+            </div>
+            <div class="cart-total">{{ cartTotal | currency:'PLN' }}</div>
+          </div>
+
+          <div class="helper-text" *ngIf="error() && selectedBranch()">{{ error() }}</div>
+
+          <div class="empty-state" *ngIf="cart().length === 0">
+            <p>{{ 'LANDING.CART.EMPTY_TITLE' | translate }}</p>
+            <p>{{ 'LANDING.CART.EMPTY_DESCRIPTION' | translate }}</p>
+          </div>
+
+          <div class="cart-items" *ngIf="cart().length > 0">
+            <div class="cart-item" *ngFor="let entry of cart()">
+              <div class="cart-item-row">
+                <div>
+                  <strong class="cart-item-name">{{ entry.name }}</strong>
+                  <div class="cart-item-price">{{ entry.price | currency:'PLN' }}</div>
+                </div>
+                <div class="quantity-controls">
+                  <button (click)="updateQuantity(entry.id, -1)">−</button>
+                  <span>{{ entry.quantity }}</span>
+                  <button (click)="updateQuantity(entry.id, 1)">+</button>
+                </div>
+              </div>
+
+              <div class="cart-item-details">
+                <div class="cart-detail-block" *ngIf="entry.sizeName">
+                  <span class="cart-detail-label">Size</span>
+                  <span class="cart-detail-value">{{ entry.sizeName }}</span>
+                </div>
+
+                <div class="cart-detail-block" *ngIf="entry.modifiers?.length">
+                  <span class="cart-detail-label">Selections</span>
+                  <div class="cart-detail-groups">
+                    <div class="cart-detail-group" *ngFor="let group of getCartModifierGroups(entry.modifiers)">
+                      <span class="cart-detail-group-label">{{ group.name }}</span>
+                      <ul class="cart-detail-list">
+                        <li *ngFor="let option of group.options">{{ option.name }}</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <textarea [value]="entry.notes" (input)="updateNotes(entry.id, $any($event.target).value)" [attr.placeholder]="'LANDING.CART.NOTES_PLACEHOLDER' | translate"></textarea>
+              <button class="text-link" (click)="removeFromCart(entry.id)">{{ 'LANDING.CART.REMOVE' | translate }}</button>
+            </div>
+          </div>
+
+          <button class="primary-btn full" (click)="continueToCheckout()" [disabled]="cart().length === 0">{{ 'LANDING.CART.CONTINUE' | translate }}</button>
+        </div>
+      </div>
+    </div>
   </section>
+
+  <button class="mobile-cart-fab" *ngIf="selectedBranch() && cart().length > 0" (click)="setActiveTab('cart')">
+    <span class="mobile-cart-fab-icon">🛒</span>
+    <span class="mobile-cart-fab-count">{{ cart().length }}</span>
+  </button>
 
   <section class="checkout-card" *ngIf="checkoutStep() !== 'menu' && selectedRestaurant() && selectedBranch()">
     <div class="checkout-stepper">

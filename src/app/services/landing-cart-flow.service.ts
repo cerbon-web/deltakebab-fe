@@ -36,7 +36,8 @@ export class LandingCartFlowService {
       : null;
     const selectedModifiers = this.menuStateService.buildSelectedModifiers(item, null, item.selectedModifiers || []);
     const unitPrice = getItemDisplayPrice(item);
-    this.cartService.addToCart(item, unitPrice, selectedSize, selectedModifiers);
+    const currentBranchId = this.selectionService.selectedBranch()?.id ?? null;
+    this.cartService.addToCart(item, unitPrice, selectedSize, selectedModifiers, currentBranchId);
 
     return {
       success: true,

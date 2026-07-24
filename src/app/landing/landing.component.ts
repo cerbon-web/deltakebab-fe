@@ -41,6 +41,7 @@ export class LandingComponent implements OnInit {
   get loading() { return this.uiStateService.loading; }
   readonly itemMessage = signal<{ type: 'success' | 'error'; message: string } | null>(null);
   readonly invalidModifierGroupIds = signal<Record<string, string[]>>({});
+  readonly activeTab = signal<'menu' | 'cart'>('menu');
   private itemMessageTimeout: number | null = null;
   private itemMessageHovered = false;
   get menuLoading() { return this.uiStateService.menuLoading; }
@@ -229,6 +230,30 @@ export class LandingComponent implements OnInit {
   }
 
   selectBranch(branch: any) {
+    const currentBranchId = this.selectedBranch()?.id;
+    const targetBranchId = branch?.id;
+
+    if (!branch || currentBranchId === targetBranchId) {
+      this.selectionService.selectBranch(branch);
+      if (branch) {
+        this.loadMenu(branch.id);
+      }
+      return;
+    }
+
+    const hasIncompatibleItems = this.cartService.hasIncompatibleBranchItems(targetBranchId);
+    if (!hasIncompatibleItems) {
+      this.selectionService.selectBranch(branch);
+      this.loadMenu(branch.id);
+      return;
+    }
+
+    const confirmed = window.confirm(this.t('LANDING.CART.CLEAR_BRANCH_SWITCH_CONFIRM'));
+    if (!confirmed) {
+      return;
+    }
+
+    this.cartService.clearCart();
     this.selectionService.selectBranch(branch);
     this.loadMenu(branch.id);
   }
@@ -278,6 +303,41 @@ export class LandingComponent implements OnInit {
 
   getItemDisplayPrice(item: any): number {
     return this.landingOrderService.getItemDisplayPrice(item);
+  }
+
+  getModifierSectionTitle(group: any): string {
+    const name = (group?.name || '').toLowerCase();
+    if (name.includes('size')) {
+      return 'Size';
+    }
+    if (name.includes('meat')) {
+      return 'Meat';
+    }
+    if (name.includes('sauce')) {
+      return 'Sauces';
+    }
+    if (name.includes('extra')) {
+      return 'Extras';
+    }
+    return group?.name || 'Options';
+  }
+
+  getCartModifierGroups(modifiers: Array<any> = []): Array<{ name: string; options: Array<any> }> {
+    const groups = new Map<string, Array<any>>();
+
+    (modifiers || []).forEach((modifier) => {
+      const groupName = modifier.groupName || 'Selections';
+      if (!groups.has(groupName)) {
+        groups.set(groupName, []);
+      }
+      groups.get(groupName)!.push(modifier);
+    });
+
+    return Array.from(groups.entries()).map(([name, options]) => ({ name, options }));
+  }
+
+  setActiveTab(tab: 'menu' | 'cart') {
+    this.activeTab.set(tab);
   }
 
   selectItemSize(item: any, sizeId: string) {
