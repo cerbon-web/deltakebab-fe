@@ -57,11 +57,11 @@ export class LandingDataService {
       }, new Map<string, any>()).values()
     );
 
-    const hasServerFeaturedCategory = baseCategories.some((category: any) => category.isFeatured || (typeof category.name === 'string' && category.name.trim().toLowerCase() === 'top ones'));
+    const hasServerFeaturedCategory = baseCategories.some((category: any) => category.isFeatured || (typeof category.name === 'string' && category.name.trim().toLowerCase() === 'bestsellers'));
 
     const featuredCategory = uniqueFeaturedItems.length > 0 && !hasServerFeaturedCategory ? {
       id: 'featured',
-      name: 'Top ones',
+      name: 'Bestsellers',
       icon: null,
       displayOrder: Number.MIN_SAFE_INTEGER,
       isFeatured: true,

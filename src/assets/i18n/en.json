@@ -80,9 +80,14 @@
     "MENU": {
       "TITLE": "Menu",
       "SUBTITLE": "Choose a category to reveal the matching dishes.",
+      "SELECT_CATEGORY_TITLE": "Choose a category",
+      "SELECT_CATEGORY_SUBTITLE": "Browse the categories below to find what you want.",
       "LOADING": "Loading menu…",
       "AVAILABLE": "Available now",
       "UNAVAILABLE": "Unavailable"
+    },
+    "CATEGORY": {
+      "BESTSELLERS": "Bestsellers"
     },
     "CART": {
       "TITLE": "Your order",

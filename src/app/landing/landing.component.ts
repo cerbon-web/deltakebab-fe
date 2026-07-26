@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject, OnInit, signal, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,6 +18,7 @@ import { LandingLocationService } from '../services/landing-location.service';
 import { LandingDataFlowService } from '../services/landing-data-flow.service';
 import { LandingCartFlowService } from '../services/landing-cart-flow.service';
 import { Branch, Restaurant } from '../types/domain';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-landing',
@@ -26,11 +27,12 @@ import { Branch, Restaurant } from '../types/domain';
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss']
 })
-export class LandingComponent implements OnInit {
+export class LandingComponent implements OnInit, AfterViewInit {
   private readonly translate = inject(TranslateService);
 
   restaurants = signal<Restaurant[]>([]);
   branches = signal<Branch[]>([]);
+  readonly carouselNeedsScroll = signal<boolean>(false);
   get selectedBranch() { return this.selectionService.selectedBranch; }
   get selectedRestaurant() { return this.selectionService.selectedRestaurant; }
   get categories() { return this.selectionService.categories; }
@@ -86,6 +88,18 @@ export class LandingComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadRestaurants();
+  }
+
+  ngAfterViewInit(): void {
+    this.checkCarouselScroll();
+  }
+
+  private checkCarouselScroll(): void {
+    const carousel = this.categoryCarousel?.nativeElement;
+    if (carousel) {
+      // Check if content overflows the visible area
+      this.carouselNeedsScroll.set(carousel.scrollWidth > carousel.clientWidth);
+    }
   }
 
   private t(key: string, params?: Record<string, unknown>) {
@@ -258,6 +272,9 @@ export class LandingComponent implements OnInit {
     this.loadMenu(branch.id);
   }
 
+  @ViewChild('categoryCarousel', { read: ElementRef })
+  categoryCarousel?: ElementRef<HTMLDivElement>;
+
   loadMenu(branchId: number | string) {
     this.dataFlowService.loadMenu(
       branchId,
@@ -266,6 +283,10 @@ export class LandingComponent implements OnInit {
           categories,
           firstItem: items.find((item: any) => item.name === 'DELTA ROLLO')
         };
+        // Schedule carousel check after view updates
+        requestAnimationFrame(() => {
+          setTimeout(() => this.checkCarouselScroll(), 0);
+        });
       },
       (message) => this.cartService.setError(this.t(message))
     );
@@ -273,6 +294,155 @@ export class LandingComponent implements OnInit {
 
   chooseCategory(categoryName: string) {
     this.selectionService.chooseCategory(categoryName);
+  }
+
+  clearSelectedCategory() {
+    this.selectionService.chooseCategory(null);
+  }
+
+  scrollCategoryCarousel(direction: 'left' | 'right') {
+    const carousel = this.categoryCarousel?.nativeElement;
+    if (!carousel) {
+      return;
+    }
+
+    const scrollAmount = carousel.clientWidth * 0.7;
+    const target = direction === 'left'
+      ? Math.max(0, carousel.scrollLeft - scrollAmount)
+      : Math.min(carousel.scrollWidth, carousel.scrollLeft + scrollAmount);
+
+    carousel.scrollTo({ left: target, behavior: 'smooth' });
+  }
+
+  private getCategoryIconAssetUrl(rawIcon?: string | null): string | null {
+    const trimmedIcon = rawIcon?.trim();
+    if (!trimmedIcon) {
+      return null;
+    }
+
+    if (/^https?:\/\//i.test(trimmedIcon)) {
+      return trimmedIcon;
+    }
+
+    if (/^(\/|\.\/|\.\.\/)/i.test(trimmedIcon)) {
+      const baseUrl = environment.apiBaseUrl.replace(/\/api\/?$/, '');
+      return `${baseUrl}${trimmedIcon.startsWith('/') ? trimmedIcon : `/${trimmedIcon}`}`;
+    }
+
+    return trimmedIcon;
+  }
+
+  isCategoryIconImage(category: { icon?: string | null }) {
+    const rawIcon = category.icon?.trim();
+    const imagePattern = /^(https?:\/\/|\/|\.\/|\.\.\/)/i;
+    return Boolean(rawIcon && imagePattern.test(rawIcon));
+  }
+
+  isItemImageAvailable(item: { imageUrl?: string | null }) {
+    const rawImage = item.imageUrl?.trim();
+    return Boolean(rawImage && /^(https?:\/\/|\/|\.\/|\.\.\/)/i.test(rawImage));
+  }
+
+  getItemImageUrl(item: { imageUrl?: string | null }) {
+    const rawImage = item.imageUrl?.trim();
+    if (!rawImage) {
+      return null;
+    }
+
+    if (/^https?:\/\//i.test(rawImage)) {
+      return rawImage;
+    }
+
+    if (/^(\/|\.\/|\.\.\/)/i.test(rawImage)) {
+      const baseUrl = environment.apiBaseUrl.replace(/\/api\/?$/, '');
+      return `${baseUrl}${rawImage.startsWith('/') ? rawImage : `/${rawImage}`}`;
+    }
+
+    return rawImage;
+  }
+
+  getCategoryIcon(category: { id?: string | number; name: string; icon?: string | null }) {
+    const rawIcon = category.icon?.trim();
+    const emojiPattern = /[\p{Extended_Pictographic}]/u;
+    const imagePattern = /^(https?:\/\/|\/|\.\/|\.\.\/)/i;
+
+    if (rawIcon && emojiPattern.test(rawIcon)) {
+      return rawIcon;
+    }
+
+    if (rawIcon && imagePattern.test(rawIcon)) {
+      return this.getCategoryIconAssetUrl(rawIcon);
+    }
+
+    const idIconMap: Record<string, string> = {
+      featured: '⭐',
+      '1': '🥙',
+      '2': '🌯',
+      '4': '📦',
+      '5': '🥖',
+      '6': '🥡',
+      '8': '🥗',
+      '9': '🧂',
+      '10': '🥤'
+    };
+
+    if (category.id !== undefined && category.id !== null) {
+      const idKey = String(category.id);
+      if (idIconMap[idKey]) {
+        return idIconMap[idKey];
+      }
+    }
+
+    const normalized = category.name
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9 ]+/g, ' ')
+      .trim();
+
+    const fallbackNameMap: Array<{ matcher: string; icon: string }> = [
+      { matcher: 'bestsellers', icon: '⭐' },
+      { matcher: 'rollo', icon: '🥙' },
+      { matcher: 'tortilla', icon: '🌯' },
+      { matcher: 'bulka', icon: '🥖' },
+      { matcher: 'box', icon: '📦' },
+      { matcher: 'kebab na talerzu', icon: '🥣' },
+      { matcher: 'salatki', icon: '🥗' },
+      { matcher: 'kapsalon', icon: '🥡' },
+      { matcher: 'dodatki', icon: '🧂' },
+      { matcher: 'o kurcze', icon: '🍗' },
+      { matcher: 'napoje', icon: '🥤' },
+      { matcher: 'pizza', icon: '🍕' },
+      { matcher: 'burger', icon: '🍔' },
+      { matcher: 'sandwich', icon: '🥪' },
+      { matcher: 'salad', icon: '🥗' },
+      { matcher: 'dessert', icon: '🍰' },
+      { matcher: 'cake', icon: '🍰' },
+      { matcher: 'drink', icon: '🥤' },
+      { matcher: 'coffee', icon: '☕' },
+      { matcher: 'tea', icon: '🫖' },
+      { matcher: 'soup', icon: '🍲' },
+      { matcher: 'pasta', icon: '🍝' },
+      { matcher: 'fries', icon: '🍟' }
+    ];
+
+    const matched = fallbackNameMap.find((entry) => normalized.includes(entry.matcher));
+    return matched?.icon ?? '🍽️';
+  }
+
+  getCategoryDisplayName(category: { name: string }): string {
+    const normalized = category.name
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9 ]+/g, ' ')
+      .trim();
+
+    if (normalized === 'bestsellers') {
+      return this.t('LANDING.CATEGORY.BESTSELLERS');
+    }
+
+    return category.name;
   }
 
   getSelectedSize(item: any) {

@@ -140,72 +140,98 @@
     <div class="menu-view-panels">
       <div class="view-panel" [class.active]="activeTab() === 'menu'">
         <div class="menu-column">
-          <div class="section-title">
-            <h3>{{ 'LANDING.MENU.TITLE' | translate }}</h3>
-            <p>{{ 'LANDING.MENU.SUBTITLE' | translate }}</p>
+          <div class="section-title" *ngIf="!selectedCategory() || selectedCategory()">
+            <h3>{{ selectedCategory() ? selectedCategory() : ('LANDING.MENU.SELECT_CATEGORY_TITLE' | translate) }}</h3>
+            <p>{{ selectedCategory() ? ('LANDING.MENU.SUBTITLE' | translate) : ('LANDING.MENU.SELECT_CATEGORY_SUBTITLE' | translate) }}</p>
           </div>
 
-          <div class="category-row" *ngIf="categories().length > 0">
-            <button class="category-chip" *ngFor="let category of categories()" [class.active]="selectedCategory() === category.name" (click)="chooseCategory(category.name)">
-              {{ category.name }}
-            </button>
+          <div class="category-selection" *ngIf="!selectedCategory()">
+            <div class="category-carousel" *ngIf="categories().length > 0">
+              <button class="carousel-nav left" *ngIf="carouselNeedsScroll()" (click)="scrollCategoryCarousel('left')" aria-label="Scroll categories left">‹</button>
+              <div class="category-card-grid" #categoryCarousel>
+                <button class="category-card" *ngFor="let category of categories()" (click)="chooseCategory(category.name)">
+                  <span class="category-card-icon">
+                    <img *ngIf="isCategoryIconImage(category)" [src]="getCategoryIcon(category)" alt="" />
+                    <ng-container *ngIf="!isCategoryIconImage(category)">{{ getCategoryIcon(category) }}</ng-container>
+                  </span>
+                  <span class="category-card-name">{{ getCategoryDisplayName(category) }}</span>
+                </button>
+              </div>
+              <button class="carousel-nav right" *ngIf="carouselNeedsScroll()" (click)="scrollCategoryCarousel('right')" aria-label="Scroll categories right">›</button>
+            </div>
+            <div class="empty-state" *ngIf="categories().length === 0 && !menuLoading()">
+              <p>No categories available yet.</p>
+            </div>
           </div>
 
-          <div class="menu-loading" *ngIf="menuLoading()">
-            <mat-progress-spinner diameter="24" mode="indeterminate"></mat-progress-spinner>
-            <span>{{ 'LANDING.MENU.LOADING' | translate }}</span>
-          </div>
+          <div class="category-view" *ngIf="selectedCategory()">
+            <div class="category-view-header">
+              <button class="secondary-btn small" (click)="clearSelectedCategory()">← Back</button>
+            </div>
 
-          <div class="products-grid" *ngIf="!menuLoading() && filteredMenuItems.length > 0">
-            <article class="product-card" *ngFor="let item of filteredMenuItems">
-              <div class="product-content">
-                <div class="product-title-row">
-                  <h4>{{ item.name }}</h4>
-                  <span class="price-pill">{{ getItemDisplayPrice(item) | currency:'PLN' }}</span>
-                </div>
-                <p class="product-description">{{ item.ingredients }}</p>
+            <div class="menu-loading" *ngIf="menuLoading()">
+              <mat-progress-spinner diameter="24" mode="indeterminate"></mat-progress-spinner>
+              <span>{{ 'LANDING.MENU.LOADING' | translate }}</span>
+            </div>
 
-                <div class="customization-sections">
-                  <div class="customization-section" *ngIf="item.sizes.length > 1">
-                    <div class="customization-title">Size</div>
-                    <div class="size-options">
-                      <button
-                        class="size-chip"
-                        *ngFor="let size of item.sizes"
-                        [class.active]="(item.selectedSizeId || item.sizes[0].id) === size.id"
-                        (click)="selectItemSize(item, size.id)">
-                        <span>{{ size.name }}</span>
-                        <span class="size-price">{{ size.price | currency:'PLN' }}</span>
-                      </button>
+            <div class="products-grid" *ngIf="!menuLoading() && filteredMenuItems.length > 0">
+              <article class="product-card" *ngFor="let item of filteredMenuItems">
+                <div class="product-content">
+                  <div class="product-image-wrap" *ngIf="isItemImageAvailable(item)">
+                    <img class="product-image" [src]="getItemImageUrl(item)" alt="{{ item.name }}" />
+                  </div>
+                  <div class="product-title-row">
+                    <h4>{{ item.name }}</h4>
+                    <span class="price-pill">{{ getItemDisplayPrice(item) | currency:'PLN' }}</span>
+                  </div>
+                  <p class="product-description">{{ item.ingredients }}</p>
+
+                  <div class="customization-sections">
+                    <div class="customization-section" *ngIf="item.sizes.length > 1">
+                      <div class="customization-title">Size</div>
+                      <div class="size-options">
+                        <button
+                          class="size-chip"
+                          *ngFor="let size of item.sizes"
+                          [class.active]="(item.selectedSizeId || item.sizes[0].id) === size.id"
+                          (click)="selectItemSize(item, size.id)">
+                          <span>{{ size.name }}</span>
+                          <span class="size-price">{{ size.price | currency:'PLN' }}</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="customization-section modifier-section" *ngFor="let group of getActiveModifierGroups(item)" [class.invalid]="isModifierGroupInvalid(item, group)">
+                      <div class="customization-title">{{ getModifierSectionTitle(group) }}</div>
+                      <div class="modifier-options">
+                        <button
+                          class="modifier-chip"
+                          *ngFor="let option of group.options"
+                          [class.active]="isModifierSelected(item, group, option)"
+                          (click)="toggleModifier(item, group, option)">
+                          <span>{{ option.name }}</span>
+                          <span class="modifier-price" *ngIf="option.price > 0">+{{ option.price | currency:'PLN' }}</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
 
-                  <div class="customization-section modifier-section" *ngFor="let group of getActiveModifierGroups(item)" [class.invalid]="isModifierGroupInvalid(item, group)">
-                    <div class="customization-title">{{ getModifierSectionTitle(group) }}</div>
-                    <div class="modifier-options">
-                      <button
-                        class="modifier-chip"
-                        *ngFor="let option of group.options"
-                        [class.active]="isModifierSelected(item, group, option)"
-                        (click)="toggleModifier(item, group, option)">
-                        <span>{{ option.name }}</span>
-                        <span class="modifier-price" *ngIf="option.price > 0">+{{ option.price | currency:'PLN' }}</span>
-                      </button>
-                    </div>
+                  <p class="availability-pill" *ngIf="item.available === false">{{ 'LANDING.MENU.UNAVAILABLE' | translate }}</p>
+                </div>
+
+                <div class="product-card-footer">
+                  <div class="product-price-summary">
+                    <span class="product-price-summary-label">Current price</span>
+                    <span class="product-price-summary-value">{{ getItemDisplayPrice(item) | currency:'PLN' }}</span>
                   </div>
+                  <button class="primary-btn small" (click)="addToCart(item)">{{ 'LANDING.CART.ADD' | translate }}</button>
                 </div>
+              </article>
+            </div>
 
-                <p class="availability-pill" *ngIf="item.available === false">{{ 'LANDING.MENU.UNAVAILABLE' | translate }}</p>
-              </div>
-
-              <div class="product-card-footer">
-                <div class="product-price-summary">
-                  <span class="product-price-summary-label">Current price</span>
-                  <span class="product-price-summary-value">{{ getItemDisplayPrice(item) | currency:'PLN' }}</span>
-                </div>
-                <button class="primary-btn small" (click)="addToCart(item)">{{ 'LANDING.CART.ADD' | translate }}</button>
-              </div>
-            </article>
+            <div class="empty-state" *ngIf="!menuLoading() && filteredMenuItems.length === 0">
+              <p>No items available in this category yet.</p>
+            </div>
           </div>
         </div>
       </div>

@@ -46,17 +46,17 @@ describe('LandingDataService', () => {
       ]
     });
 
-    expect(categories[0].name).toBe('Top ones');
+    expect(categories[0].name).toBe('Bestsellers');
     expect(items[0].name).toBe('Classic');
     expect(items[0].ingredients).toBe('Tasty');
   });
 
-  it('does not add a second Top ones category when the server already provides one', () => {
+  it('does not add a second Bestsellers category when the server already provides one', () => {
     const { categories } = service.buildMenuViewModel({
       categories: [
         {
           id: 'cat-top',
-          name: 'Top ones',
+          name: 'Bestsellers',
           isFeatured: true,
           displayOrder: 1,
           items: [
@@ -73,6 +73,6 @@ describe('LandingDataService', () => {
       ]
     });
 
-    expect(categories.filter((category) => category.name === 'Top ones')).toHaveSize(1);
+    expect(categories.filter((category) => category.name === 'Bestsellers')).toHaveSize(1);
   });
 });

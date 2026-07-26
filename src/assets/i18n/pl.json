@@ -80,9 +80,14 @@
     "MENU": {
       "TITLE": "Menu",
       "SUBTITLE": "Wybierz kategorię, aby odkryć pasujące dania.",
+      "SELECT_CATEGORY_TITLE": "Wybierz kategorię",
+      "SELECT_CATEGORY_SUBTITLE": "Przeglądaj kategorie poniżej, aby znaleźć to, co chcesz zamówić.",
       "LOADING": "Ładowanie menu…",
       "AVAILABLE": "Dostępne teraz",
       "UNAVAILABLE": "Niedostępne"
+    },
+    "CATEGORY": {
+      "BESTSELLERS": "Bestsellery"
     },
     "CART": {
       "TITLE": "Twoje zamówienie",

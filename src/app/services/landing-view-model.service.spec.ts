@@ -15,7 +15,7 @@ describe('LandingViewModelService', () => {
       { id: 'i-2', name: 'Veggie', featured: false, category_name: 'Burgers' } as any
     ];
 
-    const result = service.getFilteredMenuItems('Top ones', [{ name: 'Top ones', isFeatured: true } as any], items);
+    const result = service.getFilteredMenuItems('Bestsellers', [{ name: 'Bestsellers', isFeatured: true } as any], items);
 
     expect(result).toHaveSize(1);
     expect(result[0].name).toBe('Classic');
