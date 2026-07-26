@@ -42,6 +42,9 @@ export class LandingComponent implements OnInit, AfterViewInit {
   get error() { return this.cartService.error; }
   get loading() { return this.uiStateService.loading; }
   readonly itemMessage = signal<{ type: 'success' | 'error'; message: string } | null>(null);
+  readonly customizationOpen = signal<boolean>(false);
+  readonly customizationItem = signal<any | null>(null);
+  readonly customizationItemId = signal<string | number | null>(null);
   readonly invalidModifierGroupIds = signal<Record<string, string[]>>({});
   readonly activeTab = signal<'menu' | 'cart'>('menu');
   private itemMessageTimeout: number | null = null;
@@ -459,6 +462,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
 
   toggleModifier(item: any, group: any, option: any) {
     this.cartFlowService.toggleModifier(item, group, option);
+    this.syncCustomizationItem();
 
     const missingGroups = this.getMissingRequiredModifierGroupIds(item);
     if (missingGroups.length === 0) {
@@ -506,12 +510,117 @@ export class LandingComponent implements OnInit, AfterViewInit {
     return Array.from(groups.entries()).map(([name, options]) => ({ name, options }));
   }
 
+  openCustomization(item: any) {
+    this.customizationItemId.set(item?.id ?? null);
+    this.customizationItem.set(item);
+    this.customizationOpen.set(true);
+  }
+
+  closeCustomization() {
+    this.customizationOpen.set(false);
+    this.customizationItem.set(null);
+    this.customizationItemId.set(null);
+  }
+
+  private syncCustomizationItem() {
+    const activeItemId = this.customizationItemId();
+    if (activeItemId === null) {
+      this.customizationItem.set(null);
+      return;
+    }
+
+    const latestItem = this.menuItems().find((item) => item.id === activeItemId) ?? null;
+    this.customizationItem.set(latestItem);
+  }
+
+  hasCustomizationOptions(item: any): boolean {
+    return (item?.sizes?.length || 0) > 1 || (this.getActiveModifierGroups(item) || []).length > 0;
+  }
+
+  getCustomizationMode(item: any): 'compact' | 'full' {
+    if (!item) {
+      return 'compact';
+    }
+
+    const activeGroups = this.getActiveModifierGroups(item) || [];
+    const totalOptions = activeGroups.reduce((count, group: any) => count + (group.options?.length || 0), 0);
+    const hasMultipleSizes = (item.sizes?.length || 0) > 1;
+    const hasManyGroups = activeGroups.length > 1;
+    const hasLargeGroup = activeGroups.some((group: any) => (group.options?.length || 0) > 3);
+
+    return hasMultipleSizes || hasManyGroups || hasLargeGroup || totalOptions > 5 ? 'full' : 'compact';
+  }
+
+  getCustomizationSummary(item: any): string {
+    if (!item) {
+      return 'Default selection';
+    }
+
+    const parts: string[] = [];
+    const selectedSize = this.getSelectedSize(item);
+
+    if (selectedSize?.name) {
+      parts.push(selectedSize.name);
+    }
+
+    const selectedModifiers = (item.selectedModifiers || [])
+      .map((selection: any) => selection.name)
+      .filter(Boolean);
+
+    if (selectedModifiers.length) {
+      parts.push(selectedModifiers.slice(0, 3).join(', '));
+    }
+
+    return parts.length ? parts.join(' • ') : 'Default selection';
+  }
+
+  getCustomizationHint(item: any): string {
+    const activeGroups = this.getActiveModifierGroups(item) || [];
+
+    if ((item?.sizes?.length || 0) > 1 && activeGroups.length) {
+      return 'Choose your size and any preferred add-ons.';
+    }
+
+    if ((item?.sizes?.length || 0) > 1) {
+      return 'Pick the size that fits your order.';
+    }
+
+    if (activeGroups.length) {
+      return 'Pick the option that fits your taste.';
+    }
+
+    return 'Ready to order as-is.';
+  }
+
+  quickAddItem(item: any) {
+    const result = this.cartFlowService.addToCart(item, (entry) => this.getItemDisplayPrice(entry));
+    const itemId = String(item.id);
+
+    if (result?.success) {
+      const summary = this.getCustomizationSummary(item);
+      const message = summary === 'Default selection' ? item.name : `${item.name} • ${summary}`;
+      this.showItemMessage('success', message);
+      this.clearInvalidModifierGroups(item);
+      this.closeCustomization();
+      return;
+    }
+
+    const message = this.t(result?.messageKey ?? 'LANDING.ERRORS.MODIFIER_SELECTION_REQUIRED');
+    this.showItemMessage('error', message);
+    this.openCustomization(item);
+    this.invalidModifierGroupIds.update((current) => ({
+      ...current,
+      [itemId]: this.getMissingRequiredModifierGroupIds(item)
+    }));
+  }
+
   setActiveTab(tab: 'menu' | 'cart') {
     this.activeTab.set(tab);
   }
 
   selectItemSize(item: any, sizeId: string) {
     this.menuStateService.selectSize(item.id, sizeId);
+    this.syncCustomizationItem();
   }
 
   addToCart(item: any) {
@@ -529,8 +638,34 @@ export class LandingComponent implements OnInit, AfterViewInit {
         }));
       } else {
         this.clearInvalidModifierGroups(item);
+        this.closeCustomization();
       }
     }
+  }
+
+  addToCartFromCustomization() {
+    const item = this.customizationItem();
+    if (!item) {
+      return;
+    }
+
+    const result = this.cartFlowService.addToCart(item, (entry) => this.getItemDisplayPrice(entry));
+    const itemId = String(item.id);
+
+    if (result?.success) {
+      const summary = this.getCustomizationSummary(item);
+      const message = summary === 'Default selection' ? item.name : `${item.name} • ${summary}`;
+      this.showItemMessage('success', message);
+      this.clearInvalidModifierGroups(item);
+      this.closeCustomization();
+      return;
+    }
+
+    this.showItemMessage('error', this.t(result?.messageKey ?? 'LANDING.ERRORS.MODIFIER_SELECTION_REQUIRED'));
+    this.invalidModifierGroupIds.update((current) => ({
+      ...current,
+      [itemId]: this.getMissingRequiredModifierGroupIds(item)
+    }));
   }
 
   isModifierGroupInvalid(item: any, group: any) {

@@ -186,34 +186,11 @@
                   </div>
                   <p class="product-description">{{ item.ingredients }}</p>
 
-                  <div class="customization-sections">
-                    <div class="customization-section" *ngIf="item.sizes.length > 1">
-                      <div class="customization-title">Size</div>
-                      <div class="size-options">
-                        <button
-                          class="size-chip"
-                          *ngFor="let size of item.sizes"
-                          [class.active]="(item.selectedSizeId || item.sizes[0].id) === size.id"
-                          (click)="selectItemSize(item, size.id)">
-                          <span>{{ size.name }}</span>
-                          <span class="size-price">{{ size.price | currency:'PLN' }}</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div class="customization-section modifier-section" *ngFor="let group of getActiveModifierGroups(item)" [class.invalid]="isModifierGroupInvalid(item, group)">
-                      <div class="customization-title">{{ getModifierSectionTitle(group) }}</div>
-                      <div class="modifier-options">
-                        <button
-                          class="modifier-chip"
-                          *ngFor="let option of group.options"
-                          [class.active]="isModifierSelected(item, group, option)"
-                          (click)="toggleModifier(item, group, option)">
-                          <span>{{ option.name }}</span>
-                          <span class="modifier-price" *ngIf="option.price > 0">+{{ option.price | currency:'PLN' }}</span>
-                        </button>
-                      </div>
-                    </div>
+                  <div class="product-meta-row">
+                    <span class="meta-pill" *ngIf="item.sizes?.length > 1">Multiple sizes</span>
+                    <span class="meta-pill" *ngIf="item.sizes?.length === 1 && item.sizes[0]?.name">{{ item.sizes[0].name }}</span>
+                    <span class="meta-pill" *ngIf="hasCustomizationOptions(item)">Customizable</span>
+                    <span class="meta-pill" *ngIf="!hasCustomizationOptions(item)">Ready as-is</span>
                   </div>
 
                   <p class="availability-pill" *ngIf="item.available === false">{{ 'LANDING.MENU.UNAVAILABLE' | translate }}</p>
@@ -221,10 +198,13 @@
 
                 <div class="product-card-footer">
                   <div class="product-price-summary">
-                    <span class="product-price-summary-label">Current price</span>
+                    <span class="product-price-summary-label">Starting from</span>
                     <span class="product-price-summary-value">{{ getItemDisplayPrice(item) | currency:'PLN' }}</span>
                   </div>
-                  <button class="primary-btn small" (click)="addToCart(item)">{{ 'LANDING.CART.ADD' | translate }}</button>
+                  <div class="product-actions">
+                    <button class="secondary-btn small" (click)="openCustomization(item)">Customize</button>
+                    <button class="primary-btn small" (click)="quickAddItem(item)">Quick add</button>
+                  </div>
                 </div>
               </article>
             </div>
@@ -301,6 +281,129 @@
     <span class="mobile-cart-fab-icon">🛒</span>
     <span class="mobile-cart-fab-count">{{ cart().length }}</span>
   </button>
+
+  <div class="customization-backdrop" *ngIf="customizationOpen()" (click)="closeCustomization()"></div>
+  <div class="customization-sheet" *ngIf="customizationOpen()" role="dialog" aria-modal="true" aria-label="Customize item" (click)="$event.stopPropagation()">
+    <div class="customization-sheet-header">
+      <div>
+        <p class="eyebrow">Customize</p>
+        <h3>{{ customizationItem()?.name }}</h3>
+      </div>
+      <button class="icon-btn" (click)="closeCustomization()" aria-label="Close customization">✕</button>
+    </div>
+
+    <div class="customization-sheet-body">
+      <div class="customization-preview">
+        <div class="customization-preview-info">
+          <span class="meta-pill">{{ getCustomizationMode(customizationItem()) === 'full' ? 'Full customization' : 'Quick customization' }}</span>
+          <p>{{ getCustomizationHint(customizationItem()) }}</p>
+        </div>
+        <div class="customization-preview-price">
+          <span class="product-price-summary-label">Current total</span>
+          <strong>{{ getItemDisplayPrice(customizationItem()) | currency:'PLN' }}</strong>
+        </div>
+      </div>
+
+      <div class="customization-simple-layout" *ngIf="getCustomizationMode(customizationItem()) === 'compact'">
+        <div class="customization-section-card" *ngIf="customizationItem()?.sizes?.length > 1">
+          <div class="customization-section-header">
+            <div>
+              <div class="customization-title">Size</div>
+              <p class="customization-section-hint">Choose the size you want.</p>
+            </div>
+          </div>
+          <div class="customization-option-grid">
+            <button
+              class="customization-option-btn"
+              *ngFor="let size of customizationItem()?.sizes"
+              [class.active]="(customizationItem()?.selectedSizeId || customizationItem()?.sizes[0]?.id) === size.id"
+              (click)="selectItemSize(customizationItem(), size.id)">
+              <span>{{ size.name }}</span>
+              <span class="option-price">{{ size.price | currency:'PLN' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="customization-section-card" *ngIf="getActiveModifierGroups(customizationItem()).length > 0">
+          <div class="customization-section-header">
+            <div>
+              <div class="customization-title">{{ getModifierSectionTitle(getActiveModifierGroups(customizationItem())[0]) }}</div>
+              <p class="customization-section-hint">Choose one option.</p>
+            </div>
+          </div>
+          <div class="customization-option-grid">
+            <button
+              class="customization-option-btn"
+              *ngFor="let option of getActiveModifierGroups(customizationItem())[0]?.options"
+              [class.active]="isModifierSelected(customizationItem(), getActiveModifierGroups(customizationItem())[0], option)"
+              (click)="toggleModifier(customizationItem(), getActiveModifierGroups(customizationItem())[0], option)">
+              <span>{{ option.name }}</span>
+              <span class="option-price" *ngIf="option.price > 0">+{{ option.price | currency:'PLN' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="customization-full-layout" *ngIf="getCustomizationMode(customizationItem()) === 'full'">
+        <div class="customization-section-card" *ngIf="customizationItem()?.sizes?.length > 1">
+          <div class="customization-section-header">
+            <div>
+              <div class="customization-title">Size</div>
+              <p class="customization-section-hint">Pick the right size for your order.</p>
+            </div>
+          </div>
+          <div class="customization-option-grid">
+            <button
+              class="customization-option-btn"
+              *ngFor="let size of customizationItem()?.sizes"
+              [class.active]="(customizationItem()?.selectedSizeId || customizationItem()?.sizes[0]?.id) === size.id"
+              (click)="selectItemSize(customizationItem(), size.id)">
+              <span>{{ size.name }}</span>
+              <span class="option-price">{{ size.price | currency:'PLN' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="customization-section-card" *ngFor="let group of getActiveModifierGroups(customizationItem())" [class.invalid]="isModifierGroupInvalid(customizationItem(), group)">
+          <div class="customization-section-header">
+            <div>
+              <div class="customization-title">{{ getModifierSectionTitle(group) }}</div>
+              <p class="customization-section-hint">{{ group.required ? 'Required selection' : 'Optional enhancement' }}</p>
+            </div>
+          </div>
+          <div class="customization-option-grid">
+            <button
+              class="customization-option-btn"
+              *ngFor="let option of group.options"
+              [class.active]="isModifierSelected(customizationItem(), group, option)"
+              (click)="toggleModifier(customizationItem(), group, option)">
+              <span>{{ option.name }}</span>
+              <span class="option-price" *ngIf="option.price > 0">+{{ option.price | currency:'PLN' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="customization-summary-card" *ngIf="customizationItem()">
+        <div>
+          <div class="customization-title">Your selection</div>
+          <p class="customization-summary-text">{{ getCustomizationSummary(customizationItem()) }}</p>
+        </div>
+        <div class="customization-summary-price">{{ getItemDisplayPrice(customizationItem()) | currency:'PLN' }}</div>
+      </div>
+    </div>
+
+    <div class="customization-sheet-footer">
+      <div class="customization-price-summary">
+        <span>Ready to add</span>
+        <strong>{{ getItemDisplayPrice(customizationItem()) | currency:'PLN' }}</strong>
+      </div>
+      <div class="customization-actions">
+        <button class="secondary-btn" (click)="closeCustomization()">Close</button>
+        <button class="primary-btn" (click)="addToCartFromCustomization()">Add to cart</button>
+      </div>
+    </div>
+  </div>
 
   <section class="checkout-card" *ngIf="checkoutStep() !== 'menu' && selectedRestaurant() && selectedBranch()">
     <div class="checkout-stepper">
