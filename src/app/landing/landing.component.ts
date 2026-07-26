@@ -537,6 +537,21 @@ export class LandingComponent implements OnInit, AfterViewInit {
     return (item?.sizes?.length || 0) > 1 || (this.getActiveModifierGroups(item) || []).length > 0;
   }
 
+  shouldShowCustomizeButton(item: any): boolean {
+    const activeGroups = this.getActiveModifierGroups(item) || [];
+    return activeGroups.length > 1;
+  }
+
+  shouldShowInlineModifierSelection(item: any): boolean {
+    const activeGroups = this.getActiveModifierGroups(item) || [];
+    return activeGroups.length === 1;
+  }
+
+  getCardModifierGroup(item: any): any {
+    const activeGroups = this.getActiveModifierGroups(item) || [];
+    return this.shouldShowInlineModifierSelection(item) ? activeGroups[0] : null;
+  }
+
   getCustomizationMode(item: any): 'compact' | 'full' {
     if (!item) {
       return 'compact';

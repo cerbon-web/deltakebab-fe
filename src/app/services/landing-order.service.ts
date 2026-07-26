@@ -50,7 +50,9 @@ export class LandingOrderService {
     const selectedSize = item.sizes?.length
       ? item.sizes.find((size) => size.id === item.selectedSizeId) || item.sizes[0]
       : null;
-    const sizePrice = Number(selectedSize?.price ?? item.basePrice ?? 0);
+    const selectedSizePrice = Number(selectedSize?.price ?? 0);
+    const fallbackItemPrice = Number(item.price ?? item.basePrice ?? 0);
+    const sizePrice = selectedSizePrice > 0 ? selectedSizePrice : fallbackItemPrice;
     const modifierPrice = (item.selectedModifiers || []).reduce((sum, modifier) => sum + Number(modifier.price ?? 0), 0);
     return Number(sizePrice + modifierPrice);
   }

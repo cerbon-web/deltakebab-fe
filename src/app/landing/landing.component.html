@@ -186,6 +186,34 @@
                   </div>
                   <p class="product-description">{{ item.ingredients }}</p>
 
+                  <div class="customization-section" *ngIf="item.sizes?.length > 1">
+                    <div class="customization-title">Size</div>
+                    <div class="size-options">
+                      <button
+                        class="size-chip"
+                        *ngFor="let size of item.sizes"
+                        [class.active]="(item.selectedSizeId || item.sizes[0].id) === size.id"
+                        (click)="selectItemSize(item, size.id)">
+                        <span>{{ size.name }}</span>
+                        <span class="size-price">{{ size.price | currency:'PLN' }}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="customization-section modifier-section" *ngIf="shouldShowInlineModifierSelection(item) && getCardModifierGroup(item)">
+                    <div class="customization-title">{{ getModifierSectionTitle(getCardModifierGroup(item)) }}</div>
+                    <div class="modifier-options">
+                      <button
+                        class="modifier-chip"
+                        *ngFor="let option of getCardModifierGroup(item).options"
+                        [class.active]="isModifierSelected(item, getCardModifierGroup(item), option)"
+                        (click)="toggleModifier(item, getCardModifierGroup(item), option)">
+                        <span>{{ option.name }}</span>
+                        <span class="modifier-price" *ngIf="option.price > 0">+{{ option.price | currency:'PLN' }}</span>
+                      </button>
+                    </div>
+                  </div>
+
                   <div class="product-meta-row">
                     <span class="meta-pill" *ngIf="item.sizes?.length > 1">Multiple sizes</span>
                     <span class="meta-pill" *ngIf="item.sizes?.length === 1 && item.sizes[0]?.name">{{ item.sizes[0].name }}</span>
@@ -202,7 +230,7 @@
                     <span class="product-price-summary-value">{{ getItemDisplayPrice(item) | currency:'PLN' }}</span>
                   </div>
                   <div class="product-actions">
-                    <button class="secondary-btn small" (click)="openCustomization(item)">Customize</button>
+                    <button class="secondary-btn small" *ngIf="shouldShowCustomizeButton(item)" (click)="openCustomization(item)">Customize</button>
                     <button class="primary-btn small" (click)="quickAddItem(item)">Quick add</button>
                   </div>
                 </div>

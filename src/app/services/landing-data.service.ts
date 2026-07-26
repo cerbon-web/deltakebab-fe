@@ -83,20 +83,24 @@ export class LandingDataService {
         ingredients: item.description ?? ''
       }))
     ).map((item: any) => {
-      const normalizedSizes = (item.sizes || []).map((size: any) => ({
-        id: size.id,
-        name: size.name ?? size.sizeOption?.name ?? '',
-        price: Number(size.price ?? 0),
-        available: size.available ?? true,
-        modifierGroups: (size.modifierGroups || []).map((group: any) => ({
-          ...group,
-          options: (group.options || []).map((option: any) => ({
-            ...option,
-            price: Number(option.price ?? 0),
-            defaultSelected: Boolean(option.defaultSelected)
+      const fallbackItemPrice = Number(item.price ?? item.basePrice ?? 0);
+      const normalizedSizes = (item.sizes || []).map((size: any) => {
+        const sizePrice = Number(size.price ?? 0);
+        return {
+          id: size.id,
+          name: size.name ?? size.sizeOption?.name ?? '',
+          price: sizePrice > 0 ? sizePrice : fallbackItemPrice,
+          available: size.available ?? true,
+          modifierGroups: (size.modifierGroups || []).map((group: any) => ({
+            ...group,
+            options: (group.options || []).map((option: any) => ({
+              ...option,
+              price: Number(option.price ?? 0),
+              defaultSelected: Boolean(option.defaultSelected)
+            }))
           }))
-        }))
-      }));
+        };
+      });
 
       const normalizedItemModifierGroups = (item.modifierGroups || []).map((group: any) => ({
         ...group,
@@ -109,6 +113,7 @@ export class LandingDataService {
 
       const initialSelectedSizeId = normalizedSizes?.[0]?.id ?? null;
       const initialSelectedSize = normalizedSizes.find((size: any) => size.id === initialSelectedSizeId) || null;
+      const initialSelectedSizePrice = Number(initialSelectedSize?.price ?? 0);
       const initialDefaultSelections = (initialSelectedSize?.modifierGroups || normalizedItemModifierGroups || [])
         .flatMap((group: any) => {
           const defaultOptions = (group.options || []).filter((option: any) => option.defaultSelected);
@@ -127,7 +132,7 @@ export class LandingDataService {
         modifierGroups: normalizedItemModifierGroups,
         selectedSizeId: initialSelectedSizeId,
         selectedModifiers: initialDefaultSelections,
-        price: Number((normalizedSizes || []).find((size: any) => size.id === initialSelectedSizeId)?.price ?? item.price ?? item.basePrice ?? 0),
+        price: initialSelectedSizePrice > 0 ? initialSelectedSizePrice : fallbackItemPrice,
         ingredients: item.ingredients ?? item.description ?? ''
       };
     });
