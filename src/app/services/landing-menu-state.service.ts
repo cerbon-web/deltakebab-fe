@@ -43,7 +43,7 @@ export class LandingMenuStateService {
     });
   }
 
-  toggleModifier(itemId: string | number, groupId: string, option: MenuModifierOption, maxSelections: number, existingSelections: Array<{ groupId: string; optionId?: string; name: string; price: number }> = [], required: boolean = false) {
+  toggleModifier(itemId: string | number, groupId: string, option: MenuModifierOption, maxSelections: number, existingSelections: Array<{ groupId: string; groupName?: string; optionId?: string; name: string; price: number }> = [], required: boolean = false, groupName?: string) {
     const currentSelections = existingSelections || [];
     const groupSelections = currentSelections.filter((selected) => selected.groupId === groupId);
     const remainingSelections = currentSelections.filter((selected) => selected.groupId !== groupId);
@@ -58,6 +58,7 @@ export class LandingMenuStateService {
         ...remainingSelections,
         {
           groupId,
+          groupName,
           optionId: option.id,
           name: option.name,
           price: Number(option.price ?? 0)
@@ -78,6 +79,7 @@ export class LandingMenuStateService {
       ...groupSelections,
       {
         groupId,
+        groupName,
         optionId: option.id,
         name: option.name,
         price: Number(option.price ?? 0)

@@ -97,6 +97,8 @@
       "EMPTY_DESCRIPTION": "Select a dish to start your order.",
       "NOTES_PLACEHOLDER": "Add notes for this item",
       "REMOVE": "Remove",
+      "SIZE": "Size",
+      "SELECTIONS": "Selections",
       "ADD": "Add to cart",
       "CONTINUE": "Continue order",
       "ADDED_SUCCESS": "Item added to cart successfully.",

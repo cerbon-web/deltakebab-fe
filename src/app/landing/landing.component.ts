@@ -90,6 +90,13 @@ export class LandingComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
+    this.translate.onLangChange.subscribe(() => {
+      const branch = this.selectedBranch();
+      if (branch) {
+        this.loadMenu(branch.id);
+      }
+    });
+
     this.loadRestaurants();
   }
 
@@ -479,6 +486,65 @@ export class LandingComponent implements OnInit, AfterViewInit {
     return this.landingOrderService.getItemDisplayPrice(item);
   }
 
+  getCartItemDisplayName(entry: any): string {
+    const currentItem = this.menuItems().find((item: any) => String(item.id) === String(entry?.itemId)) ?? null;
+    return currentItem?.name || entry?.name || '';
+  }
+
+  getCartItemDisplaySize(entry: any): string | null {
+    const currentItem = this.menuItems().find((item: any) => String(item.id) === String(entry?.itemId)) ?? null;
+    const matchingSize = currentItem?.sizes?.find((size: any) => String(size.id) === String(entry?.sizeId)) ?? null;
+    return matchingSize?.name || entry?.sizeName || null;
+  }
+
+  private getCartEntryModifierGroups(entry: any): Array<any> {
+    const currentItem = this.menuItems().find((item: any) => String(item.id) === String(entry?.itemId)) ?? null;
+    const selectedSize = currentItem?.sizes?.length
+      ? currentItem.sizes.find((size: any) => String(size.id) === String(entry?.sizeId)) || currentItem.sizes[0]
+      : null;
+    const availableGroups = selectedSize?.modifierGroups?.length ? selectedSize.modifierGroups : currentItem?.modifierGroups || [];
+
+    return (entry?.modifiers || []).reduce((groups: Array<{ id: string; name: string; options: Array<any> }>, modifier: any) => {
+      const groupId = String(modifier.groupId ?? '');
+      const existingGroup = groups.find((group) => group.id === groupId);
+      const availableGroup = availableGroups.find((group: any) => String(group.id) === groupId);
+      const groupName = availableGroup?.name || modifier.groupName || this.t('LANDING.CART.SELECTIONS');
+
+      if (existingGroup) {
+        existingGroup.options.push({
+          ...modifier,
+          name: this.getCartModifierOptionDisplayName(currentItem, selectedSize, modifier)
+        });
+        return groups;
+      }
+
+      groups.push({
+        id: groupId,
+        name: groupName,
+        options: [{
+          ...modifier,
+          name: this.getCartModifierOptionDisplayName(currentItem, selectedSize, modifier)
+        }]
+      });
+
+      return groups;
+    }, []);
+  }
+
+  private getCartModifierOptionDisplayName(item: any, selectedSize: any, modifier: any): string {
+    const groupId = modifier?.groupId;
+    const optionId = modifier?.optionId;
+    if (!groupId || !optionId) {
+      return modifier?.name || '';
+    }
+
+    const availableGroups = selectedSize?.modifierGroups?.length ? selectedSize.modifierGroups : item?.modifierGroups || [];
+    const matchingGroup = availableGroups.find((group: any) => String(group.id) === String(groupId));
+    const matchingOption = (matchingGroup?.options || []).find((option: any) => String(option.id) === String(optionId));
+
+    return matchingOption?.name || modifier?.name || '';
+  }
+
   getModifierSectionTitle(group: any): string {
     const name = (group?.name || '').toLowerCase();
     if (name.includes('size')) {
@@ -496,18 +562,8 @@ export class LandingComponent implements OnInit, AfterViewInit {
     return group?.name || 'Options';
   }
 
-  getCartModifierGroups(modifiers: Array<any> = []): Array<{ name: string; options: Array<any> }> {
-    const groups = new Map<string, Array<any>>();
-
-    (modifiers || []).forEach((modifier) => {
-      const groupName = modifier.groupName || 'Selections';
-      if (!groups.has(groupName)) {
-        groups.set(groupName, []);
-      }
-      groups.get(groupName)!.push(modifier);
-    });
-
-    return Array.from(groups.entries()).map(([name, options]) => ({ name, options }));
+  getCartModifierGroups(entry: any): Array<{ name: string; options: Array<any> }> {
+    return this.getCartEntryModifierGroups(entry).map(({ name, options }) => ({ name, options }));
   }
 
   openCustomization(item: any) {

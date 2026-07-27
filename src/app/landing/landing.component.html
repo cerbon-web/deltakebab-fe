@@ -265,7 +265,7 @@
             <div class="cart-item" *ngFor="let entry of cart()">
               <div class="cart-item-row">
                 <div>
-                  <strong class="cart-item-name">{{ entry.name }}</strong>
+                  <strong class="cart-item-name">{{ getCartItemDisplayName(entry) }}</strong>
                   <div class="cart-item-price">{{ entry.price | currency:'PLN' }}</div>
                 </div>
                 <div class="quantity-controls">
@@ -277,14 +277,14 @@
 
               <div class="cart-item-details">
                 <div class="cart-detail-block" *ngIf="entry.sizeName">
-                  <span class="cart-detail-label">Size</span>
-                  <span class="cart-detail-value">{{ entry.sizeName }}</span>
+                  <span class="cart-detail-label">{{ 'LANDING.CART.SIZE' | translate }}</span>
+                  <span class="cart-detail-value">{{ getCartItemDisplaySize(entry) }}</span>
                 </div>
 
                 <div class="cart-detail-block" *ngIf="entry.modifiers?.length">
-                  <span class="cart-detail-label">Selections</span>
+                  <span class="cart-detail-label">{{ 'LANDING.CART.SELECTIONS' | translate }}</span>
                   <div class="cart-detail-groups">
-                    <div class="cart-detail-group" *ngFor="let group of getCartModifierGroups(entry.modifiers)">
+                    <div class="cart-detail-group" *ngFor="let group of getCartModifierGroups(entry)">
                       <span class="cart-detail-group-label">{{ group.name }}</span>
                       <ul class="cart-detail-list">
                         <li *ngFor="let option of group.options">{{ option.name }}</li>

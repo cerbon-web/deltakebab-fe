@@ -73,13 +73,14 @@ export class LandingCartFlowService {
       option as any,
       group.maxSelections ?? 1,
       item.selectedModifiers || [],
-      group.required ?? false
+      group.required ?? false,
+      group.name
     );
 
     this.menuStateService.updateMenuItem(item.id, {
       selectedModifiers: nextSelections.map((selection: any) => ({
         groupId: selection.groupId,
-        groupName: group.name,
+        groupName: selection.groupName ?? group.name,
         optionId: selection.optionId,
         name: selection.name,
         price: selection.price
