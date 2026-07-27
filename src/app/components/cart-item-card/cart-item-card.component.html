@@ -1,0 +1,35 @@
+<div class="cart-item">
+  <div class="cart-item-row">
+    <div>
+      <strong class="cart-item-name">{{ cartItemDisplayName }}</strong>
+      <div class="cart-item-price">{{ cartItemPrice | currency:'PLN' }}</div>
+    </div>
+    <div class="quantity-controls">
+      <button (click)="onQuantityChange(-1)">−</button>
+      <span>{{ quantity }}</span>
+      <button (click)="onQuantityChange(1)">+</button>
+    </div>
+  </div>
+
+  <div class="cart-item-details">
+    <div class="cart-detail-block" *ngIf="cartItemDisplaySize">
+      <span class="cart-detail-label">{{ 'LANDING.CART.SIZE' | translate }}</span>
+      <span class="cart-detail-value">{{ cartItemDisplaySize }}</span>
+    </div>
+
+    <div class="cart-detail-block" *ngIf="cartModifierGroups.length">
+      <span class="cart-detail-label">{{ 'LANDING.CART.SELECTIONS' | translate }}</span>
+      <div class="cart-detail-groups">
+        <div class="cart-detail-group" *ngFor="let group of cartModifierGroups">
+          <span class="cart-detail-group-label">{{ group.name }}</span>
+          <ul class="cart-detail-list">
+            <li *ngFor="let option of group.options">{{ option.name }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <textarea [value]="entry?.notes" (input)="onNotesChange($any($event.target).value)" [attr.placeholder]="'LANDING.CART.NOTES_PLACEHOLDER' | translate"></textarea>
+  <button class="text-link" (click)="onRemove()">{{ 'LANDING.CART.REMOVE' | translate }}</button>
+</div>

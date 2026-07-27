@@ -123,6 +123,8 @@
       "TITLE": "Twoje zamówienie",
       "ITEM_SINGULAR": "pozycja",
       "ITEM_PLURAL": "pozycje",
+      "ENTRY": "pozycja",
+      "ENTRIES": "pozycje",
       "EMPTY_TITLE": "Twój koszyk jest pusty.",
       "EMPTY_DESCRIPTION": "Wybierz danie, aby rozpocząć zamówienie.",
       "NOTES_PLACEHOLDER": "Dodaj notatki do tej pozycji",
@@ -161,7 +163,9 @@
       "ACTIONS": {
         "REVIEW_ORDER": "Przejdź do podsumowania",
         "PLACE_ORDER": "Złóż zamówienie",
-        "PLACING_ORDER": "Składanie zamówienia…"
+        "PLACING_ORDER": "Składanie zamówienia…",
+        "BACK_TO_MENU": "Powrót do menu",
+        "CHANGE_ITEMS": "Zmień pozycje"
       },
       "REVIEW": {
         "TITLE": "Podsumowanie zamówienia",

@@ -132,6 +132,10 @@ export class LandingCartService {
     this.checkoutStep.set('confirm');
   }
 
+  backToMenu() {
+    this.checkoutStep.set('menu');
+  }
+
   completeOrder(submittedOrder: any) {
     this.submittedOrder.set(submittedOrder);
     this.checkoutStep.set('submitted');

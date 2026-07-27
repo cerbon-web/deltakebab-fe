@@ -55,7 +55,7 @@
     </div>
   </section>
 
-  <section class="branch-selector-card" *ngIf="shouldShowBranchSelector()" [class.enter]="selectedRestaurant()">
+  <section class="branch-selector-card" *ngIf="shouldShowBranchSelector() && checkoutStep() === 'menu'" [class.enter]="selectedRestaurant()">
     <div class="branch-header">
       <div class="branch-title-group">
         <h2>{{ 'LANDING.SELECT_BRANCH.TITLE' | translate }}</h2>
@@ -107,7 +107,7 @@
     <div class="helper-text" *ngIf="error() && selectedRestaurant()">{{ error() }}</div>
   </section>
 
-  <section class="selector-header" *ngIf="selectorCollapsed() && selectedRestaurant() && selectedBranch()">
+  <section class="selector-header" *ngIf="selectorCollapsed() && selectedRestaurant() && selectedBranch() && checkoutStep() === 'menu'">
     <div class="header-content">
       <div class="selection-summary">
         <div class="summary-item">
@@ -126,50 +126,38 @@
     </div>
   </section>
 
-  <section class="menu-stage" *ngIf="selectedBranch()" [class.enter]="selectedBranch()">
+  <section class="menu-stage" *ngIf="selectedBranch()" [class.enter]="selectedBranch()" [class.collapsed]="checkoutStep() !== 'menu'">
+    <div class="menu-collapse-summary" *ngIf="checkoutStep() !== 'menu'">
+      <div>
+        <p class="eyebrow">{{ 'LANDING.CART.TITLE' | translate }}</p>
+        <h3>{{ totalCartItems }} {{ totalCartItems === 1 ? ('LANDING.CART.ITEM_SINGULAR' | translate) : ('LANDING.CART.ITEM_PLURAL' | translate) }}</h3>
+        <p class="collapse-summary-detail">{{ cart().length }} {{ cart().length === 1 ? ('LANDING.CART.ENTRY' | translate) : ('LANDING.CART.ENTRIES' | translate) }} · {{ cartTotal | currency:'PLN' }}</p>
+      </div>
+      <button class="change-btn small" (click)="backToMenu()">{{ 'LANDING.CHECKOUT.ACTIONS.CHANGE_ITEMS' | translate }}</button>
+    </div>
+
     <div class="order-tabs" role="tablist" aria-label="Ordering view">
       <button class="order-tab" [class.active]="activeTab() === 'menu'" (click)="setActiveTab('menu')">
         <span>{{ 'LANDING.MENU.TITLE' | translate }}</span>
       </button>
       <button class="order-tab" [class.active]="activeTab() === 'cart'" (click)="setActiveTab('cart')">
         <span>{{ 'LANDING.CART.TITLE' | translate }}</span>
-        <span class="tab-badge" *ngIf="cart().length > 0">{{ cart().length }}</span>
+        <span class="tab-badge" *ngIf="cart().length > 0">{{ totalCartItems }}</span>
       </button>
     </div>
 
     <div class="menu-view-panels">
       <div class="view-panel" [class.active]="activeTab() === 'menu'">
         <div class="menu-column">
-          <div class="section-title" *ngIf="!selectedCategory() || selectedCategory()">
-            <h3>{{ selectedCategory() ? selectedCategory() : ('LANDING.MENU.SELECT_CATEGORY_TITLE' | translate) }}</h3>
-            <p>{{ selectedCategory() ? ('LANDING.MENU.SUBTITLE' | translate) : ('LANDING.MENU.SELECT_CATEGORY_SUBTITLE' | translate) }}</p>
-          </div>
+          <app-category-selector
+            [categories]="categories()"
+            [selectedCategory]="selectedCategory()"
+            [menuLoading]="menuLoading()"
+            (categorySelected)="chooseCategory($event)"
+            (categoryCleared)="clearSelectedCategory()">
+          </app-category-selector>
 
-          <div class="category-selection" *ngIf="!selectedCategory()">
-            <div class="category-carousel" *ngIf="categories().length > 0">
-              <button class="carousel-nav left" *ngIf="carouselNeedsScroll()" (click)="scrollCategoryCarousel('left')" aria-label="Scroll categories left">‹</button>
-              <div class="category-card-grid" #categoryCarousel>
-                <button class="category-card" *ngFor="let category of categories()" (click)="chooseCategory(category.name)">
-                  <span class="category-card-icon">
-                    <img *ngIf="isCategoryIconImage(category)" [src]="getCategoryIcon(category)" alt="" />
-                    <ng-container *ngIf="!isCategoryIconImage(category)">{{ getCategoryIcon(category) }}</ng-container>
-                  </span>
-                  <span class="category-card-name">{{ getCategoryDisplayName(category) }}</span>
-                </button>
-              </div>
-              <button class="carousel-nav right" *ngIf="carouselNeedsScroll()" (click)="scrollCategoryCarousel('right')" aria-label="Scroll categories right">›</button>
-            </div>
-            <div class="empty-state" *ngIf="categories().length === 0 && !menuLoading()">
-              <p>No categories available yet.</p>
-            </div>
-          </div>
-
-          <div class="category-view" *ngIf="selectedCategory()">
-            <div class="category-view-header">
-              <button class="secondary-btn small" (click)="clearSelectedCategory()">← Back</button>
-            </div>
-
-            <div class="menu-loading" *ngIf="menuLoading()">
+          <div class="menu-loading" *ngIf="menuLoading()">
               <mat-progress-spinner diameter="24" mode="indeterminate"></mat-progress-spinner>
               <span>{{ 'LANDING.MENU.LOADING' | translate }}</span>
             </div>
@@ -189,14 +177,10 @@
               </article>
             </div>
 
-            <div class="empty-state" *ngIf="!menuLoading() && filteredMenuItems.length === 0">
-              <p>No items available in this category yet.</p>
-            </div>
           </div>
         </div>
-      </div>
 
-      <div class="view-panel" [class.active]="activeTab() === 'cart'">
+        <div class="view-panel" [class.active]="activeTab() === 'cart'">
         <div class="cart-panel">
           <div class="cart-panel-header">
             <div>
@@ -214,41 +198,18 @@
           </div>
 
           <div class="cart-items" *ngIf="cart().length > 0">
-            <div class="cart-item" *ngFor="let entry of cart()">
-              <div class="cart-item-row">
-                <div>
-                  <strong class="cart-item-name">{{ getCartItemDisplayName(entry) }}</strong>
-                  <div class="cart-item-price">{{ entry.price | currency:'PLN' }}</div>
-                </div>
-                <div class="quantity-controls">
-                  <button (click)="updateQuantity(entry.id, -1)">−</button>
-                  <span>{{ entry.quantity }}</span>
-                  <button (click)="updateQuantity(entry.id, 1)">+</button>
-                </div>
-              </div>
-
-              <div class="cart-item-details">
-                <div class="cart-detail-block" *ngIf="entry.sizeName">
-                  <span class="cart-detail-label">{{ 'LANDING.CART.SIZE' | translate }}</span>
-                  <span class="cart-detail-value">{{ getCartItemDisplaySize(entry) }}</span>
-                </div>
-
-                <div class="cart-detail-block" *ngIf="entry.modifiers?.length">
-                  <span class="cart-detail-label">{{ 'LANDING.CART.SELECTIONS' | translate }}</span>
-                  <div class="cart-detail-groups">
-                    <div class="cart-detail-group" *ngFor="let group of getCartModifierGroups(entry)">
-                      <span class="cart-detail-group-label">{{ group.name }}</span>
-                      <ul class="cart-detail-list">
-                        <li *ngFor="let option of group.options">{{ option.name }}</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <textarea [value]="entry.notes" (input)="updateNotes(entry.id, $any($event.target).value)" [attr.placeholder]="'LANDING.CART.NOTES_PLACEHOLDER' | translate"></textarea>
-              <button class="text-link" (click)="removeFromCart(entry.id)">{{ 'LANDING.CART.REMOVE' | translate }}</button>
-            </div>
+            <app-cart-item-card
+              *ngFor="let entry of cart()"
+              [entry]="entry"
+              [cartItemDisplayName]="getCartItemDisplayName(entry)"
+              [cartItemDisplaySize]="getCartItemDisplaySize(entry)"
+              [cartModifierGroups]="getCartModifierGroups(entry)"
+              [cartItemPrice]="entry.price"
+              [quantity]="entry.quantity"
+              (quantityChanged)="updateQuantity($event.id, $event.delta)"
+              (notesChanged)="updateNotes($event.id, $event.notes)"
+              (removed)="removeFromCart($event)">
+            </app-cart-item-card>
           </div>
 
           <button class="primary-btn full" (click)="continueToCheckout()" [disabled]="cart().length === 0">{{ 'LANDING.CART.CONTINUE' | translate }}</button>
@@ -259,139 +220,37 @@
 
   <button class="mobile-cart-fab" *ngIf="selectedBranch()" (click)="setActiveTab('cart')">
     <span class="mobile-cart-fab-icon">🛒</span>
-    <span class="mobile-cart-fab-count">{{ cart().length }}</span>
+    <span class="mobile-cart-fab-count">{{ totalCartItems }}</span>
   </button>
 
-  <div class="customization-backdrop" *ngIf="customizationOpen()" (click)="closeCustomization()"></div>
-  <div class="customization-sheet" *ngIf="customizationOpen()" role="dialog" aria-modal="true" aria-label="Customize item" (click)="$event.stopPropagation()">
-    <div class="customization-sheet-header">
-      <div>
-        <p class="eyebrow">{{ 'LANDING.MENU.CUSTOMIZE' | translate }}</p>
-        <h3>{{ customizationItem()?.name }}</h3>
-      </div>
-      <button class="icon-btn" (click)="closeCustomization()" [attr.aria-label]="'LANDING.CUSTOMIZATION.ARIA_LABEL' | translate">✕</button>
-    </div>
-
-    <div class="customization-sheet-body">
-      <div class="customization-preview">
-        <div class="customization-preview-info">
-          <span class="meta-pill">{{ getCustomizationMode(customizationItem()) === 'full' ? ('LANDING.CUSTOMIZATION.FULL' | translate) : ('LANDING.CUSTOMIZATION.QUICK' | translate) }}</span>
-          <p>{{ getCustomizationHint(customizationItem()) }}</p>
-        </div>
-        <div class="customization-preview-price">
-          <span class="product-price-summary-label">{{ 'LANDING.CUSTOMIZATION.CURRENT_TOTAL' | translate }}</span>
-          <strong>{{ getItemDisplayPrice(customizationItem()) | currency:'PLN' }}</strong>
-        </div>
-      </div>
-
-      <div class="customization-simple-layout" *ngIf="getCustomizationMode(customizationItem()) === 'compact'">
-        <div class="customization-section-card" *ngIf="customizationItem()?.sizes?.length > 1">
-          <div class="customization-section-header">
-            <div>
-              <div class="customization-title">Size</div>
-              <p class="customization-section-hint">{{ 'LANDING.CUSTOMIZATION.CHOOSE_SIZE' | translate }}</p>
-            </div>
-          </div>
-          <div class="customization-option-grid">
-            <button
-              class="customization-option-btn"
-              *ngFor="let size of customizationItem()?.sizes"
-              [class.active]="(customizationItem()?.selectedSizeId || customizationItem()?.sizes[0]?.id) === size.id"
-              (click)="selectItemSize(customizationItem(), size.id)">
-              <span>{{ size.name }}</span>
-              <span class="option-price">{{ size.price | currency:'PLN' }}</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="customization-section-card" *ngIf="getActiveModifierGroups(customizationItem()).length > 0">
-          <div class="customization-section-header">
-            <div>
-              <div class="customization-title">{{ getModifierSectionTitle(getActiveModifierGroups(customizationItem())[0]) }}</div>
-              <p class="customization-section-hint">{{ 'LANDING.CUSTOMIZATION.CHOOSE_OPTION' | translate }}</p>
-            </div>
-          </div>
-          <div class="customization-option-grid">
-            <button
-              class="customization-option-btn"
-              *ngFor="let option of getActiveModifierGroups(customizationItem())[0]?.options"
-              [class.active]="isModifierSelected(customizationItem(), getActiveModifierGroups(customizationItem())[0], option)"
-              (click)="toggleModifier(customizationItem(), getActiveModifierGroups(customizationItem())[0], option)">
-              <span>{{ option.name }}</span>
-              <span class="option-price" *ngIf="option.price > 0">+{{ option.price | currency:'PLN' }}</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="customization-full-layout" *ngIf="getCustomizationMode(customizationItem()) === 'full'">
-        <div class="customization-section-card" *ngIf="customizationItem()?.sizes?.length > 1">
-          <div class="customization-section-header">
-            <div>
-              <div class="customization-title">Size</div>
-              <p class="customization-section-hint">{{ 'LANDING.CUSTOMIZATION.PICK_SIZE' | translate }}</p>
-            </div>
-          </div>
-          <div class="customization-option-grid">
-            <button
-              class="customization-option-btn"
-              *ngFor="let size of customizationItem()?.sizes"
-              [class.active]="(customizationItem()?.selectedSizeId || customizationItem()?.sizes[0]?.id) === size.id"
-              (click)="selectItemSize(customizationItem(), size.id)">
-              <span>{{ size.name }}</span>
-              <span class="option-price">{{ size.price | currency:'PLN' }}</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="customization-section-card" *ngFor="let group of getActiveModifierGroups(customizationItem())" [class.invalid]="isModifierGroupInvalid(customizationItem(), group)">
-          <div class="customization-section-header">
-            <div>
-              <div class="customization-title">{{ getModifierSectionTitle(group) }}</div>
-              <p class="customization-section-hint">{{ group.required ? ('LANDING.CUSTOMIZATION.REQUIRED_SELECTION' | translate) : ('LANDING.CUSTOMIZATION.OPTIONAL_ENHANCEMENT' | translate) }}</p>
-            </div>
-          </div>
-          <div class="customization-option-grid">
-            <button
-              class="customization-option-btn"
-              *ngFor="let option of group.options"
-              [class.active]="isModifierSelected(customizationItem(), group, option)"
-              (click)="toggleModifier(customizationItem(), group, option)">
-              <span>{{ option.name }}</span>
-              <span class="option-price" *ngIf="option.price > 0">+{{ option.price | currency:'PLN' }}</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="customization-summary-card" *ngIf="customizationItem()">
-        <div>
-          <div class="customization-title">{{ 'LANDING.CUSTOMIZATION.YOUR_SELECTION' | translate }}</div>
-          <p class="customization-summary-text">{{ getCustomizationSummary(customizationItem()) }}</p>
-        </div>
-        <div class="customization-summary-price">{{ getItemDisplayPrice(customizationItem()) | currency:'PLN' }}</div>
-      </div>
-    </div>
-
-    <div class="customization-sheet-footer">
-      <div class="customization-price-summary">
-        <span>{{ 'LANDING.CUSTOMIZATION.READY_TO_ADD' | translate }}</span>
-        <strong>{{ getItemDisplayPrice(customizationItem()) | currency:'PLN' }}</strong>
-      </div>
-      <div class="customization-actions">
-        <button class="secondary-btn" (click)="closeCustomization()">{{ 'LANDING.CUSTOMIZATION.CLOSE_BUTTON' | translate }}</button>
-        <button class="primary-btn" (click)="addToCartFromCustomization($event)">{{ 'LANDING.CART.ADD' | translate }}</button>
-      </div>
-    </div>
-  </div>
+  <app-customization-sheet
+    [open]="customizationOpen()"
+    [item]="customizationItem()"
+    [invalidModifierGroupIds]="invalidModifierGroupIds()"
+    (closed)="closeCustomization()"
+    (sizeSelected)="selectItemSize($event.item, $event.sizeId)"
+    (modifierToggled)="toggleModifier($event.item, $event.group, $event.option)"
+    (addToCart)="addToCartFromCustomization()">
+  </app-customization-sheet>
 
   <section class="checkout-card" *ngIf="checkoutStep() !== 'menu' && selectedRestaurant() && selectedBranch()">
-    <div class="checkout-stepper">
-      <span [class.active]="checkoutStep() === 'details'">{{ 'LANDING.CHECKOUT.STEPS.DETAILS' | translate }}</span>
-      <span [class.active]="checkoutStep() === 'confirm' || checkoutStep() === 'submitted'">{{ 'LANDING.CHECKOUT.STEPS.REVIEW' | translate }}</span>
+    <div class="checkout-stepper" role="tablist" aria-label="Checkout steps">
+      <button class="step-pill" [class.active]="checkoutStep() === 'details'" [disabled]="checkoutStep() !== 'details'" (click)="goToDetails()">
+        <span class="step-indicator"></span>
+        <span>{{ 'LANDING.CHECKOUT.STEPS.DETAILS' | translate }}</span>
+      </button>
+      <button class="step-pill" [class.active]="checkoutStep() === 'confirm' || checkoutStep() === 'submitted'" [disabled]="checkoutStep() === 'details'" (click)="goToConfirmation()">
+        <span class="step-indicator"></span>
+        <span>{{ 'LANDING.CHECKOUT.STEPS.REVIEW' | translate }}</span>
+      </button>
     </div>
 
     <div *ngIf="checkoutStep() === 'details'" class="checkout-panel">
+      <div class="checkout-panel-header">
+        <h3>{{ 'LANDING.CHECKOUT.STEPS.DETAILS' | translate }}</h3>
+        <button class="checkout-back-btn" (click)="backToMenu()">← {{ 'LANDING.CHECKOUT.ACTIONS.BACK_TO_MENU' | translate }}</button>
+      </div>
+
       <div class="order-type-toggle">
         <button class="choice-btn" [class.active]="orderType() === 'SELF_PICKUP'" (click)="orderType.set('SELF_PICKUP')">{{ 'LANDING.CHECKOUT.ORDER_TYPES.SELF_PICKUP' | translate }}</button>
         <button class="choice-btn" [class.active]="orderType() === 'DELIVERY'" (click)="orderType.set('DELIVERY')">{{ 'LANDING.CHECKOUT.ORDER_TYPES.DELIVERY' | translate }}</button>
@@ -421,21 +280,54 @@
     </div>
 
     <div *ngIf="checkoutStep() === 'confirm'" class="checkout-panel">
-      <h3>{{ 'LANDING.CHECKOUT.REVIEW.TITLE' | translate }}</h3>
-      <div class="summary-box">
-        <p><strong>{{ 'LANDING.CHECKOUT.REVIEW.RESTAURANT' | translate }}</strong> {{ selectedRestaurant()?.name }}</p>
-        <p><strong>{{ 'LANDING.CHECKOUT.REVIEW.BRANCH' | translate }}</strong> {{ selectedBranch()?.street }} {{ selectedBranch()?.buildingNumber }}, {{ selectedBranch()?.city }}</p>
-        <p><strong>{{ 'LANDING.CHECKOUT.REVIEW.RECEIVING' | translate }}</strong> {{ orderType() === 'DELIVERY' ? ('LANDING.CHECKOUT.ORDER_TYPES.DELIVERY' | translate) : ('LANDING.CHECKOUT.ORDER_TYPES.SELF_PICKUP' | translate) }}</p>
-        <p><strong>{{ 'LANDING.CHECKOUT.REVIEW.PAYMENT' | translate }}</strong> {{ paymentMethod() === 'CASH' ? ('LANDING.CHECKOUT.PAYMENT_METHODS.CASH' | translate) : ('LANDING.CHECKOUT.PAYMENT_METHODS.CARD' | translate) }}</p>
-        <p><strong>{{ 'LANDING.CHECKOUT.REVIEW.PHONE' | translate }}</strong> {{ customerPhone() }}</p>
+      <div class="checkout-panel-header">
+        <h3>{{ 'LANDING.CHECKOUT.REVIEW.TITLE' | translate }}</h3>
+        <button class="checkout-back-btn" (click)="goToDetails()">← {{ 'LANDING.CHECKOUT.ACTIONS.BACK_TO_MENU' | translate }}</button>
       </div>
-      <div class="summary-items" *ngFor="let item of cart()">
-        <span>
-          {{ item.name }}
-          <small *ngIf="item.sizeName">({{ item.sizeName }})</small>
-          × {{ item.quantity }}
-        </span>
-        <span *ngIf="item.notes">{{ 'LANDING.CHECKOUT.REVIEW.NOTES' | translate }} {{ item.notes }}</span>
+      <div class="summary-box checkout-summary-box">
+        <div class="summary-row">
+          <span class="summary-label">{{ 'LANDING.CHECKOUT.REVIEW.RESTAURANT' | translate }}</span>
+          <span class="summary-value">{{ selectedRestaurant()?.name }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">{{ 'LANDING.CHECKOUT.REVIEW.BRANCH' | translate }}</span>
+          <span class="summary-value">{{ selectedBranch()?.street }} {{ selectedBranch()?.buildingNumber }}, {{ selectedBranch()?.city }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">{{ 'LANDING.CHECKOUT.REVIEW.RECEIVING' | translate }}</span>
+          <span class="summary-value">{{ orderType() === 'DELIVERY' ? ('LANDING.CHECKOUT.ORDER_TYPES.DELIVERY' | translate) : ('LANDING.CHECKOUT.ORDER_TYPES.SELF_PICKUP' | translate) }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">{{ 'LANDING.CHECKOUT.REVIEW.PAYMENT' | translate }}</span>
+          <span class="summary-value">{{ paymentMethod() === 'CASH' ? ('LANDING.CHECKOUT.PAYMENT_METHODS.CASH' | translate) : ('LANDING.CHECKOUT.PAYMENT_METHODS.CARD' | translate) }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">{{ 'LANDING.CHECKOUT.REVIEW.PHONE' | translate }}</span>
+          <span class="summary-value">{{ customerPhone() }}</span>
+        </div>
+      </div>
+      <div class="checkout-items">
+        <div class="checkout-item" *ngFor="let item of cart()">
+          <div class="checkout-item-header">
+            <strong>{{ item.name }}</strong>
+            <span>{{ item.price | currency:'PLN' }}</span>
+          </div>
+          <div class="checkout-item-meta">
+            <span>{{ item.sizeName }}</span>
+            <span>× {{ item.quantity }}</span>
+          </div>
+          <div class="checkout-item-modifiers" *ngIf="item.modifiers?.length">
+            <div class="checkout-item-modifier-group" *ngFor="let group of getCartModifierGroups(item)">
+              <div class="modifier-group-name">{{ group.name }}</div>
+              <ul>
+                <li *ngFor="let option of group.options">{{ option.name }}</li>
+              </ul>
+            </div>
+          </div>
+          <div class="checkout-item-notes" *ngIf="item.notes">
+            <strong>{{ 'LANDING.CHECKOUT.REVIEW.NOTES' | translate }}</strong> {{ item.notes }}
+          </div>
+        </div>
       </div>
       <button class="primary-btn full" (click)="placeOrder()" [disabled]="orderSubmitting()">{{ orderSubmitting() ? ('LANDING.CHECKOUT.ACTIONS.PLACING_ORDER' | translate) : ('LANDING.CHECKOUT.ACTIONS.PLACE_ORDER' | translate) }}</button>
     </div>

@@ -123,6 +123,8 @@
       "TITLE": "Your order",
       "ITEM_SINGULAR": "item",
       "ITEM_PLURAL": "items",
+      "ENTRY": "entry",
+      "ENTRIES": "entries",
       "EMPTY_TITLE": "Your cart is empty.",
       "EMPTY_DESCRIPTION": "Select a dish to start your order.",
       "NOTES_PLACEHOLDER": "Add notes for this item",
@@ -161,7 +163,9 @@
       "ACTIONS": {
         "REVIEW_ORDER": "Review order",
         "PLACE_ORDER": "Place order",
-        "PLACING_ORDER": "Placing order…"
+        "PLACING_ORDER": "Placing order…",
+        "BACK_TO_MENU": "Back to menu",
+        "CHANGE_ITEMS": "Change items"
       },
       "REVIEW": {
         "TITLE": "Order review",

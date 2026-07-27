@@ -9,7 +9,7 @@ import { LandingViewModelService } from '../../services/landing-view-model.servi
   standalone: true,
   imports: [CommonModule, TranslateModule],
   templateUrl: './product-card-content.component.html',
-  styleUrls: ['../../landing/landing.component.scss']
+  styleUrls: ['./product-card-content.component.scss']
 })
 export class ProductCardContentComponent {
   @Input() item: any;

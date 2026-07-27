@@ -1,0 +1,189 @@
+:host {
+  display: block;
+}
+
+.customization-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 1000;
+}
+
+.customization-sheet {
+  position: fixed;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 1001;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2);
+  display: flex;
+  flex-direction: column;
+  max-height: min(82vh, 760px);
+  overflow: hidden;
+}
+
+.customization-sheet-header,
+.customization-sheet-footer,
+.customization-preview,
+.customization-summary-card,
+.customization-section-card {
+  padding: 1rem 1.25rem;
+}
+
+.customization-sheet-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.customization-sheet-body {
+  overflow-y: auto;
+  padding: 0.5rem 0 1rem;
+}
+
+.customization-preview {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.customization-preview-info {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.meta-pill,
+.product-price-summary-label,
+.customization-summary-text {
+  color: #6b7280;
+}
+
+.customization-preview-price,
+.customization-price-summary {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.customization-section-card {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.75rem 1.25rem 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #fffaf5;
+}
+
+.customization-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.customization-title {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.customization-section-hint {
+  margin: 0.2rem 0 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.customization-option-grid {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.customization-option-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+  padding: 0.8rem 0.9rem;
+  cursor: pointer;
+}
+
+.customization-option-btn.active {
+  border-color: #fdba74;
+  background: #fff7ed;
+}
+
+.customization-summary-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0.75rem 1.25rem 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #fff7ed;
+}
+
+.customization-sheet-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid #f3f4f6;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .customization-sheet {
+    left: 50%;
+    right: auto;
+    bottom: 1.5rem;
+    width: min(38rem, calc(100vw - 3rem));
+    transform: translateX(-50%);
+  }
+}
+
+.customization-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.customization-actions .secondary-btn,
+.customization-actions .primary-btn {
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  border-radius: 999px;
+  font-weight: 700;
+  transition: all 200ms ease;
+}
+
+.customization-actions .secondary-btn {
+  background: #fff7ed;
+  color: #7c2d12;
+  padding: 0.7rem 1rem;
+  border: 1px solid #fdba74;
+}
+
+.customization-actions .secondary-btn:hover {
+  background: #fed7aa;
+}
+
+.customization-actions .primary-btn {
+  background: var(--primary);
+  color: white;
+  padding: 0.7rem 1rem;
+}
+
+.customization-actions .primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+}

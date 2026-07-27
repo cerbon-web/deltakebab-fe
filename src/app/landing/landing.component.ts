@@ -1,8 +1,7 @@
-import { Component, ElementRef, ViewChild, inject, OnInit, signal, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { GeolocationService } from '../services/geolocation.service';
@@ -20,20 +19,22 @@ import { LandingCartFlowService } from '../services/landing-cart-flow.service';
 import { Branch, Restaurant } from '../types/domain';
 import { environment } from '../../environments/environment';
 import { ProductCardContentComponent } from '../components/product-card-content/product-card-content.component';
+import { CategorySelectorComponent } from '../components/category-selector/category-selector.component';
+import { CartItemCardComponent } from '../components/cart-item-card/cart-item-card.component';
+import { CustomizationSheetComponent } from '../components/customization-sheet/customization-sheet.component';
 
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatCardModule, TranslateModule, MatProgressSpinnerModule, ProductCardContentComponent],
+  imports: [CommonModule, MatButtonModule, MatIconModule, TranslateModule, MatProgressSpinnerModule, ProductCardContentComponent, CategorySelectorComponent, CartItemCardComponent, CustomizationSheetComponent],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss']
 })
-export class LandingComponent implements OnInit, AfterViewInit {
+export class LandingComponent implements OnInit {
   private readonly translate = inject(TranslateService);
 
   restaurants = signal<Restaurant[]>([]);
   branches = signal<Branch[]>([]);
-  readonly carouselNeedsScroll = signal<boolean>(false);
   get selectedBranch() { return this.selectionService.selectedBranch; }
   get selectedRestaurant() { return this.selectionService.selectedRestaurant; }
   get categories() { return this.selectionService.categories; }
@@ -51,7 +52,6 @@ export class LandingComponent implements OnInit, AfterViewInit {
   private itemMessageTimeout: number | null = null;
   private itemMessageHovered = false;
   get menuLoading() { return this.uiStateService.menuLoading; }
-  get cartOpen() { return this.cartService.cartOpen; }
   get checkoutStep() { return this.cartService.checkoutStep; }
   get orderType() { return this.checkoutFormService.orderType; }
   get paymentMethod() { return this.checkoutFormService.paymentMethod; }
@@ -101,24 +101,16 @@ export class LandingComponent implements OnInit, AfterViewInit {
     this.loadRestaurants();
   }
 
-  ngAfterViewInit(): void {
-    this.checkCarouselScroll();
-  }
-
-  private checkCarouselScroll(): void {
-    const carousel = this.categoryCarousel?.nativeElement;
-    if (carousel) {
-      // Check if content overflows the visible area
-      this.carouselNeedsScroll.set(carousel.scrollWidth > carousel.clientWidth);
-    }
-  }
-
   private t(key: string, params?: Record<string, unknown>) {
     return this.translate.instant(key, params);
   }
 
   get cartTotal(): number {
     return this.cartService.cartTotal;
+  }
+
+  get totalCartItems(): number {
+    return this.cart().reduce((sum, entry) => sum + (entry.quantity || 1), 0);
   }
 
   get filteredMenuItems() {
@@ -217,10 +209,6 @@ export class LandingComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private normalizeBranches(branches: any[], restaurantName?: string): any[] {
-    return this.restaurantFlowService.normalizeBranches(branches, restaurantName);
-  }
-
   async selectRestaurant(restaurant: any) {
     this.selectionService.setSingleRestaurantMode(false);
 
@@ -248,10 +236,6 @@ export class LandingComponent implements OnInit, AfterViewInit {
       return this.t('LANDING.DISTANCE.METERS', { value: Math.round(distanceKm * 1000) });
     }
     return this.t('LANDING.DISTANCE.KILOMETERS', { value: distanceKm.toFixed(1) });
-  }
-
-  private async reverseGeocodeLocation(lat: number, lng: number): Promise<string | null> {
-    return this.restaurantFlowService.reverseGeocodeAndPopulateForm(lat, lng);
   }
 
   selectBranch(branch: any) {
@@ -283,9 +267,6 @@ export class LandingComponent implements OnInit, AfterViewInit {
     this.loadMenu(branch.id);
   }
 
-  @ViewChild('categoryCarousel', { read: ElementRef })
-  categoryCarousel?: ElementRef<HTMLDivElement>;
-
   loadMenu(branchId: number | string) {
     this.dataFlowService.loadMenu(
       branchId,
@@ -294,10 +275,6 @@ export class LandingComponent implements OnInit, AfterViewInit {
           categories,
           firstItem: items.find((item: any) => item.name === 'DELTA ROLLO')
         };
-        // Schedule carousel check after view updates
-        requestAnimationFrame(() => {
-          setTimeout(() => this.checkCarouselScroll(), 0);
-        });
       },
       (message) => this.cartService.setError(this.t(message))
     );
@@ -311,42 +288,31 @@ export class LandingComponent implements OnInit, AfterViewInit {
     this.selectionService.chooseCategory(null);
   }
 
-  scrollCategoryCarousel(direction: 'left' | 'right') {
-    const carousel = this.categoryCarousel?.nativeElement;
-    if (!carousel) {
-      return;
-    }
-
-    const scrollAmount = carousel.clientWidth * 0.7;
-    const target = direction === 'left'
-      ? Math.max(0, carousel.scrollLeft - scrollAmount)
-      : Math.min(carousel.scrollWidth, carousel.scrollLeft + scrollAmount);
-
-    carousel.scrollTo({ left: target, behavior: 'smooth' });
+  getSelectedSize(item: any) {
+    return this.viewModelService.getSelectedSize(item);
   }
 
-  private getCategoryIconAssetUrl(rawIcon?: string | null): string | null {
-    const trimmedIcon = rawIcon?.trim();
-    if (!trimmedIcon) {
-      return null;
-    }
-
-    if (/^https?:\/\//i.test(trimmedIcon)) {
-      return trimmedIcon;
-    }
-
-    if (/^(\/|\.\/|\.\.\/)/i.test(trimmedIcon)) {
-      const baseUrl = environment.apiBaseUrl.replace(/\/api\/?$/, '');
-      return `${baseUrl}${trimmedIcon.startsWith('/') ? trimmedIcon : `/${trimmedIcon}`}`;
-    }
-
-    return trimmedIcon;
+  getActiveModifierGroups(item: any) {
+    return this.viewModelService.getActiveModifierGroups(item);
   }
 
-  isCategoryIconImage(category: { icon?: string | null }) {
-    const rawIcon = category.icon?.trim();
-    const imagePattern = /^(https?:\/\/|\/|\.\/|\.\.\/)/i;
-    return Boolean(rawIcon && imagePattern.test(rawIcon));
+  toggleModifier(item: any, group: any, option: any) {
+    this.cartFlowService.toggleModifier(item, group, option);
+    this.syncCustomizationItem();
+
+    const missingGroups = this.getMissingRequiredModifierGroupIds(item);
+    if (missingGroups.length === 0) {
+      this.clearInvalidModifierGroups(item);
+    } else {
+      this.invalidModifierGroupIds.update((current) => ({
+        ...current,
+        [String(item.id)]: missingGroups
+      }));
+    }
+  }
+
+  getItemDisplayPrice(item: any): number {
+    return this.landingOrderService.getItemDisplayPrice(item);
   }
 
   isItemImageAvailable(item: { imageUrl?: string | null }) {
@@ -370,121 +336,6 @@ export class LandingComponent implements OnInit, AfterViewInit {
     }
 
     return rawImage;
-  }
-
-  getCategoryIcon(category: { id?: string | number; name: string; icon?: string | null }) {
-    const rawIcon = category.icon?.trim();
-    const emojiPattern = /[\p{Extended_Pictographic}]/u;
-    const imagePattern = /^(https?:\/\/|\/|\.\/|\.\.\/)/i;
-
-    if (rawIcon && emojiPattern.test(rawIcon)) {
-      return rawIcon;
-    }
-
-    if (rawIcon && imagePattern.test(rawIcon)) {
-      return this.getCategoryIconAssetUrl(rawIcon);
-    }
-
-    const idIconMap: Record<string, string> = {
-      featured: '⭐',
-      '1': '🥙',
-      '2': '🌯',
-      '4': '📦',
-      '5': '🥖',
-      '6': '🥡',
-      '8': '🥗',
-      '9': '🧂',
-      '10': '🥤'
-    };
-
-    if (category.id !== undefined && category.id !== null) {
-      const idKey = String(category.id);
-      if (idIconMap[idKey]) {
-        return idIconMap[idKey];
-      }
-    }
-
-    const normalized = category.name
-      .toLowerCase()
-      .normalize('NFKD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9 ]+/g, ' ')
-      .trim();
-
-    const fallbackNameMap: Array<{ matcher: string; icon: string }> = [
-      { matcher: 'bestsellers', icon: '⭐' },
-      { matcher: 'rollo', icon: '🥙' },
-      { matcher: 'tortilla', icon: '🌯' },
-      { matcher: 'bulka', icon: '🥖' },
-      { matcher: 'box', icon: '📦' },
-      { matcher: 'kebab na talerzu', icon: '🥣' },
-      { matcher: 'salatki', icon: '🥗' },
-      { matcher: 'kapsalon', icon: '🥡' },
-      { matcher: 'dodatki', icon: '🧂' },
-      { matcher: 'o kurcze', icon: '🍗' },
-      { matcher: 'napoje', icon: '🥤' },
-      { matcher: 'pizza', icon: '🍕' },
-      { matcher: 'burger', icon: '🍔' },
-      { matcher: 'sandwich', icon: '🥪' },
-      { matcher: 'salad', icon: '🥗' },
-      { matcher: 'dessert', icon: '🍰' },
-      { matcher: 'cake', icon: '🍰' },
-      { matcher: 'drink', icon: '🥤' },
-      { matcher: 'coffee', icon: '☕' },
-      { matcher: 'tea', icon: '🫖' },
-      { matcher: 'soup', icon: '🍲' },
-      { matcher: 'pasta', icon: '🍝' },
-      { matcher: 'fries', icon: '🍟' }
-    ];
-
-    const matched = fallbackNameMap.find((entry) => normalized.includes(entry.matcher));
-    return matched?.icon ?? '🍽️';
-  }
-
-  getCategoryDisplayName(category: { name: string }): string {
-    const normalized = category.name
-      .toLowerCase()
-      .normalize('NFKD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9 ]+/g, ' ')
-      .trim();
-
-    if (normalized === 'bestsellers') {
-      return this.t('LANDING.CATEGORY.BESTSELLERS');
-    }
-
-    return category.name;
-  }
-
-  getSelectedSize(item: any) {
-    return this.viewModelService.getSelectedSize(item);
-  }
-
-  getActiveModifierGroups(item: any) {
-    return this.viewModelService.getActiveModifierGroups(item);
-  }
-
-  isModifierSelected(item: any, group: any, option: any) {
-    return this.menuStateService.isModifierSelected(item, group, option);
-  }
-
-  toggleModifier(item: any, group: any, option: any) {
-    this.cartFlowService.toggleModifier(item, group, option);
-    this.syncCustomizationItem();
-
-    const missingGroups = this.getMissingRequiredModifierGroupIds(item);
-    if (missingGroups.length === 0) {
-      this.clearInvalidModifierGroups(item);
-    } else {
-      this.invalidModifierGroupIds.update((current) => ({
-        ...current,
-        [String(item.id)]: missingGroups
-      }));
-    }
-  }
-
-  getItemDisplayPrice(item: any): number {
-    return this.landingOrderService.getItemDisplayPrice(item);
   }
 
   getCartItemDisplayName(entry: any): string {
@@ -546,23 +397,6 @@ export class LandingComponent implements OnInit, AfterViewInit {
     return matchingOption?.name || modifier?.name || '';
   }
 
-  getModifierSectionTitle(group: any): string {
-    const name = (group?.name || '').toLowerCase();
-    if (name.includes('size')) {
-      return 'Size';
-    }
-    if (name.includes('meat')) {
-      return 'Meat';
-    }
-    if (name.includes('sauce')) {
-      return 'Sauces';
-    }
-    if (name.includes('extra')) {
-      return 'Extras';
-    }
-    return group?.name || 'Options';
-  }
-
   getCartModifierGroups(entry: any): Array<{ name: string; options: Array<any> }> {
     return this.getCartEntryModifierGroups(entry).map(({ name, options }) => ({ name, options }));
   }
@@ -590,39 +424,6 @@ export class LandingComponent implements OnInit, AfterViewInit {
     this.customizationItem.set(latestItem);
   }
 
-  hasCustomizationOptions(item: any): boolean {
-    return (item?.sizes?.length || 0) > 1 || (this.getActiveModifierGroups(item) || []).length > 0;
-  }
-
-  shouldShowCustomizeButton(item: any): boolean {
-    const activeGroups = this.getActiveModifierGroups(item) || [];
-    return activeGroups.length > 1;
-  }
-
-  shouldShowInlineModifierSelection(item: any): boolean {
-    const activeGroups = this.getActiveModifierGroups(item) || [];
-    return activeGroups.length === 1;
-  }
-
-  getCardModifierGroup(item: any): any {
-    const activeGroups = this.getActiveModifierGroups(item) || [];
-    return this.shouldShowInlineModifierSelection(item) ? activeGroups[0] : null;
-  }
-
-  getCustomizationMode(item: any): 'compact' | 'full' {
-    if (!item) {
-      return 'compact';
-    }
-
-    const activeGroups = this.getActiveModifierGroups(item) || [];
-    const totalOptions = activeGroups.reduce((count, group: any) => count + (group.options?.length || 0), 0);
-    const hasMultipleSizes = (item.sizes?.length || 0) > 1;
-    const hasManyGroups = activeGroups.length > 1;
-    const hasLargeGroup = activeGroups.some((group: any) => (group.options?.length || 0) > 3);
-
-    return hasMultipleSizes || hasManyGroups || hasLargeGroup || totalOptions > 5 ? 'full' : 'compact';
-  }
-
   getCustomizationSummary(item: any): string {
     if (!item) {
       return this.t('LANDING.CUSTOMIZATION.DEFAULT_SELECTION');
@@ -644,24 +445,6 @@ export class LandingComponent implements OnInit, AfterViewInit {
     }
 
     return parts.length ? parts.join(' • ') : this.t('LANDING.CUSTOMIZATION.DEFAULT_SELECTION');
-  }
-
-  getCustomizationHint(item: any): string {
-    const activeGroups = this.getActiveModifierGroups(item) || [];
-
-    if ((item?.sizes?.length || 0) > 1 && activeGroups.length) {
-      return this.t('LANDING.CUSTOMIZATION.HINT.SIZE_AND_ADDONS');
-    }
-
-    if ((item?.sizes?.length || 0) > 1) {
-      return this.t('LANDING.CUSTOMIZATION.HINT.SIZE_ONLY');
-    }
-
-    if (activeGroups.length) {
-      return this.t('LANDING.CUSTOMIZATION.HINT.OPTION_ONLY');
-    }
-
-    return this.t('LANDING.CUSTOMIZATION.HINT.READY_AS_IS');
   }
 
   quickAddItem(item: any, event?: MouseEvent) {
@@ -716,7 +499,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
     }
   }
 
-  addToCartFromCustomization(event?: MouseEvent) {
+  addToCartFromCustomization(event?: MouseEvent | void) {
     const item = this.customizationItem();
     if (!item) {
       return;
@@ -731,7 +514,8 @@ export class LandingComponent implements OnInit, AfterViewInit {
       this.showItemMessage('success', message);
       this.clearInvalidModifierGroups(item);
       this.closeCustomization();
-      this.triggerAddAnimation(event?.currentTarget as HTMLElement | null);
+      const originElement = (event?.currentTarget as HTMLElement | null) ?? document.querySelector('.customization-actions .primary-btn') as HTMLElement | null;
+      this.triggerAddAnimation(originElement);
       return;
     }
 
@@ -868,6 +652,14 @@ export class LandingComponent implements OnInit, AfterViewInit {
 
   continueToCheckout() {
     this.cartFlowService.continueToCheckout(this.cart().length, (key) => this.t(key));
+  }
+
+  backToMenu() {
+    this.cartService.backToMenu();
+  }
+
+  goToDetails() {
+    this.cartService.checkoutStep.set('details');
   }
 
   goToConfirmation() {

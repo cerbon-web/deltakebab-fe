@@ -1,0 +1,29 @@
+<div class="section-title" *ngIf="!selectedCategory || selectedCategory">
+  <h3>{{ selectedCategory ? selectedCategory : ('LANDING.MENU.SELECT_CATEGORY_TITLE' | translate) }}</h3>
+  <p>{{ selectedCategory ? ('LANDING.MENU.SUBTITLE' | translate) : ('LANDING.MENU.SELECT_CATEGORY_SUBTITLE' | translate) }}</p>
+</div>
+
+<div class="category-selection" *ngIf="!selectedCategory">
+  <div class="category-carousel" *ngIf="categories.length > 0">
+    <button class="carousel-nav left" *ngIf="shouldShowPrevButton" (click)="goToPreviousPage()" aria-label="Show previous categories">‹</button>
+    <div class="category-card-grid">
+      <button class="category-card" *ngFor="let category of visibleCategories" (click)="onCategorySelect(category.name)">
+        <span class="category-card-icon">
+          <img *ngIf="isCategoryIconImage(category)" [src]="getCategoryIcon(category)" alt="" />
+          <ng-container *ngIf="!isCategoryIconImage(category)">{{ getCategoryIcon(category) }}</ng-container>
+        </span>
+        <span class="category-card-name">{{ getCategoryDisplayName(category) }}</span>
+      </button>
+    </div>
+    <button class="carousel-nav right" *ngIf="shouldShowNextButton" (click)="goToNextPage()" aria-label="Show next categories">›</button>
+  </div>
+  <div class="empty-state" *ngIf="categories.length === 0 && !menuLoading">
+    <p>No categories available yet.</p>
+  </div>
+</div>
+
+<div class="category-view" *ngIf="selectedCategory">
+  <div class="category-view-header">
+    <button class="secondary-btn small category-back-btn" (click)="onClearSelection()">← Back</button>
+  </div>
+</div>

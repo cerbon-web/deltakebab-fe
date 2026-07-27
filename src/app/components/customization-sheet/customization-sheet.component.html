@@ -1,0 +1,122 @@
+<div class="customization-backdrop" *ngIf="open" (click)="onClose()"></div>
+<div class="customization-sheet" *ngIf="open" role="dialog" aria-modal="true" aria-label="Customize item" (click)="$event.stopPropagation()">
+  <div class="customization-sheet-header">
+    <div>
+      <p class="eyebrow">{{ 'LANDING.MENU.CUSTOMIZE' | translate }}</p>
+      <h3>{{ item?.name }}</h3>
+    </div>
+    <button class="icon-btn" (click)="onClose()" [attr.aria-label]="'LANDING.CUSTOMIZATION.ARIA_LABEL' | translate">✕</button>
+  </div>
+
+  <div class="customization-sheet-body">
+    <div class="customization-preview">
+      <div class="customization-preview-info">
+        <span class="meta-pill">{{ customizationMode === 'full' ? ('LANDING.CUSTOMIZATION.FULL' | translate) : ('LANDING.CUSTOMIZATION.QUICK' | translate) }}</span>
+        <p>{{ customizationHint }}</p>
+      </div>
+      <div class="customization-preview-price">
+        <span class="product-price-summary-label">{{ 'LANDING.CUSTOMIZATION.CURRENT_TOTAL' | translate }}</span>
+        <strong>{{ itemDisplayPrice | currency:'PLN' }}</strong>
+      </div>
+    </div>
+
+    <div class="customization-simple-layout" *ngIf="customizationMode === 'compact'">
+      <div class="customization-section-card" *ngIf="item?.sizes?.length > 1">
+        <div class="customization-section-header">
+          <div>
+            <div class="customization-title">Size</div>
+            <p class="customization-section-hint">{{ 'LANDING.CUSTOMIZATION.CHOOSE_SIZE' | translate }}</p>
+          </div>
+        </div>
+        <div class="customization-option-grid">
+          <button
+            class="customization-option-btn"
+            *ngFor="let size of item?.sizes"
+            [class.active]="(item?.selectedSizeId || item?.sizes[0]?.id) === size.id"
+            (click)="onSizeSelect(size.id)">
+            <span>{{ size.name }}</span>
+            <span class="option-price">{{ size.price | currency:'PLN' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="customization-section-card" *ngIf="activeModifierGroups.length > 0">
+        <div class="customization-section-header">
+          <div>
+            <div class="customization-title">{{ modifierSectionTitle }}</div>
+            <p class="customization-section-hint">{{ 'LANDING.CUSTOMIZATION.CHOOSE_OPTION' | translate }}</p>
+          </div>
+        </div>
+        <div class="customization-option-grid">
+          <button
+            class="customization-option-btn"
+            *ngFor="let option of activeModifierGroups[0]?.options"
+            [class.active]="isModifierSelected(activeModifierGroups[0], option)"
+            (click)="onModifierToggle(activeModifierGroups[0], option)">
+            <span>{{ option.name }}</span>
+            <span class="option-price" *ngIf="option.price > 0">+{{ option.price | currency:'PLN' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="customization-full-layout" *ngIf="customizationMode === 'full'">
+      <div class="customization-section-card" *ngIf="item?.sizes?.length > 1">
+        <div class="customization-section-header">
+          <div>
+            <div class="customization-title">Size</div>
+            <p class="customization-section-hint">{{ 'LANDING.CUSTOMIZATION.PICK_SIZE' | translate }}</p>
+          </div>
+        </div>
+        <div class="customization-option-grid">
+          <button
+            class="customization-option-btn"
+            *ngFor="let size of item?.sizes"
+            [class.active]="(item?.selectedSizeId || item?.sizes[0]?.id) === size.id"
+            (click)="onSizeSelect(size.id)">
+            <span>{{ size.name }}</span>
+            <span class="option-price">{{ size.price | currency:'PLN' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="customization-section-card" *ngFor="let group of activeModifierGroups" [class.invalid]="isModifierGroupInvalid(group)">
+        <div class="customization-section-header">
+          <div>
+            <div class="customization-title">{{ group.name }}</div>
+            <p class="customization-section-hint">{{ group.required ? ('LANDING.CUSTOMIZATION.REQUIRED_SELECTION' | translate) : ('LANDING.CUSTOMIZATION.OPTIONAL_ENHANCEMENT' | translate) }}</p>
+          </div>
+        </div>
+        <div class="customization-option-grid">
+          <button
+            class="customization-option-btn"
+            *ngFor="let option of group.options"
+            [class.active]="isModifierSelected(group, option)"
+            (click)="onModifierToggle(group, option)">
+            <span>{{ option.name }}</span>
+            <span class="option-price" *ngIf="option.price > 0">+{{ option.price | currency:'PLN' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="customization-summary-card" *ngIf="item">
+      <div>
+        <div class="customization-title">{{ 'LANDING.CUSTOMIZATION.YOUR_SELECTION' | translate }}</div>
+        <p class="customization-summary-text">{{ customizationSummary }}</p>
+      </div>
+      <div class="customization-summary-price">{{ itemDisplayPrice | currency:'PLN' }}</div>
+    </div>
+  </div>
+
+  <div class="customization-sheet-footer">
+    <div class="customization-price-summary">
+      <span>{{ 'LANDING.CUSTOMIZATION.READY_TO_ADD' | translate }}</span>
+      <strong>{{ itemDisplayPrice | currency:'PLN' }}</strong>
+    </div>
+    <div class="customization-actions">
+      <button class="secondary-btn" (click)="onClose()">{{ 'LANDING.CUSTOMIZATION.CLOSE_BUTTON' | translate }}</button>
+      <button class="primary-btn" (click)="onAddToCart()">{{ 'LANDING.CART.ADD' | translate }}</button>
+    </div>
+  </div>
+</div>
