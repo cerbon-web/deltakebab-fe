@@ -35,4 +35,40 @@ export class LandingViewModelService {
     const selectedSize = this.getSelectedSize(item);
     return selectedSize?.modifierGroups?.length ? selectedSize.modifierGroups : (item.modifierGroups || []);
   }
+
+  shouldShowInlineModifierSelection(item: MenuItem) {
+    const activeGroups = this.getActiveModifierGroups(item) || [];
+    return activeGroups.length === 1;
+  }
+
+  getCardModifierGroup(item: MenuItem) {
+    const activeGroups = this.getActiveModifierGroups(item) || [];
+    return this.shouldShowInlineModifierSelection(item) ? activeGroups[0] : null;
+  }
+
+  getModifierSectionTitle(group: any): string {
+    const name = (group?.name || '').toLowerCase();
+    if (name.includes('size')) {
+      return 'Size';
+    }
+    if (name.includes('meat')) {
+      return 'Meat';
+    }
+    if (name.includes('sauce')) {
+      return 'Sauces';
+    }
+    if (name.includes('extra')) {
+      return 'Extras';
+    }
+    return group?.name || 'Options';
+  }
+
+  hasCustomizationOptions(item: MenuItem) {
+    return (item?.sizes?.length || 0) > 1 || (this.getActiveModifierGroups(item) || []).length > 0;
+  }
+
+  shouldShowCustomizeButton(item: MenuItem) {
+    const activeGroups = this.getActiveModifierGroups(item) || [];
+    return activeGroups.length > 1;
+  }
 }

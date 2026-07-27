@@ -84,7 +84,37 @@
       "SELECT_CATEGORY_SUBTITLE": "Browse the categories below to find what you want.",
       "LOADING": "Loading menu…",
       "AVAILABLE": "Available now",
-      "UNAVAILABLE": "Unavailable"
+      "UNAVAILABLE": "Unavailable",
+      "SIZE": "Size",
+      "MODIFIER_GROUP": "Choose an option",
+      "MULTIPLE_SIZES": "Multiple sizes",
+      "CUSTOMIZABLE": "Customizable",
+      "READY_AS_IS": "Ready as-is",
+      "STARTING_FROM": "Starting from",
+      "CUSTOMIZE": "Customize",
+      "QUICK_ADD": "Quick add"
+    },
+    "CUSTOMIZATION": {
+      "TITLE": "Customize item",
+      "ARIA_LABEL": "Close customization",
+      "CURRENT_TOTAL": "Current total",
+      "FULL": "Full customization",
+      "QUICK": "Quick customization",
+      "CHOOSE_SIZE": "Choose the size you want.",
+      "CHOOSE_OPTION": "Choose one option.",
+      "PICK_SIZE": "Pick the right size for your order.",
+      "REQUIRED_SELECTION": "Required selection",
+      "OPTIONAL_ENHANCEMENT": "Optional enhancement",
+      "YOUR_SELECTION": "Your selection",
+      "READY_TO_ADD": "Ready to add",
+      "CLOSE_BUTTON": "Close",
+      "DEFAULT_SELECTION": "Default selection",
+      "HINT": {
+        "SIZE_AND_ADDONS": "Choose your size and any preferred add-ons.",
+        "SIZE_ONLY": "Pick the size that fits your order.",
+        "OPTION_ONLY": "Pick the option that fits your taste.",
+        "READY_AS_IS": "Ready to order as-is."
+      }
     },
     "CATEGORY": {
       "BESTSELLERS": "Bestsellers"

@@ -84,7 +84,37 @@
       "SELECT_CATEGORY_SUBTITLE": "Przeglądaj kategorie poniżej, aby znaleźć to, co chcesz zamówić.",
       "LOADING": "Ładowanie menu…",
       "AVAILABLE": "Dostępne teraz",
-      "UNAVAILABLE": "Niedostępne"
+      "UNAVAILABLE": "Niedostępne",
+      "SIZE": "Rozmiar",
+      "MODIFIER_GROUP": "Wybierz opcję",
+      "MULTIPLE_SIZES": "Wiele rozmiarów",
+      "CUSTOMIZABLE": "Dostępne z dodatkami",
+      "READY_AS_IS": "Gotowe od razu",
+      "STARTING_FROM": "Od",
+      "CUSTOMIZE": "Dostosuj",
+      "QUICK_ADD": "Dodaj szybko"
+    },
+    "CUSTOMIZATION": {
+      "TITLE": "Dostosuj pozycję",
+      "ARIA_LABEL": "Zamknij dostosowanie",
+      "CURRENT_TOTAL": "Bieżąca suma",
+      "FULL": "Pełne dostosowanie",
+      "QUICK": "Szybkie dostosowanie",
+      "CHOOSE_SIZE": "Wybierz rozmiar, który chcesz.",
+      "CHOOSE_OPTION": "Wybierz jedną opcję.",
+      "PICK_SIZE": "Wybierz odpowiedni rozmiar dla swojego zamówienia.",
+      "REQUIRED_SELECTION": "Wymagany wybór",
+      "OPTIONAL_ENHANCEMENT": "Opcjonalne ulepszenie",
+      "YOUR_SELECTION": "Twój wybór",
+      "READY_TO_ADD": "Gotowe do dodania",
+      "CLOSE_BUTTON": "Zamknij",
+      "DEFAULT_SELECTION": "Domyślny wybór",
+      "HINT": {
+        "SIZE_AND_ADDONS": "Wybierz rozmiar i dowolne dodatki.",
+        "SIZE_ONLY": "Wybierz rozmiar pasujący do zamówienia.",
+        "OPTION_ONLY": "Wybierz opcję pasującą do Twojego smaku.",
+        "READY_AS_IS": "Gotowe do zamówienia bez zmian."
+      }
     },
     "CATEGORY": {
       "BESTSELLERS": "Bestsellery"

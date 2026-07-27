@@ -876,6 +876,23 @@
   box-shadow:0 16px 35px rgba(15, 23, 42, 0.16);
   z-index:20;
 }
+.cart-add-fly-icon {
+  position:fixed;
+  z-index:1100;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:2.1rem;
+  height:2.1rem;
+  border-radius:999px;
+  background:rgba(255,255,255,0.96);
+  box-shadow:0 10px 24px rgba(15, 23, 42, 0.16);
+  font-size:1rem;
+  pointer-events:none;
+  will-change:transform, left, top, opacity;
+  transition:left 560ms cubic-bezier(0.22, 1, 0.36, 1), top 560ms cubic-bezier(0.22, 1, 0.36, 1), opacity 560ms ease, transform 560ms ease;
+  transform:translate(-50%, -50%) scale(1);
+}
 .mobile-cart-fab-icon { font-size:1rem; }
 .mobile-cart-fab-count {
   display:inline-flex;

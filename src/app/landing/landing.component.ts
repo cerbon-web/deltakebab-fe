@@ -19,11 +19,12 @@ import { LandingDataFlowService } from '../services/landing-data-flow.service';
 import { LandingCartFlowService } from '../services/landing-cart-flow.service';
 import { Branch, Restaurant } from '../types/domain';
 import { environment } from '../../environments/environment';
+import { ProductCardContentComponent } from '../components/product-card-content/product-card-content.component';
 
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatCardModule, TranslateModule, MatProgressSpinnerModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatCardModule, TranslateModule, MatProgressSpinnerModule, ProductCardContentComponent],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss']
 })
@@ -624,7 +625,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
 
   getCustomizationSummary(item: any): string {
     if (!item) {
-      return 'Default selection';
+      return this.t('LANDING.CUSTOMIZATION.DEFAULT_SELECTION');
     }
 
     const parts: string[] = [];
@@ -642,28 +643,28 @@ export class LandingComponent implements OnInit, AfterViewInit {
       parts.push(selectedModifiers.slice(0, 3).join(', '));
     }
 
-    return parts.length ? parts.join(' • ') : 'Default selection';
+    return parts.length ? parts.join(' • ') : this.t('LANDING.CUSTOMIZATION.DEFAULT_SELECTION');
   }
 
   getCustomizationHint(item: any): string {
     const activeGroups = this.getActiveModifierGroups(item) || [];
 
     if ((item?.sizes?.length || 0) > 1 && activeGroups.length) {
-      return 'Choose your size and any preferred add-ons.';
+      return this.t('LANDING.CUSTOMIZATION.HINT.SIZE_AND_ADDONS');
     }
 
     if ((item?.sizes?.length || 0) > 1) {
-      return 'Pick the size that fits your order.';
+      return this.t('LANDING.CUSTOMIZATION.HINT.SIZE_ONLY');
     }
 
     if (activeGroups.length) {
-      return 'Pick the option that fits your taste.';
+      return this.t('LANDING.CUSTOMIZATION.HINT.OPTION_ONLY');
     }
 
-    return 'Ready to order as-is.';
+    return this.t('LANDING.CUSTOMIZATION.HINT.READY_AS_IS');
   }
 
-  quickAddItem(item: any) {
+  quickAddItem(item: any, event?: MouseEvent) {
     const result = this.cartFlowService.addToCart(item, (entry) => this.getItemDisplayPrice(entry));
     const itemId = String(item.id);
 
@@ -673,6 +674,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
       this.showItemMessage('success', message);
       this.clearInvalidModifierGroups(item);
       this.closeCustomization();
+      this.triggerAddAnimation(event?.currentTarget as HTMLElement | null);
       return;
     }
 
@@ -714,7 +716,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
     }
   }
 
-  addToCartFromCustomization() {
+  addToCartFromCustomization(event?: MouseEvent) {
     const item = this.customizationItem();
     if (!item) {
       return;
@@ -729,6 +731,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
       this.showItemMessage('success', message);
       this.clearInvalidModifierGroups(item);
       this.closeCustomization();
+      this.triggerAddAnimation(event?.currentTarget as HTMLElement | null);
       return;
     }
 
@@ -753,6 +756,56 @@ export class LandingComponent implements OnInit, AfterViewInit {
   private clearInvalidModifierGroups(item: any) {
     const { [String(item.id)]: removed, ...rest } = this.invalidModifierGroupIds();
     this.invalidModifierGroupIds.set(rest);
+  }
+
+  private triggerAddAnimation(originElement: HTMLElement | null) {
+    const cartButton = document.querySelector('.mobile-cart-fab') as HTMLElement | null;
+    if (!cartButton || !originElement) {
+      return;
+    }
+
+    const sourceRect = originElement.getBoundingClientRect();
+    const targetRect = cartButton.getBoundingClientRect();
+
+    if (!sourceRect || !targetRect) {
+      return;
+    }
+
+    const overlay = document.createElement('div');
+    overlay.className = 'cart-add-fly-icon';
+    overlay.setAttribute('aria-hidden', 'true');
+    overlay.textContent = '🛒';
+
+    Object.assign(overlay.style, {
+      position: 'fixed',
+      zIndex: '1100',
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '2.1rem',
+      height: '2.1rem',
+      borderRadius: '999px',
+      background: 'rgba(255,255,255,0.96)',
+      boxShadow: '0 10px 24px rgba(15, 23, 42, 0.16)',
+      fontSize: '1rem',
+      pointerEvents: 'none',
+      left: `${sourceRect.left + sourceRect.width / 2}px`,
+      top: `${sourceRect.top + sourceRect.height / 2}px`,
+      opacity: '1',
+      transform: 'translate(-50%, -50%) scale(1)',
+      transition: 'left 1600ms cubic-bezier(0.22, 1, 0.36, 1), top 1600ms cubic-bezier(0.22, 1, 0.36, 1), opacity 1600ms ease, transform 1600ms ease'
+    });
+
+    document.body.appendChild(overlay);
+
+    window.requestAnimationFrame(() => {
+      overlay.style.left = `${targetRect.left + targetRect.width / 2}px`;
+      overlay.style.top = `${targetRect.top + targetRect.height / 2}px`;
+      overlay.style.opacity = '0';
+      overlay.style.transform = 'translate(-50%, -50%) scale(0.25)';
+    });
+
+    window.setTimeout(() => overlay.remove(), 650);
   }
 
   showItemMessage(type: 'success' | 'error', message: string) {
