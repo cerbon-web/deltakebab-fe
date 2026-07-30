@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LandingMenuStateService } from '../../services/landing-menu-state.service';
@@ -12,11 +12,14 @@ import { LandingOrderService } from '../../services/landing-order.service';
   templateUrl: './customization-sheet.component.html',
   styleUrls: ['./customization-sheet.component.scss']
 })
-export class CustomizationSheetComponent {
+export class CustomizationSheetComponent implements OnDestroy {
   private readonly translate = inject(TranslateService);
   private readonly menuStateService = inject(LandingMenuStateService);
   private readonly viewModelService = inject(LandingViewModelService);
   private readonly orderService = inject(LandingOrderService);
+
+  private shakeTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  shakeOptionKey: string | null = null;
 
   @Input() item: any = null;
   @Input() open = false;
@@ -119,6 +122,14 @@ export class CustomizationSheetComponent {
     return this.menuStateService.isModifierSelected(this.item, group, option);
   }
 
+  shouldShakeOption(group: any, option: any): boolean {
+    return this.shakeOptionKey === this.getOptionKey(group, option);
+  }
+
+  private getOptionKey(group: any, option: any): string {
+    return `${group?.id ?? 'group'}:${option?.id ?? 'option'}`;
+  }
+
   isModifierGroupInvalid(group: any): boolean {
     return this.invalidModifierGroupIds[String(this.item?.id)]?.includes(group.id);
   }
@@ -132,7 +143,36 @@ export class CustomizationSheetComponent {
   }
 
   onModifierToggle(group: any, option: any): void {
+    const currentSelections = this.item?.selectedModifiers || [];
+    const groupSelections = currentSelections.filter((selection: any) => selection.groupId === group?.id);
+    const isAlreadySelected = groupSelections.some((selection: any) => selection.optionId === option?.id);
+    const maxSelections = Number(group?.maxSelections ?? 1);
+
+    if (maxSelections > 1 && !isAlreadySelected && groupSelections.length >= maxSelections) {
+      this.triggerShakeFeedback(group, option);
+    } else {
+      this.clearShakeFeedback();
+    }
+
     this.modifierToggled.emit({ item: this.item, group, option });
+  }
+
+  private triggerShakeFeedback(group: any, option: any): void {
+    this.clearShakeFeedback();
+    this.shakeOptionKey = this.getOptionKey(group, option);
+    this.shakeTimeoutId = setTimeout(() => this.clearShakeFeedback(), 500);
+  }
+
+  private clearShakeFeedback(): void {
+    if (this.shakeTimeoutId) {
+      clearTimeout(this.shakeTimeoutId);
+      this.shakeTimeoutId = null;
+    }
+    this.shakeOptionKey = null;
+  }
+
+  ngOnDestroy(): void {
+    this.clearShakeFeedback();
   }
 
   onAddToCart(): void {

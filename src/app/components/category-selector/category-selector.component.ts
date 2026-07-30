@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { environment } from '../../../environments/environment';
@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
   templateUrl: './category-selector.component.html',
   styleUrls: ['./category-selector.component.scss']
 })
-export class CategorySelectorComponent implements OnChanges {
+export class CategorySelectorComponent implements OnChanges, OnInit {
   private readonly translate = inject(TranslateService);
 
   @Input() categories: Array<{ id?: string | number; name: string; icon?: string | null }> = [];
@@ -21,7 +21,13 @@ export class CategorySelectorComponent implements OnChanges {
   @Output() categoryCleared = new EventEmitter<void>();
 
   readonly pageSize = 8;
+  readonly mobileBreakpoint = 900;
   currentPage = 0;
+  isMobileView = false;
+
+  ngOnInit(): void {
+    this.updateViewportMode();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['categories']) {
@@ -38,6 +44,10 @@ export class CategorySelectorComponent implements OnChanges {
     this.categoryCleared.emit();
   }
 
+  private updateViewportMode(): void {
+    this.isMobileView = typeof window !== 'undefined' && window.innerWidth < this.mobileBreakpoint;
+  }
+
   get totalPages(): number {
     return Math.max(1, Math.ceil(this.categories.length / this.pageSize));
   }
@@ -48,11 +58,15 @@ export class CategorySelectorComponent implements OnChanges {
   }
 
   get shouldShowPrevButton(): boolean {
-    return this.totalPages > 1 && this.currentPage > 0;
+    return !this.isMobileView && this.totalPages > 1 && this.currentPage > 0;
   }
 
   get shouldShowNextButton(): boolean {
-    return this.totalPages > 1 && this.currentPage < this.totalPages - 1;
+    return !this.isMobileView && this.totalPages > 1 && this.currentPage < this.totalPages - 1;
+  }
+
+  get visibleCategoriesForLayout() {
+    return this.isMobileView ? this.categories : this.visibleCategories;
   }
 
   goToPreviousPage(): void {

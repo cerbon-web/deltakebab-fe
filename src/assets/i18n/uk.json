@@ -92,7 +92,8 @@
       "READY_AS_IS": "Готово без налаштувань",
       "STARTING_FROM": "Від",
       "CUSTOMIZE": "Налаштувати",
-      "QUICK_ADD": "Додати швидко"
+      "QUICK_ADD": "Додати швидко",
+      "ADD_TO_CART": "Додати до кошика"
     },
     "CUSTOMIZATION": {
       "TITLE": "Налаштувати позицію",

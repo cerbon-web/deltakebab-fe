@@ -598,8 +598,11 @@ export class LandingComponent implements OnInit {
       this.itemMessageTimeout = null;
     }
 
-    this.itemMessage.set({ type, message });
-    this.scheduleItemMessageClear();
+    this.itemMessage.set(null);
+    window.setTimeout(() => {
+      this.itemMessage.set({ type, message });
+      this.scheduleItemMessageClear();
+    }, 0);
   }
 
   hideItemMessage() {
@@ -651,7 +654,10 @@ export class LandingComponent implements OnInit {
   }
 
   continueToCheckout() {
-    this.cartFlowService.continueToCheckout(this.cart().length, (key) => this.t(key));
+    const canContinue = this.cartFlowService.continueToCheckout(this.cart().length, (key) => this.t(key));
+    if (!canContinue) {
+      this.showItemMessage('error', this.t('LANDING.ERRORS.CART_EMPTY'));
+    }
   }
 
   backToMenu() {
@@ -663,7 +669,10 @@ export class LandingComponent implements OnInit {
   }
 
   goToConfirmation() {
-    this.cartFlowService.goToConfirmation(this.customerPhone(), (key) => this.t(key));
+    const canContinue = this.cartFlowService.goToConfirmation(this.customerPhone(), (key) => this.t(key));
+    if (!canContinue) {
+      this.showItemMessage('error', this.t('LANDING.ERRORS.PHONE_REQUIRED'));
+    }
   }
 
   placeOrder() {

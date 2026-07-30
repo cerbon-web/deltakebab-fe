@@ -53,6 +53,6 @@
   </div>
   <div class="product-actions">
     <button class="secondary-btn small" *ngIf="showCustomizeButton" (click)="onCustomize()">{{ 'LANDING.MENU.CUSTOMIZE' | translate }}</button>
-    <button class="primary-btn small" (click)="onQuickAdd($event)">{{ 'LANDING.MENU.QUICK_ADD' | translate }}</button>
+    <button class="primary-btn small" (click)="onQuickAdd($event)">{{ (hasCustomizationOptions ? 'LANDING.MENU.QUICK_ADD' : 'LANDING.MENU.ADD_TO_CART') | translate }}</button>
   </div>
 </div>

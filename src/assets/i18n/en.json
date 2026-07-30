@@ -92,7 +92,8 @@
       "READY_AS_IS": "Ready as-is",
       "STARTING_FROM": "Starting from",
       "CUSTOMIZE": "Customize",
-      "QUICK_ADD": "Quick add"
+      "QUICK_ADD": "Quick add",
+      "ADD_TO_CART": "Add to cart"
     },
     "CUSTOMIZATION": {
       "TITLE": "Customize item",

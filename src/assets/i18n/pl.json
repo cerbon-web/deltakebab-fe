@@ -92,7 +92,8 @@
       "READY_AS_IS": "Gotowe od razu",
       "STARTING_FROM": "Od",
       "CUSTOMIZE": "Dostosuj",
-      "QUICK_ADD": "Dodaj szybko"
+      "QUICK_ADD": "Dodaj szybko",
+      "ADD_TO_CART": "Dodaj do koszyka"
     },
     "CUSTOMIZATION": {
       "TITLE": "Dostosuj pozycję",

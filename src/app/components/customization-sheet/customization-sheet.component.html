@@ -52,6 +52,7 @@
             class="customization-option-btn"
             *ngFor="let option of activeModifierGroups[0]?.options"
             [class.active]="isModifierSelected(activeModifierGroups[0], option)"
+            [class.shake]="shouldShakeOption(activeModifierGroups[0], option)"
             (click)="onModifierToggle(activeModifierGroups[0], option)">
             <span>{{ option.name }}</span>
             <span class="option-price" *ngIf="option.price > 0">+{{ option.price | currency:'PLN' }}</span>
@@ -92,6 +93,7 @@
             class="customization-option-btn"
             *ngFor="let option of group.options"
             [class.active]="isModifierSelected(group, option)"
+            [class.shake]="shouldShakeOption(group, option)"
             (click)="onModifierToggle(group, option)">
             <span>{{ option.name }}</span>
             <span class="option-price" *ngIf="option.price > 0">+{{ option.price | currency:'PLN' }}</span>

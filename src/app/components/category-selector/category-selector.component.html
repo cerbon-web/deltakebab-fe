@@ -6,8 +6,8 @@
 <div class="category-selection" *ngIf="!selectedCategory">
   <div class="category-carousel" *ngIf="categories.length > 0">
     <button class="carousel-nav left" *ngIf="shouldShowPrevButton" (click)="goToPreviousPage()" aria-label="Show previous categories">‹</button>
-    <div class="category-card-grid">
-      <button class="category-card" *ngFor="let category of visibleCategories" (click)="onCategorySelect(category.name)">
+    <div class="category-card-grid" [class.mobile-grid]="isMobileView">
+      <button class="category-card" *ngFor="let category of visibleCategoriesForLayout" (click)="onCategorySelect(category.name)">
         <span class="category-card-icon">
           <img *ngIf="isCategoryIconImage(category)" [src]="getCategoryIcon(category)" alt="" />
           <ng-container *ngIf="!isCategoryIconImage(category)">{{ getCategoryIcon(category) }}</ng-container>

@@ -11,7 +11,6 @@
       <p class="eyebrow">{{ 'LANDING.HERO.EYEBROW' | translate }}</p>
       <h1>{{ 'LANDING.HERO.TITLE' | translate }}</h1>
       <p>{{ 'LANDING.HERO.DESCRIPTION' | translate }}</p>
-      <div class="helper-text" *ngIf="error() && !selectedRestaurant()">{{ error() }}</div>
     </div>
 
     <div class="hero-preview" *ngIf="!selectedRestaurant()">
@@ -104,7 +103,6 @@
       </button>
     </div>
 
-    <div class="helper-text" *ngIf="error() && selectedRestaurant()">{{ error() }}</div>
   </section>
 
   <section class="selector-header" *ngIf="selectorCollapsed() && selectedRestaurant() && selectedBranch() && checkoutStep() === 'menu'">
@@ -189,8 +187,6 @@
             </div>
             <div class="cart-total">{{ cartTotal | currency:'PLN' }}</div>
           </div>
-
-          <div class="helper-text" *ngIf="error() && selectedBranch()">{{ error() }}</div>
 
           <div class="empty-state" *ngIf="cart().length === 0">
             <p>{{ 'LANDING.CART.EMPTY_TITLE' | translate }}</p>
@@ -340,5 +336,4 @@
     </div>
   </section>
 
-  <div class="helper-text" *ngIf="error() && checkoutStep() !== 'menu' && selectedRestaurant() && selectedBranch()">{{ error() }}</div>
 </main>
