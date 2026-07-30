@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -32,6 +33,7 @@ import { CustomizationSheetComponent } from '../components/customization-sheet/c
 })
 export class LandingComponent implements OnInit {
   private readonly translate = inject(TranslateService);
+  private readonly router = inject(Router);
 
   restaurants = signal<Restaurant[]>([]);
   branches = signal<Branch[]>([]);
@@ -702,6 +704,10 @@ export class LandingComponent implements OnInit {
       payload,
       (order) => {
         this.cartFlowService.completeOrder(order);
+        const orderId = typeof (order as { id?: unknown } | null)?.id === 'string' ? (order as { id: string }).id : null;
+        if (orderId) {
+          this.router.navigate(['/orders', orderId]);
+        }
       },
       (message) => {
         this.cartFlowService.setOrderError(this.t(message));

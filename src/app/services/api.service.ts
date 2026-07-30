@@ -50,6 +50,12 @@ export class ApiService {
     );
   }
 
+  getOrderById(orderId: string): Observable<CreateOrderResponse> {
+    return this.http.get<CreateOrderResponse>(`${this.baseUrl}/orders/${orderId}`).pipe(
+      catchError((error) => this.handleError(error))
+    );
+  }
+
   private handleError(error: HttpErrorResponse) {
     const offlineMessage = this.translate?.instant?.('CONNECTION.ERRORS.BACKEND_OFFLINE');
     const genericMessage = this.translate?.instant?.('CONNECTION.ERRORS.GENERIC');

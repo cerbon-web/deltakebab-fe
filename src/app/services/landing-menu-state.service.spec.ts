@@ -62,4 +62,33 @@ describe('LandingMenuStateService', () => {
       { groupId: 'group-1', groupName: 'Sauce', optionId: 'o-2', name: 'Ostry', price: 0 }
     ]);
   });
+
+  it('keeps an explicitly deselected modifier option from being re-added', () => {
+    service.setMenuItems([{
+      id: 'item-1',
+      name: 'Classic',
+      sizes: [{
+        id: 'size-1',
+        name: 'Standard',
+        price: 10,
+        available: true,
+        modifierGroups: [{
+          id: 'group-1',
+          name: 'Sauce',
+          maxSelections: 3,
+          options: [
+            { id: 'o-1', name: 'Łagodny', price: 0, defaultSelected: true },
+            { id: 'o-2', name: 'Ostry', price: 0, defaultSelected: true }
+          ]
+        }]
+      }],
+      modifierGroups: [],
+      selectedModifiers: [{ groupId: 'group-1', groupName: 'Sauce', optionId: 'o-1', name: 'Łagodny', price: 0 }]
+    } as any]);
+
+    service.updateMenuItem('item-1', { selectedModifiers: [] }, { applyDefaults: false });
+
+    const item = service.menuItems()[0];
+    expect(item.selectedModifiers).toEqual([]);
+  });
 });

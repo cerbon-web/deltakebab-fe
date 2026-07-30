@@ -144,8 +144,24 @@ export interface CreateOrderModifier {
 
 export interface CreateOrderResponse {
   id: string;
+  orderNumber?: string;
   status: string;
-  total: number;
+  totalPrice: number;
+  deliveryFee?: number;
+  createdAt?: string;
+  orderType?: string;
+  customerName?: string | null;
+  customerPhone?: string | null;
+  branch?: { id: string; name: string; street?: string | null; buildingNumber?: string | null; city?: string | null } | null;
+  items?: Array<{
+    id?: string;
+    itemName?: string;
+    sizeName?: string | null;
+    quantity?: number;
+    unitPrice?: number;
+    notes?: string | null;
+    modifiers?: Array<{ modifierOptionNameSnapshot?: string; modifierGroupNameSnapshot?: string; priceSnapshot?: number }>;
+  }>;
 }
 
 export interface MenuResponse {

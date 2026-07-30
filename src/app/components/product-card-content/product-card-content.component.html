@@ -23,11 +23,11 @@
   </div>
 
   <div class="customization-section modifier-section" *ngIf="showInlineModifierSelection && cardModifierGroup">
-    <div class="customization-title">{{ modifierSectionTitle || (cardModifierGroup?.name ? cardModifierGroup.name : ('LANDING.MENU.MODIFIER_GROUP' | translate)) }}</div>
+    <div class="customization-title">{{ modifierSectionTitle || (cardModifierGroup.name ? cardModifierGroup.name : ('LANDING.MENU.MODIFIER_GROUP' | translate)) }}</div>
     <div class="modifier-options">
       <button
         class="modifier-chip"
-        *ngFor="let option of cardModifierGroup?.options"
+        *ngFor="let option of cardModifierGroup.options"
         [class.active]="isModifierSelected(cardModifierGroup, option)"
         (click)="onModifierToggle(cardModifierGroup, option)">
         <span>{{ option.name }}</span>
@@ -53,6 +53,6 @@
   </div>
   <div class="product-actions">
     <button class="secondary-btn small" *ngIf="showCustomizeButton" (click)="onCustomize()">{{ 'LANDING.MENU.CUSTOMIZE' | translate }}</button>
-    <button class="primary-btn small" (click)="onQuickAdd($event)">{{ (hasCustomizationOptions ? 'LANDING.MENU.QUICK_ADD' : 'LANDING.MENU.ADD_TO_CART') | translate }}</button>
+    <button class="primary-btn small" data-testid="quick-add-button" (click)="onQuickAdd($event)">{{ (hasCustomizationOptions ? 'LANDING.MENU.QUICK_ADD' : 'LANDING.MENU.ADD_TO_CART') | translate }}</button>
   </div>
 </div>

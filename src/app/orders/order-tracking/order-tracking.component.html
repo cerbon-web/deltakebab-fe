@@ -1,0 +1,42 @@
+<section class="order-tracking-shell" *ngIf="order(); else loading">
+  <h2>Order {{ order()?.orderNumber || order()?.id }}</h2>
+  <p class="status-pill">{{ order()?.status }}</p>
+  <p *ngIf="order()?.createdAt">Placed {{ order()?.createdAt | date:'medium' }}</p>
+
+  <div class="summary-box">
+    <div>
+      <strong>Total</strong>
+      <div>{{ (order()?.totalPrice || 0) | currency:'PLN' }}</div>
+    </div>
+    <div *ngIf="order()?.orderType">
+      <strong>Method</strong>
+      <div>{{ order()?.orderType }}</div>
+    </div>
+    <div *ngIf="order()?.customerName">
+      <strong>Customer</strong>
+      <div>{{ order()?.customerName }}</div>
+    </div>
+  </div>
+
+  <div class="items-list" *ngIf="order()?.items?.length">
+    <div class="item-row" *ngFor="let item of order()?.items ?? []">
+      <div>
+        <strong>{{ item.itemName }}</strong>
+        <div *ngIf="item.sizeName">{{ item.sizeName }}</div>
+        <div *ngIf="item.notes">{{ item.notes }}</div>
+        <div *ngIf="item.modifiers?.length">
+          <span *ngFor="let modifier of item.modifiers; let last = last">
+            {{ modifier.modifierOptionNameSnapshot }}{{ last ? '' : ', ' }}
+          </span>
+        </div>
+      </div>
+      <div>× {{ item.quantity }}</div>
+    </div>
+  </div>
+</section>
+
+<ng-template #loading>
+  <section class="order-tracking-shell">
+    <p>Loading order...</p>
+  </section>
+</ng-template>

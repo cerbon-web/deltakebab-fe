@@ -23,7 +23,8 @@ export class LandingCartFlowService {
   ) {}
 
   addToCart(item: MenuItem, getItemDisplayPrice: (item: MenuItem) => number) {
-    if (this.hasMissingRequiredSelection(item)) {
+    const effectiveModifiers = this.getEffectiveSelectedModifiers(item);
+    if (this.hasMissingRequiredSelection(item, effectiveModifiers)) {
       return {
         success: false,
         type: 'error' as const,
@@ -34,7 +35,11 @@ export class LandingCartFlowService {
     const selectedSize = item.sizes?.length
       ? item.sizes.find((size) => size.id === item.selectedSizeId) || item.sizes[0]
       : null;
-    const selectedModifiers = this.menuStateService.buildSelectedModifiers(item, null, item.selectedModifiers || []);
+    if (!this.areModifiersEqual(item.selectedModifiers || [], effectiveModifiers)) {
+      this.menuStateService.updateMenuItem(item.id, { selectedModifiers: effectiveModifiers }, { applyDefaults: false });
+    }
+
+    const selectedModifiers = this.menuStateService.buildSelectedModifiers(item, null, effectiveModifiers);
     const unitPrice = getItemDisplayPrice(item);
     const currentBranchId = this.selectionService.selectedBranch()?.id ?? null;
     this.cartService.addToCart(item, unitPrice, selectedSize, selectedModifiers, currentBranchId);
@@ -52,18 +57,84 @@ export class LandingCartFlowService {
       : null;
   }
 
-  private getActiveModifierGroups(item: MenuItem) {
-    const selectedSize = this.getSelectedSize(item);
-    return selectedSize?.modifierGroups?.length ? selectedSize.modifierGroups : item.modifierGroups || [];
+  private getEffectiveSelectedModifiers(item: MenuItem) {
+    const selectedModifiers = [...(item.selectedModifiers || [])];
+    const activeGroups = this.getActiveModifierGroups(item);
+
+    const defaultModifiers = activeGroups.flatMap((group) => this.getDefaultModifiersForGroup(group, selectedModifiers));
+
+    return [...selectedModifiers, ...defaultModifiers];
   }
 
-  private hasMissingRequiredSelection(item: MenuItem) {
-    const selectedModifiers = item.selectedModifiers || [];
+  private getDefaultModifiersForGroup(group: { id: string; name: string; maxSelections?: number; options?: Array<{ id?: string; name?: string; price?: number | string; defaultSelected?: boolean }> }, selectedModifiers: Array<{ groupId: string; groupName?: string; optionId?: string; name: string; price: number }>) {
+    const groupSelections = selectedModifiers.filter((selection) => String(selection.groupId) === String(group.id));
+    const selectedOptionIds = new Set(groupSelections.map((selection) => String(selection.optionId)));
+    const defaultOptions = (group.options || []).filter((option) => option.defaultSelected);
 
+    if (defaultOptions.length > 0) {
+      const maxSelections = Number(group.maxSelections ?? 1);
+      const existingCount = groupSelections.length;
+      const availableSlots = maxSelections > 1 ? Math.max(0, maxSelections - existingCount) : (existingCount > 0 ? 0 : 1);
+
+      return defaultOptions.reduce<Array<{ groupId: string; groupName: string; optionId?: string; name: string; price: number }>>((acc, option) => {
+        if (selectedOptionIds.has(String(option.id))) {
+          return acc;
+        }
+
+        if (availableSlots <= 0 || acc.length >= availableSlots) {
+          return acc;
+        }
+
+        acc.push({
+          groupId: String(group.id),
+          groupName: group.name,
+          optionId: String(option.id),
+          name: option.name ?? '',
+          price: Number(option.price ?? 0)
+        });
+
+        return acc;
+      }, []);
+    }
+
+    if ((group.maxSelections ?? 1) <= 1 && (group.options || []).length > 0 && groupSelections.length === 0) {
+      const option = (group.options || [])[0];
+      return [{
+        groupId: String(group.id),
+        groupName: group.name,
+        optionId: String(option.id),
+        name: option.name ?? '',
+        price: Number(option.price ?? 0)
+      }];
+    }
+
+    return [];
+  }
+
+  private areModifiersEqual(a: Array<any>, b: Array<any>) {
+    const normalizedA = this.menuStateService.buildSelectedModifiers({ selectedModifiers: a } as any, null, a);
+    const normalizedB = this.menuStateService.buildSelectedModifiers({ selectedModifiers: b } as any, null, b);
+
+    if (normalizedA.length !== normalizedB.length) {
+      return false;
+    }
+
+    return normalizedA.every((modifier, index) =>
+      modifier.groupId === normalizedB[index].groupId &&
+      modifier.optionId === normalizedB[index].optionId
+    );
+  }
+
+  private hasMissingRequiredSelection(item: MenuItem, selectedModifiers: Array<{ groupId: string; groupName?: string; optionId?: string; name: string; price: number }> = []) {
     return this.getActiveModifierGroups(item).some((group) =>
       group.required && (group.maxSelections ?? 1) <= 1 &&
       !selectedModifiers.some((selection) => selection.groupId === group.id && selection.optionId)
     );
+  }
+
+  private getActiveModifierGroups(item: MenuItem) {
+    const selectedSize = this.getSelectedSize(item);
+    return selectedSize?.modifierGroups?.length ? selectedSize.modifierGroups : item.modifierGroups || [];
   }
 
   toggleModifier(item: MenuItem, group: { id: string; name: string; maxSelections?: number; required?: boolean }, option: { id?: string; name?: string; price?: number | string }, getItemDisplayPrice?: (item: MenuItem) => number) {
@@ -85,7 +156,7 @@ export class LandingCartFlowService {
         name: selection.name,
         price: selection.price
       }))
-    });
+    }, { applyDefaults: false });
 
     return nextSelections;
   }

@@ -36,7 +36,8 @@
         <button
           class="restaurant-btn"
           *ngFor="let restaurant of restaurants()"
-          (click)="selectRestaurant(restaurant)">
+          (click)="selectRestaurant(restaurant)"
+          [attr.data-testid]="'restaurant-button'">
           <span class="restaurant-name">{{ restaurant.name }}</span>
           <span *ngIf="restaurant.distance_km !== null && restaurant.distance_km !== undefined" class="restaurant-distance">
             {{ restaurant.distance_km | number:'1.0-1' }} km
@@ -89,7 +90,8 @@
         class="branch-btn"
         *ngFor="let branch of restaurantBranches()"
         (click)="selectBranch(branch)"
-        [class.suggested]="branch.id === suggestedNearestBranch()?.id">
+        [class.suggested]="branch.id === suggestedNearestBranch()?.id"
+        [attr.data-testid]="'branch-button'">
         <div class="branch-info">
           <div class="branch-name">{{ branch.street }} {{ branch.buildingNumber }}</div>
           <div class="branch-address">{{ branch.postalCode }} {{ branch.city }}</div>
@@ -161,7 +163,7 @@
             </div>
 
             <div class="products-grid" *ngIf="!menuLoading() && filteredMenuItems.length > 0">
-              <article class="product-card" *ngFor="let item of filteredMenuItems">
+              <article class="product-card" *ngFor="let item of filteredMenuItems" [attr.data-testid]="'product-card'">
                 <app-product-card-content
                   [item]="item"
                   [itemDisplayPrice]="getItemDisplayPrice(item)"
@@ -208,7 +210,7 @@
             </app-cart-item-card>
           </div>
 
-          <button class="primary-btn full" (click)="continueToCheckout()" [disabled]="cart().length === 0">{{ 'LANDING.CART.CONTINUE' | translate }}</button>
+          <button class="primary-btn full" data-testid="continue-to-checkout-button" (click)="continueToCheckout()" [disabled]="cart().length === 0">{{ 'LANDING.CART.CONTINUE' | translate }}</button>
         </div>
       </div>
     </div>
@@ -266,13 +268,13 @@
       </div>
 
       <div class="checkout-form">
-        <input [attr.placeholder]="'LANDING.CHECKOUT.FORM.PHONE' | translate" required [value]="customerPhone()" (input)="customerPhone.set($any($event.target).value)" />
-        <input [attr.placeholder]="'LANDING.CHECKOUT.FORM.NAME' | translate" [value]="customerName()" (input)="customerName.set($any($event.target).value)" />
-        <input [attr.placeholder]="'LANDING.CHECKOUT.FORM.EMAIL' | translate" [value]="customerEmail()" (input)="customerEmail.set($any($event.target).value)" />
-        <textarea [attr.placeholder]="'LANDING.CHECKOUT.FORM.NOTES' | translate" [value]="deliveryNotes()" (input)="deliveryNotes.set($any($event.target).value)"></textarea>
+        <input data-testid="checkout-phone-input" [attr.placeholder]="'LANDING.CHECKOUT.FORM.PHONE' | translate" required [value]="customerPhone()" (input)="customerPhone.set($any($event.target).value)" />
+        <input data-testid="checkout-name-input" [attr.placeholder]="'LANDING.CHECKOUT.FORM.NAME' | translate" [value]="customerName()" (input)="customerName.set($any($event.target).value)" />
+        <input data-testid="checkout-email-input" [attr.placeholder]="'LANDING.CHECKOUT.FORM.EMAIL' | translate" [value]="customerEmail()" (input)="customerEmail.set($any($event.target).value)" />
+        <textarea data-testid="checkout-notes-input" [attr.placeholder]="'LANDING.CHECKOUT.FORM.NOTES' | translate" [value]="deliveryNotes()" (input)="deliveryNotes.set($any($event.target).value)"></textarea>
       </div>
 
-      <button class="primary-btn full" (click)="goToConfirmation()">{{ 'LANDING.CHECKOUT.ACTIONS.REVIEW_ORDER' | translate }}</button>
+      <button class="primary-btn full" data-testid="review-order-button" (click)="goToConfirmation()">{{ 'LANDING.CHECKOUT.ACTIONS.REVIEW_ORDER' | translate }}</button>
     </div>
 
     <div *ngIf="checkoutStep() === 'confirm'" class="checkout-panel">
@@ -325,13 +327,13 @@
           </div>
         </div>
       </div>
-      <button class="primary-btn full" (click)="placeOrder()" [disabled]="orderSubmitting()">{{ orderSubmitting() ? ('LANDING.CHECKOUT.ACTIONS.PLACING_ORDER' | translate) : ('LANDING.CHECKOUT.ACTIONS.PLACE_ORDER' | translate) }}</button>
+      <button class="primary-btn full" data-testid="place-order-button" (click)="placeOrder()" [disabled]="orderSubmitting()">{{ orderSubmitting() ? ('LANDING.CHECKOUT.ACTIONS.PLACING_ORDER' | translate) : ('LANDING.CHECKOUT.ACTIONS.PLACE_ORDER' | translate) }}</button>
     </div>
 
     <div *ngIf="checkoutStep() === 'submitted'" class="checkout-panel success-panel">
       <h3>{{ 'LANDING.CHECKOUT.SUCCESS.TITLE' | translate }}</h3>
       <p>{{ 'LANDING.CHECKOUT.SUCCESS.DESCRIPTION' | translate }}</p>
-      <p><strong>{{ 'LANDING.CHECKOUT.SUCCESS.ORDER_ID' | translate }}</strong> {{ submittedOrder()?.id }}</p>
+      <p data-testid="order-confirmation-id"><strong>{{ 'LANDING.CHECKOUT.SUCCESS.ORDER_ID' | translate }}</strong> {{ submittedOrder()?.id }}</p>
       <p><strong>{{ 'LANDING.CHECKOUT.SUCCESS.STATUS' | translate }}</strong> {{ submittedOrder()?.status }}</p>
     </div>
   </section>
