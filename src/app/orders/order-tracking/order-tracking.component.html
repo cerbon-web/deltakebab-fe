@@ -10,7 +10,7 @@
     </div>
     <div *ngIf="order()?.orderType">
       <strong>{{ 'ORDER_TRACKING.METHOD' | translate }}</strong>
-      <div>{{ order()?.orderType }}</div>
+      <div>{{ ('LANDING.CHECKOUT.ORDER_TYPES.' + (order()?.orderType || '')) | translate }}</div>
     </div>
     <div *ngIf="order()?.customerName">
       <strong>{{ 'ORDER_TRACKING.CUSTOMER' | translate }}</strong>
