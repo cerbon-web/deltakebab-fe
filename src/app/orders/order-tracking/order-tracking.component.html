@@ -1,42 +1,50 @@
 <section class="order-tracking-shell" *ngIf="order(); else loading">
-  <h2>Order {{ order()?.orderNumber || order()?.id }}</h2>
+  <h2>{{ 'ORDER_TRACKING.TITLE' | translate }} {{ order()?.orderNumber || order()?.id }}</h2>
   <p class="status-pill">{{ order()?.status }}</p>
-  <p *ngIf="order()?.createdAt">Placed {{ order()?.createdAt | date:'medium' }}</p>
+  <p *ngIf="order()?.createdAt">{{ 'ORDER_TRACKING.PLACED' | translate }} {{ order()?.createdAt | date:'medium' }}</p>
 
   <div class="summary-box">
     <div>
-      <strong>Total</strong>
+      <strong>{{ 'ORDER_TRACKING.TOTAL' | translate }}</strong>
       <div>{{ (order()?.totalPrice || 0) | currency:'PLN' }}</div>
     </div>
     <div *ngIf="order()?.orderType">
-      <strong>Method</strong>
+      <strong>{{ 'ORDER_TRACKING.METHOD' | translate }}</strong>
       <div>{{ order()?.orderType }}</div>
     </div>
     <div *ngIf="order()?.customerName">
-      <strong>Customer</strong>
+      <strong>{{ 'ORDER_TRACKING.CUSTOMER' | translate }}</strong>
       <div>{{ order()?.customerName }}</div>
     </div>
   </div>
 
   <div class="items-list" *ngIf="order()?.items?.length">
     <div class="item-row" *ngFor="let item of order()?.items ?? []">
-      <div>
-        <strong>{{ item.itemName }}</strong>
-        <div *ngIf="item.sizeName">{{ item.sizeName }}</div>
-        <div *ngIf="item.notes">{{ item.notes }}</div>
-        <div *ngIf="item.modifiers?.length">
-          <span *ngFor="let modifier of item.modifiers; let last = last">
-            {{ modifier.modifierOptionNameSnapshot }}{{ last ? '' : ', ' }}
-          </span>
+      <div class="item-main">
+        <div class="item-heading">
+          <strong>{{ item.itemName }}</strong>
+          <span class="item-price">{{ getItemLineTotal(item) | currency:'PLN' }}</span>
+        </div>
+        <div class="item-details" *ngIf="item.sizeName || item.unitPrice !== undefined || item.notes">
+          <div *ngIf="item.sizeName">{{ item.sizeName }}</div>
+          <div *ngIf="item.unitPrice !== undefined">{{ 'ORDER_TRACKING.UNIT_PRICE' | translate }} {{ item.unitPrice | currency:'PLN' }}</div>
+          <div *ngIf="item.notes">{{ item.notes }}</div>
+        </div>
+        <div class="modifier-list" *ngIf="item.modifiers?.length">
+          <div class="modifier-item" *ngFor="let modifier of item.modifiers">
+            <span class="modifier-group">{{ modifier.modifierGroupNameSnapshot }}</span>
+            <span class="modifier-option">{{ modifier.modifierOptionNameSnapshot }}</span>
+            <span class="modifier-price" *ngIf="(modifier.priceSnapshot || 0) > 0">+{{ modifier.priceSnapshot | currency:'PLN' }}</span>
+          </div>
         </div>
       </div>
-      <div>× {{ item.quantity }}</div>
+      <div class="item-qty">× {{ item.quantity }}</div>
     </div>
   </div>
 </section>
 
 <ng-template #loading>
   <section class="order-tracking-shell">
-    <p>Loading order...</p>
+    <p>{{ 'ORDER_TRACKING.LOADING' | translate }}</p>
   </section>
 </ng-template>

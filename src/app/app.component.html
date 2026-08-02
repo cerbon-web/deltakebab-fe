@@ -33,7 +33,7 @@
 
       <nav class="main-nav" role="navigation" [attr.aria-label]="'APP.MAIN_NAV_LABEL' | translate">
         <a routerLink="/">{{ 'NAV.LANDING' | translate }}</a>
-        <a routerLink="/menu">{{ 'NAV.MENU' | translate }}</a>
+        <a routerLink="/orders">{{ 'NAV.ORDERS' | translate }}</a>
         <a routerLink="/why-us">{{ 'NAV.WHY' | translate }}</a>
         <a routerLink="/contact">{{ 'NAV.CONTACT' | translate }}</a>
         <a routerLink="/about">{{ 'NAV.ABOUT' | translate }}</a>
@@ -50,7 +50,7 @@
       <div class="mobile-menu" role="menu" [attr.aria-hidden]="!showMenu()">
         <ul>
           <li><a routerLink="/" (click)="showMenu.set(false)">{{ 'NAV.LANDING' | translate }}</a></li>
-          <li><a routerLink="/menu" (click)="showMenu.set(false)">{{ 'NAV.MENU' | translate }}</a></li>
+          <li><a routerLink="/orders" (click)="showMenu.set(false)">{{ 'NAV.ORDERS' | translate }}</a></li>
           <li><a routerLink="/why-us" (click)="showMenu.set(false)">{{ 'NAV.WHY' | translate }}</a></li>
           <li><a routerLink="/contact" (click)="showMenu.set(false)">{{ 'NAV.CONTACT' | translate }}</a></li>
           <li><a routerLink="/about" (click)="showMenu.set(false)">{{ 'NAV.ABOUT' | translate }}</a></li>

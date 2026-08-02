@@ -267,11 +267,24 @@
         <input [attr.placeholder]="'LANDING.CHECKOUT.FORM.CITY' | translate" [value]="city()" (input)="city.set($any($event.target).value)" />
       </div>
 
+      <div class="checkout-form" *ngIf="globalError()" role="alert" aria-live="assertive" class="checkout-error-banner">
+        {{ globalError() }}
+      </div>
+
       <div class="checkout-form">
-        <input data-testid="checkout-phone-input" [attr.placeholder]="'LANDING.CHECKOUT.FORM.PHONE' | translate" required [value]="customerPhone()" (input)="customerPhone.set($any($event.target).value)" />
-        <input data-testid="checkout-name-input" [attr.placeholder]="'LANDING.CHECKOUT.FORM.NAME' | translate" [value]="customerName()" (input)="customerName.set($any($event.target).value)" />
-        <input data-testid="checkout-email-input" [attr.placeholder]="'LANDING.CHECKOUT.FORM.EMAIL' | translate" [value]="customerEmail()" (input)="customerEmail.set($any($event.target).value)" />
-        <textarea data-testid="checkout-notes-input" [attr.placeholder]="'LANDING.CHECKOUT.FORM.NOTES' | translate" [value]="deliveryNotes()" (input)="deliveryNotes.set($any($event.target).value)"></textarea>
+        <div class="checkout-input-group">
+          <input data-testid="checkout-phone-input" [attr.placeholder]="'LANDING.CHECKOUT.FORM.PHONE' | translate" required [value]="customerPhone()" (input)="customerPhone.set($any($event.target).value)" [class.input-error]="formErrors()['guestPhone']" />
+          <div class="checkout-error" *ngIf="formErrors()['guestPhone']">{{ formErrors()['guestPhone'] }}</div>
+        </div>
+        <div class="checkout-input-group">
+          <input data-testid="checkout-name-input" [attr.placeholder]="'LANDING.CHECKOUT.FORM.NAME' | translate" [value]="customerName()" (input)="customerName.set($any($event.target).value)" />
+        </div>
+        <div class="checkout-input-group">
+          <input data-testid="checkout-email-input" [attr.placeholder]="'LANDING.CHECKOUT.FORM.EMAIL' | translate" [value]="customerEmail()" (input)="customerEmail.set($any($event.target).value)" />
+        </div>
+        <div class="checkout-input-group">
+          <textarea data-testid="checkout-notes-input" [attr.placeholder]="'LANDING.CHECKOUT.FORM.NOTES' | translate" [value]="deliveryNotes()" (input)="deliveryNotes.set($any($event.target).value)"></textarea>
+        </div>
       </div>
 
       <button class="primary-btn full" data-testid="review-order-button" (click)="goToConfirmation()">{{ 'LANDING.CHECKOUT.ACTIONS.REVIEW_ORDER' | translate }}</button>
@@ -308,7 +321,7 @@
         <div class="checkout-item" *ngFor="let item of cart()">
           <div class="checkout-item-header">
             <strong>{{ item.name }}</strong>
-            <span>{{ item.price | currency:'PLN' }}</span>
+            <span>{{ (item.price * item.quantity) | currency:'PLN' }}</span>
           </div>
           <div class="checkout-item-meta">
             <span>{{ item.sizeName }}</span>
@@ -326,6 +339,10 @@
             <strong>{{ 'LANDING.CHECKOUT.REVIEW.NOTES' | translate }}</strong> {{ item.notes }}
           </div>
         </div>
+      </div>
+      <div class="summary-row checkout-total-row">
+        <span class="summary-label">{{ 'LANDING.CHECKOUT.REVIEW.TOTAL' | translate }}</span>
+        <span class="summary-value">{{ cartTotal | currency:'PLN' }}</span>
       </div>
       <button class="primary-btn full" data-testid="place-order-button" (click)="placeOrder()" [disabled]="orderSubmitting()">{{ orderSubmitting() ? ('LANDING.CHECKOUT.ACTIONS.PLACING_ORDER' | translate) : ('LANDING.CHECKOUT.ACTIONS.PLACE_ORDER' | translate) }}</button>
     </div>

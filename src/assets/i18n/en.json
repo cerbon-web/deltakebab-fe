@@ -1,5 +1,5 @@
 {
-  "NAV": { "LANDING": "Landing", "MENU": "Menu", "WHY": "Why Us", "CONTACT": "Contact", "ABOUT": "About", "HOME": "Home" },
+  "NAV": { "LANDING": "Landing", "ORDERS": "Orders", "MENU": "Menu", "WHY": "Why Us", "CONTACT": "Contact", "ABOUT": "About", "HOME": "Home" },
   "HERO": { "SLOGAN": "Fresh ingredients. Fast service. Tasty kebab.", "CTA": "Find nearest location" },
   "NEAREST": {
     "TITLE": "Nearest branch",
@@ -41,6 +41,29 @@
       "GENERIC": "Something went wrong.",
       "SERVICE_UNAVAILABLE": "The service is temporarily unavailable."
     }
+  },
+  "ORDERS": {
+    "TITLE": "Recent orders",
+    "SUBTITLE": "Your most recent orders from this browser.",
+    "ORDER_NUMBER": "Order number",
+    "STATUS_UNKNOWN": "Unknown",
+    "DATE": "Date",
+    "RESTAURANT": "Restaurant",
+    "BRANCH": "Branch",
+    "TOTAL": "Total",
+    "NOT_AVAILABLE": "Not available",
+    "EMPTY_TITLE": "No recent orders yet",
+    "EMPTY_DESCRIPTION": "Your submitted orders will appear here so you can reopen them later."
+  },
+  "ORDER_TRACKING": {
+    "TITLE": "Order",
+    "LOADING": "Loading order...",
+    "PLACED": "Placed",
+    "TOTAL": "Total",
+    "METHOD": "Method",
+    "CUSTOMER": "Customer",
+    "UNIT_PRICE": "Unit price:",
+    "STATUS": "Status"
   },
   "LANDING": {
     "HERO": {
@@ -187,6 +210,15 @@
     "DISTANCE": {
       "METERS": "{{value}} m",
       "KILOMETERS": "{{value}} km"
+    },
+    "VALIDATION": {
+      "PHONE_TOO_SHORT": "The phone number must contain at least 5 characters.",
+      "BRANCH_REQUIRED": "Please select a branch before placing the order.",
+      "ORDER_ITEMS_REQUIRED": "Add at least one item to your cart.",
+      "INVALID_VALUE": "The selected values are invalid.",
+      "FIELD_REQUIRED": "This field is required.",
+      "VALIDATION_ERROR": "The form validation failed.",
+      "GENERIC": "The form could not be processed."
     },
     "ERRORS": {
       "RESTAURANT_LIST_UNAVAILABLE": "The restaurant list is temporarily unavailable.",

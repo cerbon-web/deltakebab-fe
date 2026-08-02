@@ -27,3 +27,48 @@
   padding: 0.75rem 0;
   border-bottom: 1px solid #eee;
 }
+
+.item-main {
+  display: grid;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.item-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.item-price {
+  font-weight: 600;
+}
+
+.item-details {
+  color: #555;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.modifier-list {
+  display: grid;
+  gap: 0.3rem;
+  padding-left: 0.75rem;
+  color: #555;
+}
+
+.modifier-item {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.modifier-group {
+  font-weight: 600;
+}
+
+.item-qty {
+  font-weight: 600;
+  white-space: nowrap;
+}

@@ -52,10 +52,15 @@ export class LandingDataFlowService {
     });
   }
 
-  placeOrder(payload: CreateOrderPayload, onSuccess: (order: unknown) => void, onError: (message: string) => void) {
+  placeOrder(payload: CreateOrderPayload, onSuccess: (order: unknown) => void, onError: (message: string, errors?: Array<{ field?: string; code: string; message?: string }>, code?: string) => void) {
     this.apiService.createOrder(payload).subscribe({
       next: (order) => onSuccess(order),
-      error: () => onError('LANDING.ERRORS.ORDER_PLACE_FAILED')
+      error: (error: Error & { payload?: { code?: string; message?: string; errors?: Array<{ field?: string; code: string; message?: string }> } }) => {
+        const payload = error?.payload;
+        const fallbackMessage = 'LANDING.ERRORS.ORDER_PLACE_FAILED';
+        const normalizedErrors = payload?.errors ?? [];
+        onError(payload?.message ? payload.message : fallbackMessage, normalizedErrors, payload?.code);
+      }
     });
   }
 }

@@ -1,5 +1,5 @@
 {
-  "NAV": { "LANDING": "Strona główna", "MENU": "Menu", "WHY": "Dlaczego my?", "CONTACT": "Kontakt", "ABOUT": "O nas", "HOME": "Strona główna" },
+  "NAV": { "LANDING": "Strona główna", "ORDERS": "Zamówienia", "MENU": "Menu", "WHY": "Dlaczego my?", "CONTACT": "Kontakt", "ABOUT": "O nas", "HOME": "Strona główna" },
   "HERO": { "SLOGAN": "Świeże składniki. Szybka obsługa. Pyszny kebab.", "CTA": "Znajdź najbliższy lokal" },
   "NEAREST": {
     "TITLE": "Najbliższy lokal",
@@ -41,6 +41,29 @@
       "GENERIC": "Coś poszło nie tak.",
       "SERVICE_UNAVAILABLE": "Usługa jest tymczasowo niedostępna."
     }
+  },
+  "ORDERS": {
+    "TITLE": "Ostatnie zamówienia",
+    "SUBTITLE": "Twoje najnowsze zamówienia z tej przeglądarki.",
+    "ORDER_NUMBER": "Numer zamówienia",
+    "STATUS_UNKNOWN": "Nieznany",
+    "DATE": "Data",
+    "RESTAURANT": "Restauracja",
+    "BRANCH": "Oddział",
+    "TOTAL": "Suma",
+    "NOT_AVAILABLE": "Brak danych",
+    "EMPTY_TITLE": "Brak ostatnich zamówień",
+    "EMPTY_DESCRIPTION": "Twoje złożone zamówienia pojawią się tutaj, abyś mógł je później otworzyć."
+  },
+  "ORDER_TRACKING": {
+    "TITLE": "Zamówienie",
+    "LOADING": "Ładowanie zamówienia...",
+    "PLACED": "Złożone",
+    "TOTAL": "Suma",
+    "METHOD": "Metoda",
+    "CUSTOMER": "Klient",
+    "UNIT_PRICE": "Cena jednostkowa:",
+    "STATUS": "Status"
   },
   "LANDING": {
     "HERO": {
@@ -187,6 +210,15 @@
     "DISTANCE": {
       "METERS": "{{value}} m",
       "KILOMETERS": "{{value}} km"
+    },
+    "VALIDATION": {
+      "PHONE_TOO_SHORT": "Numer telefonu musi zawierać co najmniej 5 znaków.",
+      "BRANCH_REQUIRED": "Wybierz oddział, aby złożyć zamówienie.",
+      "ORDER_ITEMS_REQUIRED": "Dodaj przynajmniej jeden produkt do koszyka.",
+      "INVALID_VALUE": "Wybrane dane są nieprawidłowe.",
+      "FIELD_REQUIRED": "To pole jest wymagane.",
+      "VALIDATION_ERROR": "Weryfikacja formularza nie powiodła się.",
+      "GENERIC": "Nie można przetworzyć formularza."
     },
     "ERRORS": {
       "RESTAURANT_LIST_UNAVAILABLE": "Lista restauracji jest chwilowo niedostępna.",

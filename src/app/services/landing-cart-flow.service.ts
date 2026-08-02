@@ -193,7 +193,7 @@ export class LandingCartFlowService {
     return true;
   }
 
-  placeOrder(payload: CreateOrderPayload, onSuccess: (order: unknown) => void, onError: (message: string) => void) {
+  placeOrder(payload: CreateOrderPayload, onSuccess: (order: unknown) => void, onError: (message: string, errors?: Array<{ field?: string; code: string; message?: string }>, code?: string) => void) {
     this.cartService.setOrderSubmitting(true);
     this.cartService.setError(null);
     this.dataFlowService.placeOrder(payload, onSuccess, onError);

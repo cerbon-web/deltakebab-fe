@@ -7,6 +7,13 @@ import { environment } from '../../environments/environment';
 import { CreateOrderPayload, CreateOrderResponse, MenuResponse, Restaurant } from '../types/domain';
 import { LanguageService } from './language.service';
 
+export interface ApiErrorPayload {
+  status: 'error';
+  code: string;
+  message: string;
+  errors?: Array<{ field?: string; code: string; message?: string }>;
+}
+
 export interface HealthResponse {
   status: string;
 }
@@ -59,10 +66,19 @@ export class ApiService {
   private handleError(error: HttpErrorResponse) {
     const offlineMessage = this.translate?.instant?.('CONNECTION.ERRORS.BACKEND_OFFLINE');
     const genericMessage = this.translate?.instant?.('CONNECTION.ERRORS.GENERIC');
-    const message = error.status === 0
-      ? (typeof offlineMessage === 'string' && offlineMessage ? offlineMessage : 'Backend is temporarily unavailable.')
-      : error.error?.message || (typeof genericMessage === 'string' && genericMessage ? genericMessage : 'Something went wrong.');
 
-    return throwError(() => new Error(message));
+    if (error.status === 0) {
+      const errorWithPayload = new Error(typeof offlineMessage === 'string' && offlineMessage ? offlineMessage : 'Backend is temporarily unavailable.') as Error & { payload?: ApiErrorPayload };
+      errorWithPayload.payload = undefined;
+      return throwError(() => errorWithPayload);
+    }
+
+    const payload = error.error as ApiErrorPayload | undefined;
+    const fallbackMessage = typeof genericMessage === 'string' && genericMessage ? genericMessage : 'Something went wrong.';
+    const message = payload?.message || payload?.code || fallbackMessage;
+    const errorWithPayload = new Error(message) as Error & { payload?: ApiErrorPayload };
+    errorWithPayload.payload = payload;
+
+    return throwError(() => errorWithPayload);
   }
 }

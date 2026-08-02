@@ -17,6 +17,7 @@ import { LandingRestaurantFlowService } from '../services/landing-restaurant-flo
 import { LandingLocationService } from '../services/landing-location.service';
 import { LandingDataFlowService } from '../services/landing-data-flow.service';
 import { LandingCartFlowService } from '../services/landing-cart-flow.service';
+import { RecentOrdersService } from '../services/recent-orders.service';
 import { Branch, Restaurant } from '../types/domain';
 import { environment } from '../../environments/environment';
 import { ProductCardContentComponent } from '../components/product-card-content/product-card-content.component';
@@ -51,6 +52,8 @@ export class LandingComponent implements OnInit {
   readonly customizationItemId = signal<string | number | null>(null);
   readonly invalidModifierGroupIds = signal<Record<string, string[]>>({});
   readonly activeTab = signal<'menu' | 'cart'>('menu');
+  readonly formErrors = signal<Record<string, string>>({});
+  readonly globalError = signal<string | null>(null);
   private itemMessageTimeout: number | null = null;
   private itemMessageHovered = false;
   get menuLoading() { return this.uiStateService.menuLoading; }
@@ -89,7 +92,8 @@ export class LandingComponent implements OnInit {
     private restaurantFlowService: LandingRestaurantFlowService,
     private locationService: LandingLocationService,
     private dataFlowService: LandingDataFlowService,
-    private cartFlowService: LandingCartFlowService
+    private cartFlowService: LandingCartFlowService,
+    private recentOrdersService: RecentOrdersService
   ) {}
 
   ngOnInit(): void {
@@ -105,6 +109,60 @@ export class LandingComponent implements OnInit {
 
   private t(key: string, params?: Record<string, unknown>) {
     return this.translate.instant(key, params);
+  }
+
+  private getErrorMessageForCode(code: string, fallbackKey: string) {
+    const translationKey = `LANDING.ERRORS.${code.toLowerCase()}`;
+    const translated = this.t(translationKey);
+    return translated && translated !== translationKey ? translated : this.t(fallbackKey);
+  }
+
+  private setFormErrors(errors: Array<{ field?: string; code: string; message?: string }> = []) {
+    const nextErrors: Record<string, string> = {};
+
+    errors.forEach((error) => {
+      if (!error.field) {
+        return;
+      }
+
+      const normalizedField = error.field.toLowerCase();
+      const fieldKey = normalizedField === 'guestphone' ? 'guestPhone' : normalizedField;
+      const translationKey = this.getErrorTranslationKey(error.code);
+      nextErrors[fieldKey] = this.t(translationKey);
+    });
+
+    this.formErrors.set(nextErrors);
+  }
+
+  private getErrorTranslationKey(code: string) {
+    const normalizedCode = code.toUpperCase();
+    const translationMap: Record<string, string> = {
+      PHONE_TOO_SHORT: 'LANDING.VALIDATION.PHONE_TOO_SHORT',
+      BRANCH_REQUIRED: 'LANDING.VALIDATION.BRANCH_REQUIRED',
+      ORDER_ITEMS_REQUIRED: 'LANDING.VALIDATION.ORDER_ITEMS_REQUIRED',
+      INVALID_VALUE: 'LANDING.VALIDATION.INVALID_VALUE',
+      FIELD_REQUIRED: 'LANDING.VALIDATION.FIELD_REQUIRED',
+      VALIDATION_ERROR: 'LANDING.VALIDATION.VALIDATION_ERROR',
+      ORDER_CREATE_FAILED: 'LANDING.ERRORS.ORDER_PLACE_FAILED',
+      ORDER_NOT_FOUND: 'LANDING.ERRORS.ORDER_PLACE_FAILED',
+      INVALID_ORDER_STATUS: 'LANDING.ERRORS.ORDER_PLACE_FAILED'
+    };
+
+    return translationMap[normalizedCode] || 'LANDING.VALIDATION.GENERIC';
+  }
+
+  private handleOrderError(message: string, errors: Array<{ field?: string; code: string; message?: string }> = [], code?: string) {
+    const normalizedCode = (code || '').toUpperCase();
+    const translatedMessage = normalizedCode === 'VALIDATION_ERROR' || errors.length > 0
+      ? this.t('LANDING.VALIDATION.VALIDATION_ERROR')
+      : normalizedCode === 'ORDER_CREATE_FAILED' || normalizedCode === 'INVALID_ORDER_STATUS' || normalizedCode === 'ORDER_NOT_FOUND'
+        ? this.t('LANDING.ERRORS.ORDER_PLACE_FAILED')
+        : this.t(message && message !== 'LANDING.ERRORS.ORDER_PLACE_FAILED' ? message : 'LANDING.ERRORS.ORDER_PLACE_FAILED');
+
+    this.setFormErrors(errors);
+    this.globalError.set(translatedMessage);
+    this.showItemMessage('error', translatedMessage);
+    this.cartFlowService.setOrderError(translatedMessage);
   }
 
   get cartTotal(): number {
@@ -673,6 +731,8 @@ export class LandingComponent implements OnInit {
   goToConfirmation() {
     const canContinue = this.cartFlowService.goToConfirmation(this.customerPhone(), (key) => this.t(key));
     if (!canContinue) {
+      this.formErrors.set({ guestPhone: this.t('LANDING.ERRORS.PHONE_REQUIRED') });
+      this.globalError.set(this.t('LANDING.ERRORS.PHONE_REQUIRED'));
       this.showItemMessage('error', this.t('LANDING.ERRORS.PHONE_REQUIRED'));
     }
   }
@@ -706,11 +766,20 @@ export class LandingComponent implements OnInit {
         this.cartFlowService.completeOrder(order);
         const orderId = typeof (order as { id?: unknown } | null)?.id === 'string' ? (order as { id: string }).id : null;
         if (orderId) {
+          this.recentOrdersService.addOrder({
+            orderId,
+            orderNumber: typeof (order as { orderNumber?: unknown } | null)?.orderNumber === 'string' ? (order as { orderNumber: string }).orderNumber : undefined,
+            createdAt: typeof (order as { createdAt?: unknown } | null)?.createdAt === 'string' ? (order as { createdAt: string }).createdAt : undefined,
+            restaurantName: this.selectedRestaurant()?.name,
+            branchName: this.selectedBranch()?.name,
+            total: typeof (order as { totalPrice?: unknown } | null)?.totalPrice === 'number' ? (order as { totalPrice: number }).totalPrice : this.cartTotal,
+            status: typeof (order as { status?: unknown } | null)?.status === 'string' ? (order as { status: string }).status : 'SUBMITTED'
+          });
           this.router.navigate(['/orders', orderId]);
         }
       },
-      (message) => {
-        this.cartFlowService.setOrderError(this.t(message));
+      (message, errors, code) => {
+        this.handleOrderError(message, errors, code);
       }
     );
   }

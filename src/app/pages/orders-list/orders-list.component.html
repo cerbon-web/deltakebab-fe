@@ -1,0 +1,47 @@
+<section class="orders-page">
+  <div class="orders-page__header">
+    <h1>{{ 'ORDERS.TITLE' | translate }}</h1>
+    <p>{{ 'ORDERS.SUBTITLE' | translate }}</p>
+  </div>
+
+  <div class="orders-list" *ngIf="orders().length; else emptyState">
+    <a class="order-card" *ngFor="let order of orders()" [routerLink]="['/orders', order.orderId]">
+      <div class="order-card__top">
+        <div>
+          <div class="order-card__label">{{ 'ORDERS.ORDER_NUMBER' | translate }}</div>
+          <div class="order-card__value">{{ order.orderNumber || order.orderId }}</div>
+        </div>
+        <span class="order-card__status">{{ order.status || ('ORDERS.STATUS_UNKNOWN' | translate) }}</span>
+      </div>
+
+      <div class="order-card__meta">
+        <div>
+          <div class="order-card__label">{{ 'ORDERS.DATE' | translate }}</div>
+          <div class="order-card__value">{{ order.createdAt | date:'medium' }}</div>
+        </div>
+        <div>
+          <div class="order-card__label">{{ 'ORDERS.RESTAURANT' | translate }}</div>
+          <div class="order-card__value">{{ order.restaurantName || ('ORDERS.NOT_AVAILABLE' | translate) }}</div>
+        </div>
+      </div>
+
+      <div class="order-card__meta">
+        <div>
+          <div class="order-card__label">{{ 'ORDERS.BRANCH' | translate }}</div>
+          <div class="order-card__value">{{ order.branchName || ('ORDERS.NOT_AVAILABLE' | translate) }}</div>
+        </div>
+        <div>
+          <div class="order-card__label">{{ 'ORDERS.TOTAL' | translate }}</div>
+          <div class="order-card__value">{{ (order.total || 0) | currency:'PLN' }}</div>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<ng-template #emptyState>
+  <div class="empty-state">
+    <h2>{{ 'ORDERS.EMPTY_TITLE' | translate }}</h2>
+    <p>{{ 'ORDERS.EMPTY_DESCRIPTION' | translate }}</p>
+  </div>
+</ng-template>
