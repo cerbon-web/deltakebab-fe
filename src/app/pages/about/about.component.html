@@ -2,4 +2,10 @@
   <h1>{{ 'ABOUT.TITLE' | translate }}</h1>
   <p>{{ 'ABOUT.TEXT' | translate }}</p>
   <p><strong>{{ 'ABOUT.BUILD_DATE' | translate }}:</strong> {{ buildDateLabel }}</p>
+  <button type="button" (click)="loadHealthBuildDate()" [disabled]="isLoadingHealth">
+    {{ isLoadingHealth ? ('ABOUT.LOADING' | translate) : ('ABOUT.SHOW_HEALTH_VERSION' | translate) }}
+  </button>
+  <p *ngIf="healthBuildDateLabel !== '—'">
+    <strong>{{ 'ABOUT.HEALTH_BUILD_DATE' | translate }}:</strong> {{ healthBuildDateLabel }}
+  </p>
 </main>
