@@ -14,8 +14,21 @@ export class NotificationService {
   private gainNode?: GainNode;
   private alertTimer?: number;
   private repeatCount = 0;
+  private audioUnlocked = false;
 
   constructor() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const unlockInteraction = () => {
+      void this.unlockAudio();
+      void this.requestPermission();
+    };
+
+    window.addEventListener('pointerdown', unlockInteraction, { once: true, capture: true });
+    window.addEventListener('touchstart', unlockInteraction, { once: true, capture: true });
+    window.addEventListener('keydown', unlockInteraction, { once: true, capture: true });
   }
 
   private createTone() {
@@ -33,8 +46,34 @@ export class NotificationService {
     return oscillator;
   }
 
+  private async unlockAudio() {
+    if (this.audioUnlocked) {
+      return;
+    }
+
+    try {
+      if (!this.audioContext) {
+        this.audioContext = new AudioContext();
+        this.gainNode = this.audioContext.createGain();
+        this.gainNode.gain.setValueAtTime(0.15, this.audioContext.currentTime);
+        this.gainNode.connect(this.audioContext.destination);
+      }
+
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
+      this.audioUnlocked = true;
+    } catch {
+      this.audioUnlocked = false;
+    }
+  }
+
   async requestPermission() {
-    if ('Notification' in window && Notification.permission === 'default') {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      return;
+    }
+
+    if (Notification.permission === 'default') {
       await Notification.requestPermission();
     }
   }
@@ -42,27 +81,31 @@ export class NotificationService {
   notify(notification: KitchenNotification) {
     this.activeNotification.set(notification);
     this.showBrowserNotification(notification);
-    this.pulseAlert();
+    void this.pulseAlert();
   }
 
   private showBrowserNotification(notification: KitchenNotification) {
-    if (!('Notification' in window)) {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
       return;
     }
 
     if (Notification.permission === 'granted') {
-      new Notification(notification.title, { body: notification.body, silent: true });
+      new Notification(notification.title, {
+        body: notification.body,
+        tag: `kitchen-${notification.orderId ?? Date.now()}`
+      });
     }
   }
 
-  private pulseAlert() {
+  private async pulseAlert() {
     if (this.isAlerting()) {
       return;
     }
 
     this.repeatCount = 0;
     this.isAlerting.set(true);
-    this.playSoundCycle();
+    await this.unlockAudio();
+    void this.playSoundCycle();
   }
 
   private playSoundCycle() {
@@ -74,7 +117,10 @@ export class NotificationService {
     try {
       const oscillator = this.createTone();
       oscillator.start();
-      oscillator.stop(this.audioContext!.currentTime + 12);
+      oscillator.stop(this.audioContext!.currentTime + 0.25);
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        navigator.vibrate([120, 60, 120]);
+      }
     } catch {
       // audio context may be blocked until user interacts
     }

@@ -1,6 +1,6 @@
 {
-  "name": "Delta Kebab Kitchen",
-  "short_name": "Delta Kitchen",
+  "name": "Delta Kebab",
+  "short_name": "Delta Kebab",
   "description": "Kitchen dashboard for Delta Kebab restaurant staff.",
   "start_url": "./index.html",
   "display": "standalone",
