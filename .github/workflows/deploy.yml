@@ -52,9 +52,11 @@ jobs:
       - name: Build (production)
         env:
           BASE_HREF: ${{ steps.base-href.outputs.BASE_HREF }}
+          BUILD_DATE: ${{ github.run_started_at }}
         run: |
           echo "Building with base-href=$BASE_HREF"
-          npx ng build --configuration production --base-href "$BASE_HREF"
+          echo "Build date=$BUILD_DATE"
+          npm run build -- --base-href "$BASE_HREF"
 
       - name: Copy CNAME for custom domain (if present)
         run: |
