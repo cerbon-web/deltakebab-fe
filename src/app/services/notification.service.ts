@@ -24,6 +24,8 @@ export class NotificationService {
   private alertTimer?: number;
   private repeatCount = 0;
   private audioUnlocked = false;
+  private alertInterval?: number;
+  private alertEndTime = 0;
 
   constructor() {
     if (typeof window === 'undefined') {
@@ -165,31 +167,36 @@ export class NotificationService {
     }
 
     this.repeatCount = 0;
+    this.alertEndTime = Date.now() + 5 * 60 * 1000;
     this.isAlerting.set(true);
     await this.unlockAudio();
-    void this.playSoundCycle();
+    this.startRepeatingTone();
   }
 
-  private playSoundCycle() {
-    if (this.repeatCount >= 6) {
-      this.stopAlert();
-      return;
-    }
-
-    try {
-      const oscillator = this.createTone();
-      const now = this.audioContext!.currentTime;
-      oscillator.start(now);
-      oscillator.stop(now + 0.5);
-      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-        navigator.vibrate([200, 80, 200]);
+  private startRepeatingTone() {
+    const playBuzz = () => {
+      if (!this.audioContext || Date.now() >= this.alertEndTime) {
+        this.stopAlert();
+        return;
       }
-    } catch {
-      // audio context may be blocked until user interacts
-    }
 
-    this.repeatCount += 1;
-    this.alertTimer = window.setTimeout(() => this.playSoundCycle(), 1200);
+      try {
+        const oscillator = this.createTone();
+        const now = this.audioContext.currentTime;
+        oscillator.start(now);
+        oscillator.stop(now + 0.8);
+      } catch {
+        // audio context may be blocked until user interacts
+      }
+
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        navigator.vibrate([300, 100, 300]);
+      }
+
+      this.alertInterval = window.setTimeout(playBuzz, 1000);
+    };
+
+    playBuzz();
   }
 
   stopAlert() {
@@ -197,7 +204,12 @@ export class NotificationService {
       window.clearTimeout(this.alertTimer);
       this.alertTimer = undefined;
     }
-    // Close the AudioContext if created to stop ongoing sound.
+    if (this.alertInterval) {
+      window.clearTimeout(this.alertInterval);
+      this.alertInterval = undefined;
+    }
+    this.alertEndTime = 0;
+
     try {
       if (this.audioContext) {
         this.audioContext.close();
