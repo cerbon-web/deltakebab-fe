@@ -26,6 +26,7 @@ export class NotificationService {
   private audioUnlocked = false;
   private alertInterval?: number;
   private alertEndTime = 0;
+  private readonly storageKey = 'kitchen-notification';
 
   constructor() {
     if (typeof window === 'undefined') {
@@ -40,8 +41,15 @@ export class NotificationService {
     window.addEventListener('pointerdown', unlockInteraction, { once: true, capture: true });
     window.addEventListener('touchstart', unlockInteraction, { once: true, capture: true });
     window.addEventListener('keydown', unlockInteraction, { once: true, capture: true });
+    window.addEventListener('focus', () => void this.restorePendingNotification());
+    window.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        void this.restorePendingNotification();
+      }
+    });
 
     void this.registerServiceWorker();
+    void this.restorePendingNotification();
   }
 
   private createTone() {
@@ -91,6 +99,60 @@ export class NotificationService {
     }
   }
 
+  private restorePendingNotification() {
+    if (this.activeNotification() || this.isAlerting()) {
+      return;
+    }
+
+    const stored = this.loadStoredNotification();
+    if (stored) {
+      this.activeNotification.set(stored);
+      void this.pulseAlert();
+    }
+  }
+
+  private loadStoredNotification(): KitchenNotification | null {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return null;
+    }
+
+    try {
+      const raw = localStorage.getItem(this.storageKey);
+      if (!raw) {
+        return null;
+      }
+
+      const parsed = JSON.parse(raw) as KitchenNotification;
+      return parsed?.title && parsed?.body ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private storeNotification(notification: KitchenNotification) {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return;
+    }
+
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(notification));
+    } catch {
+      // ignore
+    }
+  }
+
+  private clearStoredNotification() {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return;
+    }
+
+    try {
+      localStorage.removeItem(this.storageKey);
+    } catch {
+      // ignore
+    }
+  }
+
   private async registerServiceWorker() {
     if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
       return;
@@ -105,7 +167,9 @@ export class NotificationService {
   }
 
   notify(notification: KitchenNotification) {
+    this.clearStoredNotification();
     this.activeNotification.set(notification);
+    this.storeNotification(notification);
     this.showBrowserNotification(notification);
     void this.pulseAlert();
   }
@@ -219,6 +283,7 @@ export class NotificationService {
     } catch {
       // ignore
     }
+    this.clearStoredNotification();
     this.isAlerting.set(false);
     this.activeNotification.set(null);
   }
