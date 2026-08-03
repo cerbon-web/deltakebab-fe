@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { finalize } from 'rxjs/operators';
 import { buildInfo } from '../../../environments/build-info';
 import { ApiService } from '../../services/api.service';
 
@@ -12,6 +13,7 @@ import { ApiService } from '../../services/api.service';
 })
 export class AboutComponent {
   private readonly apiService = inject(ApiService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   readonly buildDateLabel = this.formatBuildDate(buildInfo.buildDate);
   healthBuildDateLabel = '—';
@@ -35,15 +37,25 @@ export class AboutComponent {
 
   loadHealthBuildDate() {
     this.isLoadingHealth = true;
-    this.apiService.healthCheck().subscribe({
-      next: (response) => {
-        this.healthBuildDateLabel = this.formatBuildDate(response.buildDate);
-        this.isLoadingHealth = false;
-      },
-      error: () => {
-        this.healthBuildDateLabel = '—';
-        this.isLoadingHealth = false;
-      }
-    });
+    this.healthBuildDateLabel = '—';
+    this.cdr.markForCheck();
+
+    this.apiService.healthCheck()
+      .pipe(
+        finalize(() => {
+          this.isLoadingHealth = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          this.healthBuildDateLabel = response?.buildDate ? this.formatBuildDate(response.buildDate) : '—';
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.healthBuildDateLabel = '—';
+          this.cdr.markForCheck();
+        }
+      });
   }
 }
