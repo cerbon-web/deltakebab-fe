@@ -167,6 +167,10 @@ export class NotificationService {
   }
 
   notify(notification: KitchenNotification) {
+    if (this.activeNotification() || this.isAlerting()) {
+      this.stopAlert();
+    }
+
     this.clearStoredNotification();
     this.activeNotification.set(notification);
     this.storeNotification(notification);
@@ -283,6 +287,7 @@ export class NotificationService {
     } catch {
       // ignore
     }
+    this.audioUnlocked = false;
     this.clearStoredNotification();
     this.isAlerting.set(false);
     this.activeNotification.set(null);
