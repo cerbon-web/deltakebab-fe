@@ -291,9 +291,6 @@ export class KitchenComponent implements OnInit, OnDestroy {
         if (branchId) {
           this.kitchenOrderService.fetchOrders(branchId);
         }
-        if (this.notificationService.isAlerting()) {
-          this.notificationService.stopAlert();
-        }
       }
     });
   }
