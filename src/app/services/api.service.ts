@@ -16,6 +16,8 @@ export interface ApiErrorPayload {
 
 export interface HealthResponse {
   status: string;
+  environment?: string;
+  buildDate?: string;
 }
 
 @Injectable({ providedIn: 'root' })
