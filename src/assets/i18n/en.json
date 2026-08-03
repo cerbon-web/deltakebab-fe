@@ -1,5 +1,5 @@
 {
-  "NAV": { "LANDING": "Landing", "ORDERS": "Orders", "MENU": "Menu", "WHY": "Why Us", "CONTACT": "Contact", "ABOUT": "About", "HOME": "Home" },
+  "NAV": { "LANDING": "Landing", "ORDERS": "Orders", "MENU": "Menu", "WHY": "Why Us", "CONTACT": "Contact", "ABOUT": "About", "KITCHEN": "Kitchen", "HOME": "Home" },
   "HERO": { "SLOGAN": "Fresh ingredients. Fast service. Tasty kebab.", "CTA": "Find nearest location" },
   "NEAREST": {
     "TITLE": "Nearest branch",

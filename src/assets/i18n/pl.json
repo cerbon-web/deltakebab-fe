@@ -1,5 +1,5 @@
 {
-  "NAV": { "LANDING": "Strona główna", "ORDERS": "Zamówienia", "MENU": "Menu", "WHY": "Dlaczego my?", "CONTACT": "Kontakt", "ABOUT": "O nas", "HOME": "Strona główna" },
+  "NAV": { "LANDING": "Strona główna", "ORDERS": "Zamówienia", "MENU": "Menu", "WHY": "Dlaczego my?", "CONTACT": "Kontakt", "ABOUT": "O nas", "KITCHEN": "Kuchnia", "HOME": "Strona główna" },
   "HERO": { "SLOGAN": "Świeże składniki. Szybka obsługa. Pyszny kebab.", "CTA": "Znajdź najbliższy lokal" },
   "NEAREST": {
     "TITLE": "Najbliższy lokal",

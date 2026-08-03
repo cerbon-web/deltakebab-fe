@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
 import { KitchenOrderService } from '../../services/kitchen-order.service';
 import { BranchService } from '../../services/branch.service';
@@ -28,6 +28,7 @@ export class KitchenComponent implements OnInit, OnDestroy {
   public readonly notificationService = inject(NotificationService);
   private readonly socketService = inject(SocketService);
   private readonly router = inject(Router);
+  private readonly translateService = inject(TranslateService);
 
   readonly orders = this.kitchenOrderService.orders;
   readonly isLoading = this.kitchenOrderService.isLoading;
@@ -220,6 +221,26 @@ export class KitchenComponent implements OnInit, OnDestroy {
 
   getOrderItemTotal(item: KitchenOrderItem) {
     return (item.quantity ?? 0) * (item.unitPrice ?? 0);
+  }
+
+  getDisplayItemName(item: KitchenOrderItem) {
+    const currentLang = this.translateService.currentLang || this.translateService.defaultLang || 'pl';
+    const translationKey = `MENU.ITEMS.${item.itemName}`;
+    const translated = this.translateService.instant(translationKey);
+    return translated && translated !== translationKey ? translated : item.itemName || '';
+  }
+
+  getDisplayModifierName(modifier: { modifierGroupNameSnapshot?: string; modifierOptionNameSnapshot?: string }) {
+    const currentLang = this.translateService.currentLang || this.translateService.defaultLang || 'pl';
+    const groupKey = `MENU.MODIFIERS.GROUPS.${modifier.modifierGroupNameSnapshot}`;
+    const optionKey = `MENU.MODIFIERS.OPTIONS.${modifier.modifierOptionNameSnapshot}`;
+    const translatedGroup = this.translateService.instant(groupKey);
+    const translatedOption = this.translateService.instant(optionKey);
+
+    return {
+      group: translatedGroup && translatedGroup !== groupKey ? translatedGroup : modifier.modifierGroupNameSnapshot || '',
+      option: translatedOption && translatedOption !== optionKey ? translatedOption : modifier.modifierOptionNameSnapshot || ''
+    };
   }
 
   getOrderTimestamp(createdAt?: string) {

@@ -142,7 +142,7 @@
         </div>
         <ng-container *ngFor="let item of selectedOrder()?.items || []">
           <div class="grid-row">
-            <div class="item-name">{{ item.itemName }} {{ item.sizeName ? '(' + item.sizeName + ')' : '' }}</div>
+            <div class="item-name">{{ getDisplayItemName(item) }} {{ item.sizeName ? '(' + item.sizeName + ')' : '' }}</div>
             <div class="item-quantity">{{ item.quantity }}</div>
             <div class="item-price">{{ getOrderItemTotal(item) | currency:'PLN' }}</div>
           </div>
@@ -150,8 +150,8 @@
           <div class="item-modifiers" *ngIf="item.modifiers?.length">
             <div class="modifier-label">{{ 'KITCHEN.MODIFIERS' | translate }}</div>
             <div class="modifier-row" *ngFor="let modifier of item.modifiers">
-              <span>{{ modifier.modifierGroupNameSnapshot }}</span>
-              <span>{{ modifier.modifierOptionNameSnapshot }}</span>
+              <span>{{ getDisplayModifierName(modifier).group }}</span>
+              <span>{{ getDisplayModifierName(modifier).option }}</span>
               <span *ngIf="modifier.priceSnapshot">(+{{ modifier.priceSnapshot | currency:'PLN' }})</span>
             </div>
           </div>
