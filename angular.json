@@ -16,7 +16,7 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.json",
-            "assets": ["src/assets", "src/favicon.ico", "src/manifest.webmanifest"],
+            "assets": ["src/assets", "src/favicon.ico", "src/manifest.webmanifest", "src/notification-sw.js"],
             "styles": ["src/styles.css"],
             "scripts": []
           }

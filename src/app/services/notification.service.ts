@@ -95,7 +95,8 @@ export class NotificationService {
     }
 
     try {
-      await navigator.serviceWorker.register('/notification-sw.js');
+      const swUrl = new URL('notification-sw.js', window.location.href).toString();
+      await navigator.serviceWorker.register(swUrl, { scope: './' });
     } catch {
       // ignore service worker registration issues on unsupported browsers
     }
@@ -112,24 +113,48 @@ export class NotificationService {
       return;
     }
 
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-      const message: NotificationServiceWorkerMessage = {
-        type: 'KITCHEN_NOTIFICATION',
-        title: notification.title,
-        body: notification.body,
-        tag: `kitchen-${notification.orderId ?? Date.now()}`
-      };
+    const tag = `kitchen-${notification.orderId ?? Date.now()}`;
+    const payload: NotificationServiceWorkerMessage = {
+      type: 'KITCHEN_NOTIFICATION',
+      title: notification.title,
+      body: notification.body,
+      tag
+    };
 
+    if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then((registration) => {
-        registration.active?.postMessage(message);
-      }).catch(() => undefined);
+        if (registration.showNotification) {
+          const options: any = {
+            body: payload.body,
+            tag: payload.tag,
+            icon: payload.icon,
+            badge: payload.badge,
+            vibrate: [300, 100, 300],
+            requireInteraction: true,
+            renotify: true,
+            silent: false
+          };
+          registration.showNotification(payload.title, options);
+        } else {
+          registration.active?.postMessage(payload);
+        }
+      }).catch(() => {
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification(payload.title, {
+            body: payload.body,
+            tag,
+            silent: false
+          });
+        }
+      });
       return;
     }
 
     if ('Notification' in window && Notification.permission === 'granted') {
       new Notification(notification.title, {
         body: notification.body,
-        tag: `kitchen-${notification.orderId ?? Date.now()}`
+        tag,
+        silent: false
       });
     }
   }
@@ -146,30 +171,25 @@ export class NotificationService {
   }
 
   private playSoundCycle() {
-    if (this.repeatCount >= 10) {
+    if (this.repeatCount >= 6) {
       this.stopAlert();
       return;
     }
 
     try {
       const oscillator = this.createTone();
-      oscillator.start();
-      oscillator.stop(this.audioContext!.currentTime + 0.25);
+      const now = this.audioContext!.currentTime;
+      oscillator.start(now);
+      oscillator.stop(now + 0.5);
       if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-        navigator.vibrate([120, 60, 120]);
+        navigator.vibrate([200, 80, 200]);
       }
     } catch {
       // audio context may be blocked until user interacts
     }
 
     this.repeatCount += 1;
-    this.alertTimer = window.setTimeout(() => {
-      if (this.repeatCount >= 10) {
-        this.stopAlert();
-      } else {
-        this.alertTimer = window.setTimeout(() => this.playSoundCycle(), 60000);
-      }
-    }, 15000);
+    this.alertTimer = window.setTimeout(() => this.playSoundCycle(), 1200);
   }
 
   stopAlert() {
