@@ -1,0 +1,418 @@
+.kitchen-shell {
+  min-height: calc(100vh - 72px);
+  padding: 1rem;
+  background: #f3f3f3;
+}
+
+.kitchen-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status-chip {
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  background: #1e88e5;
+  color: white;
+}
+
+.notification-banner {
+  margin: 1rem 0;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 12px;
+  background: #ffeb3b;
+}
+
+.kitchen-summary {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 12px;
+  background: white;
+}
+
+.branch-selector-title {
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.restaurant-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.restaurant-group {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.restaurant-group__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.branch-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.branch-buttons button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.branch-button__label {
+  flex: 1 1 auto;
+}
+
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.45rem;
+  height: 1.45rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: #fff;
+  margin-left: 0.35rem;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.14);
+}
+
+.restaurant-count {
+  background: linear-gradient(135deg, #d81b60, #c2185b);
+}
+
+.branch-count {
+  background: linear-gradient(135deg, #f57c00, #ef6c00);
+}
+
+button.selected {
+  border-color: #1e88e5;
+  background: rgba(30, 136, 229, 0.12);
+}
+
+button.selected .branch-count {
+  background: linear-gradient(135deg, #1e88e5, #1565c0);
+}
+
+.current-branch-info {
+  font-size: 0.95rem;
+  color: #424242;
+}
+
+.order-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.order-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.order-group h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.order-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.order-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.order-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.order-number {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.order-status {
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.order-metadata,
+.order-items {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.order-items {
+  padding-top: 0.75rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.order-summary {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.order-payment {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #424242;
+}
+
+.order-payment mat-icon {
+  font-size: 1rem;
+  vertical-align: middle;
+}
+
+.order-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.order-total strong {
+  font-size: 1.2rem;
+}
+
+.item-summary {
+  color: #616161;
+  font-size: 0.9rem;
+}
+
+.order-detail-panel {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.order-detail-section {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.section-heading {
+  font-weight: 700;
+  color: #333;
+}
+
+.order-item-detail {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.item-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.item-title {
+  font-weight: 600;
+}
+
+.item-price {
+  font-weight: 700;
+}
+
+.item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  color: #616161;
+  font-size: 0.95rem;
+}
+
+.modifier-section {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.6rem 0 0 0.75rem;
+  border-left: 2px solid #e0e0e0;
+}
+
+.modifier-label {
+  font-size: 0.95rem;
+  color: #424242;
+}
+
+.modifier-row {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 0.75rem;
+  align-items: center;
+  font-size: 0.92rem;
+  color: #555;
+}
+
+.order-notes {
+  padding: 0.75rem;
+  background: #f8f8ff;
+  border-radius: 12px;
+}
+
+.order-card.expanded {
+  border: 1px solid #1976d2;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.order-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.order-detail-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.order-detail-dialog {
+  width: min(1100px, 100%);
+  max-height: min(90vh, 960px);
+  overflow: auto;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.22);
+  padding: 1.5rem;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.dialog-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.dialog-subtitle {
+  color: #616161;
+  margin-top: 0.3rem;
+}
+
+.dialog-meta {
+  display: grid;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.order-total-popup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: baseline;
+  font-weight: 700;
+}
+
+.order-count-popup {
+  color: #616161;
+  font-size: 0.95rem;
+}
+
+.order-items-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.grid-header,
+.grid-row {
+  display: grid;
+  grid-template-columns: 1.8fr 0.7fr 0.8fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.85rem 0;
+}
+
+.grid-header {
+  border-bottom: 1px solid #e0e0e0;
+  color: #424242;
+  font-weight: 700;
+}
+
+.grid-row {
+  border-bottom: 1px solid #f0f0f0;
+  color: #333;
+}
+
+.item-name {
+  min-width: 0;
+}
+
+.item-quantity,
+.item-price {
+  text-align: right;
+}
+
+.item-notes,
+.item-modifiers {
+  padding: 0.5rem 0 0 1rem;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.modifier-row {
+  grid-template-columns: 1fr 1fr auto;
+}
+
+.kitchen-login-message {
+  padding: 2rem;
+  text-align: center;
+}

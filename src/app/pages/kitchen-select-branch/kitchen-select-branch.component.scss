@@ -1,0 +1,5 @@
+.kitchen-select-branch { padding: 16px; display:flex; align-items:center; justify-content:center; }
+.kitchen-select-branch mat-card { width: min(700px, 96%); padding: 16px; }
+.kitchen-select-branch ul { list-style:none; padding:0; margin:0; display:grid; gap:12px }
+.kitchen-select-branch li { display:flex; justify-content:space-between; align-items:center; padding:8px; border-radius:6px; background:#fff }
+.kitchen-select-branch .error { color:#d32f2f }

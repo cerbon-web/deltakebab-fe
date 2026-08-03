@@ -1,0 +1,162 @@
+<main class="kitchen-shell">
+  <header class="kitchen-header">
+    <div>
+      <h1>{{ 'KITCHEN.TITLE' | translate }}</h1>
+      <p>{{ 'KITCHEN.SUBTITLE' | translate }}</p>
+    </div>
+    <div class="status-bar">
+      <span class="status-chip">{{ 'KITCHEN.STATUS_LABEL' | translate }}: {{ getConnectionStateLabel(connectionState()) | translate }}</span>
+      <button mat-flat-button color="accent" data-testid="kitchen-logout-button" (click)="authService.logout()" routerLink="/kitchen-login">
+        {{ 'KITCHEN.LOGOUT' | translate }}
+      </button>
+    </div>
+  </header>
+
+  <section class="notification-banner" *ngIf="notification()">
+    <div>
+      <strong>{{ notification()?.title }}</strong>
+      <p>{{ notification()?.body }}</p>
+    </div>
+    <button mat-icon-button color="primary" (click)="notificationService.stopAlert()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </section>
+
+  <div class="kitchen-content" *ngIf="authService.isAuthenticated(); else loginState">
+    <div class="kitchen-summary">
+      <div>
+        <div>{{ 'KITCHEN.WELCOME' | translate }} {{ staffName() }}</div>
+        <div *ngIf="!isSuperAdmin()">{{ 'KITCHEN.BRANCH_LABEL' | translate }}: {{ selectedBranch()?.name || authService.user()?.branchIds?.[0] || '–' }}</div>
+        <div *ngIf="isSuperAdmin()">
+          <div class="branch-selector-title">{{ 'KITCHEN.SELECT_BRANCH.TITLE' | translate }}</div>
+          <div class="restaurant-list">
+            <div class="restaurant-group" *ngFor="let restaurant of restaurants()">
+              <div class="restaurant-group__header">
+                <span>{{ restaurant.name }}</span>
+                <span class="count-badge restaurant-count" *ngIf="(restaurant.activeOrderCount || 0) > 0">{{ restaurant.activeOrderCount || 0 }}</span>
+              </div>
+              <div class="branch-buttons">
+                <button mat-stroked-button type="button" *ngFor="let branch of restaurant.branches"
+                  [class.selected]="selectedBranchId() === branch.id"
+                  (click)="selectBranch(branch.id)">
+                  <span class="branch-button__label">{{ branch.name }}</span>
+                  <span class="count-badge branch-count" *ngIf="(branch.activeOrderCount || 0) > 0">{{ branch.activeOrderCount || 0 }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="current-branch-info" *ngIf="selectedBranch()">
+        {{ 'KITCHEN.CURRENT_BRANCH' | translate }}: {{ selectedBranch()?.name }}{{ selectedBranch()?.restaurantName ? ' / ' + selectedBranch()?.restaurantName : '' }}
+      </div>
+    </div>
+
+    <div class="order-groups">
+      <ng-container *ngFor="let status of ['NEW', 'RECEIVED', 'ACCEPTED', 'PREPARING', 'READY_FOR_PICKUP', 'IN_DELIVERY', 'DELIVERED', 'FAILED_DELIVERY', 'CANCELLED']">
+        <section class="order-group">
+          <h2>{{ ('KITCHEN.GROUP.' + status) | translate }}</h2>
+          <div class="order-list">
+            <article class="order-card" *ngFor="let order of orders().filter(o => o.status === status)" (click)="openOrderDetails(order)">
+              <div class="order-card__header">
+                <div>
+                  <div class="order-number">#{{ formatOrderNumber(order) }}</div>
+                  <div class="order-status">{{ getStatusLabel(order.status) | translate }}</div>
+                </div>
+                <div class="order-timestamp">{{ getOrderTimestamp(order.createdAt) }}</div>
+              </div>
+
+              <div class="order-metadata">
+                <div>{{ 'KITCHEN.CUSTOMER' | translate }}: {{ order.customerName || ('KITCHEN.GUEST' | translate) }}</div>
+                <div *ngIf="order.customerPhone">{{ 'KITCHEN.PHONE' | translate }}: {{ order.customerPhone }}</div>
+                <div class="order-payment">
+                  <mat-icon>{{ getPaymentIcon(order.paymentMethod) }}</mat-icon>
+                  <span>{{ getPaymentLabel(order.paymentMethod) | translate }}</span>
+                </div>
+                <div class="order-total">
+                  <div>
+                    <span>{{ 'KITCHEN.TOTAL' | translate }}:</span>
+                    <strong>{{ order.totalPrice | currency:'PLN' }}</strong>
+                  </div>
+                  <div class="order-count">{{ getTotalItemCount(order) }} {{ 'KITCHEN.ITEMS_TOTAL' | translate }}</div>
+                </div>
+                <div *ngIf="order.street">{{ order.street }}, {{ order.buildingNumber }} {{ order.apartmentNumber }}</div>
+              </div>
+
+              <div class="order-summary">
+                <div class="item-row" *ngFor="let item of order.items?.slice(0, 2) || []">
+                  <div>{{ item.quantity }}x {{ item.itemName }} {{ item.sizeName ? '(' + item.sizeName + ')' : '' }}</div>
+                  <div>{{ getOrderItemTotal(item) | currency:'PLN' }}</div>
+                </div>
+                <div *ngIf="(order.items?.length || 0) > 2" class="item-summary">{{ getTotalItemCount(order) }} {{ 'KITCHEN.ITEMS_TOTAL' | translate }}</div>
+              </div>
+
+              <div class="order-actions">
+                <button mat-flat-button color="primary" type="button" (click)="openOrderDetails(order, $event)">{{ 'KITCHEN.DETAILS' | translate }}</button>
+                <button mat-flat-button color="primary" type="button" *ngFor="let action of getActions(order)" (click)="onAction(order, action.status, $event)">{{ action.label | translate }}</button>
+              </div>
+            </article>
+          </div>
+        </section>
+      </ng-container>
+    </div>
+  </div>
+
+  <ng-template #loginState>
+    <div class="kitchen-login-message">
+      <p>{{ 'KITCHEN.NOT_LOGGED_IN' | translate }}</p>
+      <a routerLink="/kitchen-login">{{ 'KITCHEN.LOGIN_LINK' | translate }}</a>
+    </div>
+  </ng-template>
+
+  <div class="order-detail-popup" *ngIf="selectedOrder()" (click)="closeOrderDetails()">
+    <div class="order-detail-dialog" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <div>
+          <div class="dialog-title">{{ 'KITCHEN.DETAILS' | translate }} #{{ formatOrderNumber(selectedOrder()!) }}</div>
+          <div class="dialog-subtitle">{{ selectedOrder()?.status ? (getStatusLabel(selectedOrder()!.status) | translate) : '' }}</div>
+        </div>
+        <button mat-icon-button type="button" (click)="closeOrderDetails($event)"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <div class="dialog-meta">
+        <div>{{ 'KITCHEN.CUSTOMER' | translate }}: {{ selectedOrder()?.customerName || ('KITCHEN.GUEST' | translate) }}</div>
+        <div *ngIf="selectedOrder()?.customerPhone">{{ 'KITCHEN.PHONE' | translate }}: {{ selectedOrder()?.customerPhone }}</div>
+        <div class="order-payment">
+          <mat-icon>{{ getPaymentIcon(selectedOrder()?.paymentMethod) }}</mat-icon>
+          <span>{{ getPaymentLabel(selectedOrder()?.paymentMethod) | translate }}</span>
+        </div>
+        <div class="order-total-popup">
+          <span>{{ 'KITCHEN.TOTAL' | translate }}:</span>
+          <strong>{{ selectedOrder()?.totalPrice | currency:'PLN' }}</strong>
+          <span class="order-count-popup">{{ getTotalItemCount(selectedOrder()!) }} {{ 'KITCHEN.ITEMS_TOTAL' | translate }}</span>
+        </div>
+        <div *ngIf="selectedOrder()?.street">{{ selectedOrder()?.street }}, {{ selectedOrder()?.buildingNumber }} {{ selectedOrder()?.apartmentNumber }}</div>
+      </div>
+
+      <div class="order-items-grid">
+        <div class="grid-header">
+          <span>{{ 'KITCHEN.ITEM' | translate }}</span>
+          <span>{{ 'KITCHEN.QUANTITY' | translate }}</span>
+          <span>{{ 'KITCHEN.LINE_TOTAL' | translate }}</span>
+        </div>
+        <ng-container *ngFor="let item of selectedOrder()?.items || []">
+          <div class="grid-row">
+            <div class="item-name">{{ item.itemName }} {{ item.sizeName ? '(' + item.sizeName + ')' : '' }}</div>
+            <div class="item-quantity">{{ item.quantity }}</div>
+            <div class="item-price">{{ getOrderItemTotal(item) | currency:'PLN' }}</div>
+          </div>
+          <div class="item-notes" *ngIf="item.notes">{{ 'KITCHEN.NOTES' | translate }}: {{ item.notes }}</div>
+          <div class="item-modifiers" *ngIf="item.modifiers?.length">
+            <div class="modifier-label">{{ 'KITCHEN.MODIFIERS' | translate }}</div>
+            <div class="modifier-row" *ngFor="let modifier of item.modifiers">
+              <span>{{ modifier.modifierGroupNameSnapshot }}</span>
+              <span>{{ modifier.modifierOptionNameSnapshot }}</span>
+              <span *ngIf="modifier.priceSnapshot">(+{{ modifier.priceSnapshot | currency:'PLN' }})</span>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</main>

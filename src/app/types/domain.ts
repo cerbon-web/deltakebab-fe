@@ -18,6 +18,7 @@ export interface Branch {
   longitude?: number | null;
   restaurantId?: string;
   restaurantName?: string;
+  activeOrderCount?: number;
   distance?: number | null;
   distance_km?: number | null;
   active?: boolean;

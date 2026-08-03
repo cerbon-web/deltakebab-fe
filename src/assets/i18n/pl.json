@@ -34,12 +34,74 @@
     "CONNECTING": "Łączenie...",
     "PREPARING": "Przygotowywanie doświadczenia...",
     "CONNECTED": "Połączono",
+    "OFFLINE": "Brak połączenia",
+    "RECONNECTING": "Ponowne łączenie...",
     "UNAVAILABLE": "Usługa niedostępna",
     "RETRY": "Spróbuj ponownie",
     "ERRORS": {
       "BACKEND_OFFLINE": "Serwer jest chwilowo niedostępny.",
       "GENERIC": "Coś poszło nie tak.",
       "SERVICE_UNAVAILABLE": "Usługa jest tymczasowo niedostępna."
+    }
+  },
+  "KITCHEN": {
+    "TITLE": "Kuchnia",
+    "SUBTITLE": "Zarządzaj zamówieniami restauracji w czasie rzeczywistym.",
+    "STATUS_LABEL": "Połączenie",
+    "LOGOUT": "Wyloguj",
+    "WELCOME": "Witaj",
+    "BRANCH_LABEL": "Oddział",
+    "GUEST": "Gość",
+    "NOT_LOGGED_IN": "Nie jesteś zalogowany.",
+    "LOGIN_LINK": "Zaloguj się",
+    "SELECT_BRANCH": {
+      "TITLE": "Wybierz oddział"
+    },
+    "FORM": {
+      "EMAIL": "Email",
+      "PASSWORD": "Hasło",
+      "LOGIN_TITLE": "Logowanie kuchni",
+      "LOGIN_SUBTITLE": "Zaloguj się, aby zobaczyć i zarządzać zamówieniami",
+      "LOGIN_LOADING": "Logowanie...",
+      "LOGIN_ACTION": "Zaloguj się"
+    },
+    "GROUP": {
+      "NEW": "Nowe",
+      "RECEIVED": "Odebrane",
+      "ACCEPTED": "Zaakceptowane",
+      "PREPARING": "W przygotowaniu",
+      "READY_FOR_PICKUP": "Gotowe do odbioru",
+      "IN_DELIVERY": "W dostawie",
+      "DELIVERED": "Dostarczone",
+      "FAILED_DELIVERY": "Dostawa nieudana",
+      "CANCELLED": "Anulowane"
+    },
+    "CUSTOMER": "Klient",
+    "METHOD": "Metoda",
+    "TOTAL": "Razem",
+    "PAYMENT": "Płatność",
+    "PHONE": "Telefon",
+    "DETAILS": "Szczegóły",
+    "CLOSE_DETAILS": "Ukryj szczegóły",
+    "CURRENT_BRANCH": "Aktualny oddział",
+    "ITEMS": "Pozycje",
+    "ITEMS_TOTAL": "sztuk",
+    "ITEM": "Pozycja",
+    "QUANTITY": "Ilość",
+    "LINE_TOTAL": "Suma pozycji",
+    "MODIFIERS": "Modyfikatory",
+    "UNIT_PRICE": "Cena jednostkowa",
+    "NOTES": "Notatki",
+    "ACTIONS": {
+      "RECEIVE": "Odbierz",
+      "ACCEPT": "Akceptuj",
+      "REJECT": "Odrzuć",
+      "START_PREPARING": "Rozpocznij przygotowanie",
+      "MARK_READY": "Oznacz jako gotowe",
+      "SEND_DELIVERY": "Wyślij do dostawy",
+      "MARK_DELIVERED": "Oznacz jako doręczone",
+      "MARK_FAILED": "Oznacz jako nieudane",
+      "COMPLETE": "Zakończ"
     }
   },
   "ORDERS": {

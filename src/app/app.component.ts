@@ -45,9 +45,10 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     // translation setup: Polish default
-    this.translate.addLangs(['pl','en','uk']);
+    const supportedLangs = ['pl', 'en', 'uk'];
+    this.translate.addLangs(supportedLangs);
     const saved = localStorage.getItem('delta-lang');
-    const defaultLang = saved ?? 'pl';
+    const defaultLang = supportedLangs.includes(saved || '') ? saved! : 'pl';
     this.translate.setDefaultLang('pl');
     this.translate.use(defaultLang);
 

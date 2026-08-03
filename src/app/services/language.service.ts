@@ -16,11 +16,13 @@ export class LanguageService {
   ];
 
   constructor() {
+    const supportedLangs: AppLang[] = ['pl', 'en', 'uk'];
     const saved = (localStorage.getItem('delta-lang') as AppLang) || 'pl';
-    this.translate.addLangs(['pl', 'en', 'uk']);
+    const lang = supportedLangs.includes(saved) ? saved : 'pl';
+    this.translate.addLangs(supportedLangs);
     this.translate.setDefaultLang('pl');
-    this.translate.use(saved);
-    this.currentLang.set(saved);
+    this.translate.use(lang);
+    this.currentLang.set(lang);
     this.translate.onLangChange.subscribe((e) => this.currentLang.set(e.lang as AppLang));
   }
 

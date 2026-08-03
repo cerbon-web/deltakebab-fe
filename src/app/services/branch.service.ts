@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Branch, Restaurant } from '../types/domain';
@@ -21,9 +21,16 @@ export class BranchService {
           id: branch.id,
           name: branch.name || `${restaurant.name} - ${branch.city || branch.street || ''}`,
           address: [branch.street, branch.buildingNumber, branch.postalCode, branch.city].filter(Boolean).join(', '),
-          restaurantId: restaurant.id
+          restaurantId: restaurant.id,
+          restaurantName: restaurant.name,
+          activeOrderCount: branch.activeOrderCount ?? 0
         }))
       ))
     );
+  }
+
+  assignBranch(branchId: string, token?: string) {
+    const headers = new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {});
+    return this.http.post<{ token: string; user: any }>(`${this.url}/assign-branch`, { branchId }, { headers });
   }
 }

@@ -1,10 +1,10 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideRouter, Routes } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
 import { AppComponent } from './app/app.component';
 import { APP_ROUTES } from './app/app.routes';
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient } from '@angular/common/http';
 import { importProvidersFrom } from '@angular/core';
@@ -26,8 +26,8 @@ bootstrapApplication(AppComponent, {
         useFactory: httpLoaderFactory,
         deps: [HttpClient]
       }
-    }))
-    , { provide: LocationStrategy, useClass: HashLocationStrategy }
+    })),
+    { provide: LocationStrategy, useClass: HashLocationStrategy }
   ]
 }).then(() => {
   // App initialization handled in AppComponent

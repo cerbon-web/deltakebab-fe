@@ -34,12 +34,74 @@
     "CONNECTING": "Connecting...",
     "PREPARING": "Preparing the experience...",
     "CONNECTED": "Connected",
+    "OFFLINE": "Offline",
+    "RECONNECTING": "Reconnecting",
     "UNAVAILABLE": "Service unavailable",
     "RETRY": "Retry",
     "ERRORS": {
       "BACKEND_OFFLINE": "The backend is temporarily unavailable.",
       "GENERIC": "Something went wrong.",
       "SERVICE_UNAVAILABLE": "The service is temporarily unavailable."
+    }
+  },
+  "KITCHEN": {
+    "TITLE": "Kitchen",
+    "SUBTITLE": "Manage restaurant orders in real time.",
+    "STATUS_LABEL": "Connection",
+    "LOGOUT": "Logout",
+    "WELCOME": "Welcome",
+    "BRANCH_LABEL": "Branch",
+    "GUEST": "Guest",
+    "NOT_LOGGED_IN": "You are not logged in.",
+    "LOGIN_LINK": "Log in",
+    "SELECT_BRANCH": {
+      "TITLE": "Select a branch"
+    },
+    "FORM": {
+      "EMAIL": "Email",
+      "PASSWORD": "Password",
+      "LOGIN_TITLE": "Kitchen login",
+      "LOGIN_SUBTITLE": "Sign in to view and manage orders",
+      "LOGIN_LOADING": "Logging in...",
+      "LOGIN_ACTION": "Log in"
+    },
+    "GROUP": {
+      "NEW": "New",
+      "RECEIVED": "Received",
+      "ACCEPTED": "Accepted",
+      "PREPARING": "Preparing",
+      "READY_FOR_PICKUP": "Ready for pickup",
+      "IN_DELIVERY": "In delivery",
+      "DELIVERED": "Delivered",
+      "FAILED_DELIVERY": "Delivery failed",
+      "CANCELLED": "Cancelled"
+    },
+    "CUSTOMER": "Customer",
+    "METHOD": "Method",
+    "TOTAL": "Total",
+    "PAYMENT": "Payment",
+    "PHONE": "Phone",
+    "DETAILS": "Details",
+    "CLOSE_DETAILS": "Hide details",
+    "CURRENT_BRANCH": "Current branch",
+    "ITEMS": "Items",
+    "ITEMS_TOTAL": "total items",
+    "ITEM": "Item",
+    "QUANTITY": "Qty",
+    "LINE_TOTAL": "Line total",
+    "MODIFIERS": "Modifiers",
+    "UNIT_PRICE": "Unit price",
+    "NOTES": "Notes",
+    "ACTIONS": {
+      "RECEIVE": "Receive",
+      "ACCEPT": "Accept",
+      "REJECT": "Reject",
+      "START_PREPARING": "Start preparing",
+      "MARK_READY": "Mark ready",
+      "SEND_DELIVERY": "Send to delivery",
+      "MARK_DELIVERED": "Mark delivered",
+      "MARK_FAILED": "Mark failed",
+      "COMPLETE": "Complete"
     }
   },
   "ORDERS": {

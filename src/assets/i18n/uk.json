@@ -34,12 +34,74 @@
     "CONNECTING": "Підключення...",
     "PREPARING": "Підготовка враження...",
     "CONNECTED": "Підключено",
+    "OFFLINE": "Офлайн",
+    "RECONNECTING": "Повторне підключення...",
     "UNAVAILABLE": "Сервіс недоступний",
     "RETRY": "Спробувати ще раз",
     "ERRORS": {
       "BACKEND_OFFLINE": "Сервер тимчасово недоступний.",
       "GENERIC": "Щось пішло не так.",
       "SERVICE_UNAVAILABLE": "Сервіс тимчасово недоступний."
+    }
+  },
+  "KITCHEN": {
+    "TITLE": "Кухня",
+    "SUBTITLE": "Керуйте замовленнями ресторану в режимі реального часу.",
+    "STATUS_LABEL": "З'єднання",
+    "LOGOUT": "Вийти",
+    "WELCOME": "Ласкаво просимо",
+    "BRANCH_LABEL": "Відділення",
+    "GUEST": "Гість",
+    "NOT_LOGGED_IN": "Ви не ввійшли в систему.",
+    "LOGIN_LINK": "Увійти",
+    "SELECT_BRANCH": {
+      "TITLE": "Оберіть відділення"
+    },
+    "FORM": {
+      "EMAIL": "Email",
+      "PASSWORD": "Пароль",
+      "LOGIN_TITLE": "Вхід на кухню",
+      "LOGIN_SUBTITLE": "Увійдіть, щоб переглядати та керувати замовленнями",
+      "LOGIN_LOADING": "Вхід...",
+      "LOGIN_ACTION": "Увійти"
+    },
+    "GROUP": {
+      "NEW": "Нові",
+      "RECEIVED": "Отримані",
+      "ACCEPTED": "Прийняті",
+      "PREPARING": "У приготуванні",
+      "READY_FOR_PICKUP": "Готові до видачі",
+      "IN_DELIVERY": "У доставці",
+      "DELIVERED": "Доставлені",
+      "FAILED_DELIVERY": "Доставка не вдалася",
+      "CANCELLED": "Скасовані"
+    },
+    "CUSTOMER": "Клієнт",
+    "METHOD": "Метод",
+    "TOTAL": "Всього",
+    "PAYMENT": "Оплата",
+    "PHONE": "Телефон",
+    "DETAILS": "Деталі",
+    "CLOSE_DETAILS": "Сховати деталі",
+    "CURRENT_BRANCH": "Поточний відділ",
+    "ITEMS": "Позиції",
+    "ITEMS_TOTAL": "шт",
+    "ITEM": "Позиція",
+    "QUANTITY": "Кількість",
+    "LINE_TOTAL": "Сума",
+    "MODIFIERS": "Модифікатори",
+    "UNIT_PRICE": "Ціна за одиницю",
+    "NOTES": "Нотатки",
+    "ACTIONS": {
+      "RECEIVE": "Отримати",
+      "ACCEPT": "Прийняти",
+      "REJECT": "Відхилити",
+      "START_PREPARING": "Розпочати приготування",
+      "MARK_READY": "Позначити як готові",
+      "SEND_DELIVERY": "Відправити на доставку",
+      "MARK_DELIVERED": "Позначити як доставлені",
+      "MARK_FAILED": "Позначити як не вдалося",
+      "COMPLETE": "Завершити"
     }
   },
   "ORDERS": {
