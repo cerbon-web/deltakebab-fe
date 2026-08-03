@@ -100,9 +100,13 @@ export class KitchenComponent implements OnInit, OnDestroy {
       if (payload?.event === 'order.created') {
         this.kitchenOrderService.fetchOrders(branchId);
         const order = this.kitchenOrderService.orders().find(o => o.id === payload.orderId);
+        const itemCount = this.getNotificationItemCount(payload, order);
+        const customerName = payload?.customerName || order?.customerName || 'Guest';
+        const orderType = payload?.orderType || order?.orderType || 'Order';
+
         this.notificationService.notify({
-          title: `NEW ORDER ${order?.orderNumber || payload.orderId}`,
-          body: `${order?.customerName || 'Guest'} • ${order?.orderType || 'Order'} • ${(order?.items?.length || 0)} items`,
+          title: `NEW ORDER ${order?.orderNumber || payload.orderNumber || payload.orderId}`,
+          body: `${customerName} • ${orderType} • ${itemCount} ${itemCount === 1 ? 'item' : 'items'}`,
           orderId: payload.orderId
         });
       }
@@ -153,6 +157,19 @@ export class KitchenComponent implements OnInit, OnDestroy {
 
   formatOrderNumber(order: KitchenOrder) {
     return order.orderNumber || order.id.slice(0, 8).toUpperCase();
+  }
+
+  private getNotificationItemCount(payload: any, order?: KitchenOrder | null) {
+    const payloadItemCount = Number(payload?.itemCount ?? payload?.itemCount ?? payload?.itemsCount);
+    if (Number.isFinite(payloadItemCount) && payloadItemCount > 0) {
+      return payloadItemCount;
+    }
+
+    if (order?.items?.length) {
+      return order.items.reduce((sum, item) => sum + (item.quantity ?? 0), 0);
+    }
+
+    return 0;
   }
 
   getTotalItemCount(order: KitchenOrder) {
