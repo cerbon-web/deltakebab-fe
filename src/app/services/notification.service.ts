@@ -1,5 +1,14 @@
 import { Injectable, signal } from '@angular/core';
 
+interface NotificationServiceWorkerMessage {
+  type: 'KITCHEN_NOTIFICATION';
+  title: string;
+  body: string;
+  icon?: string;
+  badge?: string;
+  tag?: string;
+}
+
 export interface KitchenNotification {
   title: string;
   body: string;
@@ -29,6 +38,8 @@ export class NotificationService {
     window.addEventListener('pointerdown', unlockInteraction, { once: true, capture: true });
     window.addEventListener('touchstart', unlockInteraction, { once: true, capture: true });
     window.addEventListener('keydown', unlockInteraction, { once: true, capture: true });
+
+    void this.registerServiceWorker();
   }
 
   private createTone() {
@@ -78,6 +89,18 @@ export class NotificationService {
     }
   }
 
+  private async registerServiceWorker() {
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+      return;
+    }
+
+    try {
+      await navigator.serviceWorker.register('/notification-sw.js');
+    } catch {
+      // ignore service worker registration issues on unsupported browsers
+    }
+  }
+
   notify(notification: KitchenNotification) {
     this.activeNotification.set(notification);
     this.showBrowserNotification(notification);
@@ -85,11 +108,25 @@ export class NotificationService {
   }
 
   private showBrowserNotification(notification: KitchenNotification) {
-    if (typeof window === 'undefined' || !('Notification' in window)) {
+    if (typeof window === 'undefined') {
       return;
     }
 
-    if (Notification.permission === 'granted') {
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      const message: NotificationServiceWorkerMessage = {
+        type: 'KITCHEN_NOTIFICATION',
+        title: notification.title,
+        body: notification.body,
+        tag: `kitchen-${notification.orderId ?? Date.now()}`
+      };
+
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.active?.postMessage(message);
+      }).catch(() => undefined);
+      return;
+    }
+
+    if ('Notification' in window && Notification.permission === 'granted') {
       new Notification(notification.title, {
         body: notification.body,
         tag: `kitchen-${notification.orderId ?? Date.now()}`
