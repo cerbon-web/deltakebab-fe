@@ -12,6 +12,7 @@ import { BranchService } from '../../services/branch.service';
 import { KitchenOrder, KitchenOrderItem } from '../../types/kitchen';
 import { Branch } from '../../types/domain';
 import { NotificationService } from '../../services/notification.service';
+import { NativeBridgeService } from '../../services/native-bridge.service';
 import { SocketService } from '../../services/socket.service';
 
 @Component({
@@ -26,6 +27,7 @@ export class KitchenComponent implements OnInit, OnDestroy {
   public readonly kitchenOrderService = inject(KitchenOrderService);
   public readonly branchService = inject(BranchService);
   public readonly notificationService = inject(NotificationService);
+  private readonly nativeBridgeService = inject(NativeBridgeService);
   private readonly socketService = inject(SocketService);
   private readonly router = inject(Router);
   private readonly translateService = inject(TranslateService);
@@ -36,6 +38,7 @@ export class KitchenComponent implements OnInit, OnDestroy {
   readonly connectionState = this.kitchenOrderService.connectionState;
   readonly notification = this.notificationService.activeNotification;
   readonly isAlerting = this.notificationService.isAlerting;
+  readonly isNativeAndroidMode = computed(() => this.nativeBridgeService.isNativeNotificationEnabled());
   readonly staffName = computed(() => this.authService.user()?.name || '');
   readonly branchId = computed(() => this.authService.user()?.branchIds?.[0] || '');
   readonly selectedOrder = signal<KitchenOrder | null>(null);
@@ -69,7 +72,9 @@ export class KitchenComponent implements OnInit, OnDestroy {
 
     if (this.isSuperAdmin()) {
       this.loadBranches();
-      this.notificationService.requestPermission();
+      if (!this.isNativeAndroidMode()) {
+        this.notificationService.requestPermission();
+      }
       return;
     }
 
@@ -80,7 +85,9 @@ export class KitchenComponent implements OnInit, OnDestroy {
     }
 
     this.changeBranch(branchId);
-    this.notificationService.requestPermission();
+    if (!this.isNativeAndroidMode()) {
+      this.notificationService.requestPermission();
+    }
   }
 
   ngOnDestroy(): void {
