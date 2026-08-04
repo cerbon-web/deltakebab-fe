@@ -1,11 +1,24 @@
 <main class="container">
   <h1>{{ 'ABOUT.TITLE' | translate }}</h1>
   <p>{{ 'ABOUT.TEXT' | translate }}</p>
-  <p><strong>{{ 'ABOUT.BUILD_DATE' | translate }}:</strong> {{ buildDateLabel }}</p>
+  <p class="build-info" role="button" tabindex="0" (click)="onBuildInfoClick()" (keydown.enter)="onBuildInfoClick()" (keydown.space)="onBuildInfoClick()">
+    <strong>{{ 'ABOUT.BUILD_DATE' | translate }}:</strong> {{ buildDateLabel }}
+  </p>
   <button type="button" (click)="loadHealthBuildDate()" [disabled]="isLoadingHealth">
     {{ isLoadingHealth ? ('ABOUT.LOADING' | translate) : ('ABOUT.SHOW_HEALTH_VERSION' | translate) }}
   </button>
   <p *ngIf="healthBuildDateLabel !== '—'">
     <strong>{{ 'ABOUT.HEALTH_BUILD_DATE' | translate }}:</strong> {{ healthBuildDateLabel }}
   </p>
+
+  <div class="secret-overlay" *ngIf="isSecretPanelVisible" role="dialog" aria-modal="true">
+    <div class="secret-card">
+      <h2>{{ 'ABOUT.SECRET_TITLE' | translate }}</h2>
+      <p>{{ secretMessage || ('ABOUT.SECRET_DESCRIPTION' | translate) }}</p>
+      <button type="button" (click)="runNativeSoundTest()">{{ 'ABOUT.SECRET_SOUND' | translate }}</button>
+      <button type="button" (click)="runNativeNotificationTest()">{{ 'ABOUT.SECRET_NOTIFICATION' | translate }}</button>
+      <button type="button" (click)="runNativeFlashTest()">{{ 'ABOUT.SECRET_FLASH' | translate }}</button>
+      <button type="button" class="secondary" (click)="closeSecretPanel()">{{ 'ABOUT.SECRET_CLOSE' | translate }}</button>
+    </div>
+  </div>
 </main>

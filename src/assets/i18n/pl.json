@@ -13,7 +13,7 @@
       "LOAD": "Błąd wczytywania lokalizacji. Wyświetlamy wszystkie lokalizacje."
     }
   },
-  "ABOUT": { "TITLE": "O nas", "TEXT": "Delta Kebab to rodzinna restauracja serwująca pyszne kebaby z najlepszych składników.", "BUILD_DATE": "Data kompilacji", "SHOW_HEALTH_VERSION": "Pokaż wersję z API zdrowia", "HEALTH_BUILD_DATE": "Data kompilacji z API zdrowia", "LOADING": "Ładowanie..." },
+  "ABOUT": { "TITLE": "O nas", "TEXT": "Delta Kebab to rodzinna restauracja serwująca pyszne kebaby z najlepszych składników.", "BUILD_DATE": "Data kompilacji", "SHOW_HEALTH_VERSION": "Pokaż wersję z API zdrowia", "HEALTH_BUILD_DATE": "Data kompilacji z API zdrowia", "LOADING": "Ładowanie...", "SECRET_TITLE": "Sekretne narzędzia", "SECRET_DESCRIPTION": "Informacje o kompilacji zostały odblokowane.", "SECRET_SOUND": "Natywny test głośnego dźwięku", "SECRET_NOTIFICATION": "Natywny test powiadomienia", "SECRET_FLASH": "Włącz/wyłącz lampę błyskową 5 razy", "SECRET_CLOSE": "Zamknij" },
   "MENU": { "TITLE": "Wybrane pozycje" },
   "WHY": { "TITLE": "Dlaczego my?", "FRESH": "Świeże składniki", "FAST": "Szybka obsługa", "LOCATIONS": "Wiele lokalizacji", "QUALITY": "Jakość mięsa", "FRIENDLY": "Przyjazna atmosfera" },
   "CONTACT": { "TITLE": "Kontakt", "PHONE": "Telefon", "EMAIL": "Email" },
