@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { inject, Injectable, signal } from '@angular/core';
+import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { NativeBridgeService } from './native-bridge.service';
 
 export interface AuthResponse {
   token: string;
@@ -18,6 +19,7 @@ export interface AuthResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http: HttpClient;
+  private readonly nativeBridgeService = inject(NativeBridgeService);
   public readonly user = signal<AuthResponse['user'] | null>(null);
   public readonly token = signal<string | null>(null);
 
@@ -39,11 +41,28 @@ export class AuthService {
         this.user.set(response.user);
         localStorage.setItem('delta_kitchen_token', response.token);
         localStorage.setItem('delta_kitchen_user', JSON.stringify(response.user));
+
+        const user = response.user;
+        const branchId = user.branchIds?.[0] ?? '';
+        const branchName = user.name || 'Delta Kebab';
+
+        this.nativeBridgeService.saveAuthentication({
+          token: response.token,
+          userId: user.id,
+          branchId,
+          branchName
+        });
+
+        if (this.nativeBridgeService.isNativeAndroidApp()) {
+          this.nativeBridgeService.registerForPushNotifications();
+        }
       })
     );
   }
 
   logout() {
+    this.nativeBridgeService.unregisterForPushNotifications();
+    this.nativeBridgeService.logout();
     this.token.set(null);
     this.user.set(null);
     localStorage.removeItem('delta_kitchen_token');

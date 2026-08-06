@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
+import { NativeBridgeService } from './native-bridge.service';
 
 interface NotificationServiceWorkerMessage {
   type: 'KITCHEN_NOTIFICATION';
@@ -17,6 +18,7 @@ export interface KitchenNotification {
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
+  private readonly nativeBridgeService = inject(NativeBridgeService);
   public readonly activeNotification = signal<KitchenNotification | null>(null);
   public readonly isAlerting = signal(false);
   private audioContext?: AudioContext;
@@ -35,21 +37,36 @@ export class NotificationService {
 
     const unlockInteraction = () => {
       void this.unlockAudio();
-      void this.requestPermission();
+      if (!this.isNativeNotificationMode()) {
+        void this.requestPermission();
+      }
     };
 
     window.addEventListener('pointerdown', unlockInteraction, { once: true, capture: true });
     window.addEventListener('touchstart', unlockInteraction, { once: true, capture: true });
     window.addEventListener('keydown', unlockInteraction, { once: true, capture: true });
-    window.addEventListener('focus', () => void this.restorePendingNotification());
+    window.addEventListener('focus', () => {
+      if (!this.isNativeNotificationMode()) {
+        void this.restorePendingNotification();
+      }
+    });
     window.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === 'visible' && !this.isNativeNotificationMode()) {
         void this.restorePendingNotification();
       }
     });
 
-    void this.registerServiceWorker();
-    void this.restorePendingNotification();
+    if (!this.isNativeNotificationMode()) {
+      void this.registerServiceWorker();
+      void this.restorePendingNotification();
+    }
+
+    effect(() => {
+      if (this.isNativeNotificationMode()) {
+        this.clearStoredNotification();
+        this.stopAlert();
+      }
+    });
   }
 
   private createTone() {
@@ -90,6 +107,10 @@ export class NotificationService {
   }
 
   async requestPermission() {
+    if (this.isNativeNotificationMode()) {
+      return;
+    }
+
     if (typeof window === 'undefined' || !('Notification' in window)) {
       return;
     }
@@ -100,6 +121,11 @@ export class NotificationService {
   }
 
   private restorePendingNotification() {
+    if (this.isNativeNotificationMode()) {
+      this.clearStoredNotification();
+      return;
+    }
+
     if (this.activeNotification() || this.isAlerting()) {
       return;
     }
@@ -154,6 +180,10 @@ export class NotificationService {
   }
 
   private async registerServiceWorker() {
+    if (this.isNativeNotificationMode()) {
+      return;
+    }
+
     if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
       return;
     }
@@ -166,7 +196,18 @@ export class NotificationService {
     }
   }
 
+  private isNativeNotificationMode(): boolean {
+    return this.nativeBridgeService.isNativeNotificationEnabled();
+  }
+
   notify(notification: KitchenNotification) {
+    if (this.isNativeNotificationMode()) {
+      this.clearStoredNotification();
+      this.activeNotification.set(null);
+      this.stopAlert();
+      return;
+    }
+
     if (this.activeNotification() || this.isAlerting()) {
       this.stopAlert();
     }
@@ -179,6 +220,10 @@ export class NotificationService {
   }
 
   private showBrowserNotification(notification: KitchenNotification) {
+    if (this.isNativeNotificationMode()) {
+      return;
+    }
+
     if (typeof window === 'undefined') {
       return;
     }

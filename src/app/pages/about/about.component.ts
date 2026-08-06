@@ -5,14 +5,6 @@ import { finalize } from 'rxjs/operators';
 import { buildInfo } from '../../../environments/build-info';
 import { ApiService } from '../../services/api.service';
 
-declare global {
-  interface Window {
-    Android?: {
-      postMessage?: (message: string) => void;
-    };
-  }
-}
-
 @Component({
   selector: 'page-about',
   standalone: true,
